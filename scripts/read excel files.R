@@ -29,7 +29,6 @@ getwd()
 #load in data and name them based on file path
 my_path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/Collected/"
 my_path_csv <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
-folder_names_list <- list.files(my_path_data)
 
 
 ################################################################################
@@ -41,6 +40,8 @@ folder_names_list <- list.files(my_path_data)
 file_names_df <- data.frame(matrix(ncol = 2, nrow = 0))
 colnames(file_names_df) <- c("FilePath", "Plot_Status")
 
+#create list of folders
+folder_names_list <- list.files(my_path_data)
 
 #create list of excel file paths and names, add to empty data frame
 for(i in 1:length(folder_names_list)) {
