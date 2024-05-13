@@ -27,9 +27,11 @@ getwd()
 ################################################################################
 
 #load in data and name them based on file path
-my_path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/Collected/"
-my_path_csv <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
+#Allie personal computer: "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/Collected/"
+#Allie personal computer: "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
 
+my_path_data <- "X:/Data Collection/SAGU/2023/Collected/"
+my_path_csv <- "X:/Data Collection/SAGU/2023/_CSV_Import to FFI/"
 
 ################################################################################
 # CREATE LIST OF DATA NEEDED
