@@ -21,18 +21,18 @@ library(rio)
 # FX protocol -------------------------------------------------------------
 
 #Change file path based on own computer
-setwd("C:/Users/LHankin/OneDrive - DOI/Documents/FXProgram/PlotData/DataCopy_forCoding/FX") #file path for data
+setwd("C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/FX") #file path for data
+getwd()
 
-
-fxnames <- list.files(path = "C:/Users/LHankin/OneDrive - DOI/Documents/FXProgram/PlotData/DataCopy_forCoding/FX", # set the path to your folder files
+fxnames <- list.files(path = "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/FX", # set the path to your folder files
                       pattern = "*.xlsx", # select all excel files in the folder
                       full.names = T) # output full file names (with path)
 
 #Add file names as a column in the output
-namecol <- data.frame(file = fxnames, 
+namecol <- data.frame(file = fxnames,
                       id = as.character(1:length(fxnames))) # id for joining
 
-data <- fxnames %>% 
+data <- fxnames %>%
   lapply(readxl::read_excel,sheet="Overstory") %>% # read all the files at once
   lapply(function(x) x[(names(x) %in% c("TreeID","Species_4letter","DBH_cm","Status_L_F_D","Height_m","CBH_m"))]) %>% #this is if you don't want all the columns from the csv files
   bind_rows(.id = "id") %>% # bind all tables into one object, and give id for each
@@ -40,18 +40,18 @@ data <- fxnames %>%
 
 #*****CHANGE "Status_L_F_D" to "Status_L_F_D_S" for actual data processing
 
-data<-as.data.frame(data) %>% 
+data<-as.data.frame(data) %>%
   mutate(Status_L_F_D = replace(Status_L_F_D, Status_L_F_D == "F", "U"),
-         Height_m = round(Height_m, 0), 
-         CBH_m = round(CBH_m, 0)) 
+         Height_m = round(Height_m, 0),
+         CBH_m = round(CBH_m, 0))
 
 
 head(data)
 
 #Columns for csv import
-#Index	QTR	TagNo	Spp_GUID	Status	Ht	LiCrBHt	DBH	ScorchHt	CrwnRto	DRC	XCoord	
-#CrScPct	CKR	DamCd1	Mort	DamSev2	DamSev3	DamSev1	CharHt	NuLiStems	EqDia	DamCd5	
-#DamSev5	YCoord	NuDeStems	CrwnRad	CrwnCl	Age	UV1	LaddMaxHt	DecayCl	DamCd3	UV2	
+#Index	QTR	TagNo	Spp_GUID	Status	Ht	LiCrBHt	DBH	ScorchHt	CrwnRto	DRC	XCoord
+#CrScPct	CKR	DamCd1	Mort	DamSev2	DamSev3	DamSev1	CharHt	NuLiStems	EqDia	DamCd5
+#DamSev5	YCoord	NuDeStems	CrwnRad	CrwnCl	Age	UV1	LaddMaxHt	DecayCl	DamCd3	UV2
 #LaddBaseHt	GrwthRt	DamCd4	DamCd2	CrFuBHt	Comment	SubFrac	UV3	DamSev4	IsVerified	Species
 
 ffimat<-data.frame(matrix(ncol = 39, nrow = nrow(data))) #create an empty matrix for other FFI variables
@@ -67,7 +67,7 @@ colnames(ffidat)<-c("id","Index","Species","DBH","Status","Ht","CrFuBHt","file",
                     "DamSev3","DamSev1","CharHt","NuLiStems","EqDia","DamCd5","DamSev5","YCoord",
                     "NuDeStems","CrwnRad","CrwnCl","Age","UV1","LaddMaxHt","DecayCl","DamCd3",
                     "UV2","LaddBaseHt","GrwthRt","DamCd4","DamCd2","Comment","SubFrac",
-                    "UV3","DamSev4","IsVerified")  
+                    "UV3","DamSev4","IsVerified")
 names(ffidat)
 
 #Reorder to required FFI order
@@ -76,7 +76,7 @@ names(ffidat)
 
 ffidat$DamCd1<-ifelse(ffidat$Status=="S","FIRE",NA) #change damage code for scorched trees to fire
 
-ffidat<-as.data.frame(ffidat) %>% 
+ffidat<-as.data.frame(ffidat) %>%
   mutate(Status = replace(Status, Status == "S", "D"))
 
 #get unique species identifier from ffi
@@ -135,10 +135,10 @@ fxnames <- list.files(path = "C:/Users/LHankin/OneDrive - DOI/Documents/FXProgra
                       full.names = T) # output full file names (with path)
 
 #Add file names as a column in the output
-namecol <- data.frame(file = fxnames, 
+namecol <- data.frame(file = fxnames,
                       id = as.character(1:length(fxnames))) # id for joining
 
-data <- fxnames %>% 
+data <- fxnames %>%
   lapply(readxl::read_excel, sheet="Browns") %>% # read all the files at once
   lapply(function(x) x[,2:5]) %>% #take specific columns
   bind_rows(.id = "id") %>% # bind all tables into one object, and give id for each
@@ -197,11 +197,11 @@ export_list(fwdout,file=names(fwdout))
 
 
 
-#Coarse Woody: 
+#Coarse Woody:
 
-data <- fxnames %>% 
+data <- fxnames %>%
   lapply(readxl::read_excel, sheet="1000HR",) %>% # read all the files at once
-  lapply(function(x) x[(names(x) %in% c("Sound_1_or_Rotten_4","Diameter_cm"))]) %>% 
+  lapply(function(x) x[(names(x) %in% c("Sound_1_or_Rotten_4","Diameter_cm"))]) %>%
   bind_rows(.id = "id") %>% # bind all tables into one object, and give id for each
   left_join(namecol) # join name column created earlier
 
@@ -261,15 +261,15 @@ fwdout<-lapply(ffilist, function(x) x[!(names(x) %in% c("file"))])
 export_list(fwdout,file=names(fwdout))
 
 
-#Duff Litt: 
+#Duff Litt:
 
-data <- fxnames %>% 
+data <- fxnames %>%
   lapply(readxl::read_excel, sheet="Fuels",) %>% # read all the files at once
-  lapply(function(x) x[1:2,c(2,4:6)]) %>% 
+  lapply(function(x) x[1:2,c(2,4:6)]) %>%
   bind_rows(.id = "id") %>% # bind all tables into one object, and give id for each
   left_join(namecol) # join name column created earlier
 
-data<-as.data.frame(data) 
+data<-as.data.frame(data)
 names(data)
 head(data)
 
@@ -326,12 +326,12 @@ fxnames <- list.files(path = "C:/Users/LHankin/OneDrive - DOI/Documents/FXProgra
                       full.names = T) # output full file names (with path)
 
 #Add file names as a column in the output
-namecol <- data.frame(file = fxnames, 
+namecol <- data.frame(file = fxnames,
                       id = as.character(1:length(fxnames))) # id for joining
 
-data <- fxnames %>% 
+data <- fxnames %>%
   lapply(readxl::read_excel, sheet="BurnSeverity",) %>% # read all the files at once
-  lapply(function(x) x[(names(x) %in% c("OverallSeverity","SoilBurnSeverity"))]) %>% 
+  lapply(function(x) x[(names(x) %in% c("OverallSeverity","SoilBurnSeverity"))]) %>%
   bind_rows(.id = "id") %>% # bind all tables into one object, and give id for each
   left_join(namecol) # join name column created earlier
 
