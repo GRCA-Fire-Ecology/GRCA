@@ -10,7 +10,7 @@
 ## Navigate to where you store FX excel data files (e.g. data/GRCA/FMH/2023/)
 ## In this folder, create 2 subfolders. One called "Collected", and the other called "_CSV_Import to FFI"
 ## Put all your completed data collection excel spreadsheets into the "Collected" folder.
-#### Create sub folders of each monitoring type as needed (e.g. "PIPO", "PIED", "PIPN", "PIEN", "PIAB")
+#### Create sub folders of each monitoring type (e.g. "PIPO", "PIED", "PIPN", "PIEN", "PIAB")
 #### Make sure excel files are named as follows: MonitoringType_Plot#_Status (e.g. PIPN_08_02Year05.xlsx)
 ## The "_CSV_Import to FFI" folder should be empty. This is where CSVs will be stored after running this code.
 
