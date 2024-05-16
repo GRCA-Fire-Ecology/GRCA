@@ -11,7 +11,7 @@
 ## In this folder, create 2 subfolders. One called "Collected", and the other called "_CSV_Import to FFI"
 ## Put all your data collection excel spreadsheets into the "Collected" folder.
 #### Create sub folders of each monitoring type as needed (e.g. "PIPO", "PIED", "PIPN", "PIEN", "PIAB")
-#### Make sure excel files are named as follows: MonitoringType_Plot#_Status (e.g. PIPN_02_02Year05.xlsx)
+#### Make sure excel files are named as follows: MonitoringType_Plot#_Status (e.g. PIPN_08_02Year05.xlsx)
 ## The "_CSV_Import to FFI" folder should be empty. This is where CSVs will be stored after running this code.
 
 
@@ -23,6 +23,7 @@
 install.packages("tidyverse")
 #load packages
 library(tidyverse)
+library(readxl)
 
 #identify working directory
 #setwd("/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test")
