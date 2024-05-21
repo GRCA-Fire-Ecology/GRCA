@@ -41,6 +41,7 @@ getwd()
 my_path_data <- "X:/Data Collection/SAGU/2023/Collected/"
 my_path_csv <- "X:/Data Collection/SAGU/2023/_CSV_Import to FFI/"
 
+
 ################################################################################
 # CREATE LIST OF DATA NEEDED
 ################################################################################
@@ -82,7 +83,6 @@ for(i in 1:nrow(file_names_df)) {
   my_path_csv_Trees <- paste0(my_path_csv, name, "_Trees.csv")
 
   FuelsFWD <- read_excel(path, sheet = "Fuels FWD")
-  FuelsFWD <- read_excel(path, sheet = "Fuels FWD")
   FuelsCWD <- read_excel(path, sheet = "Fuels CWD")
   FuelsDuffLitt <- read_excel(path, sheet = "Fuels Duff-Litt")
   HerbsCover <- read_excel(path, sheet = "Cover")
@@ -96,7 +96,6 @@ for(i in 1:nrow(file_names_df)) {
   write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE)
   write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE)
 }
-
 
 
 
