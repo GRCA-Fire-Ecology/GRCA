@@ -31,6 +31,12 @@ getwd()
 
 
 ################################################################################
+################################################################################
+# USE THIS CODE IF FILE STRUCTURE INCLUDES FOLDERS WITH MONITORING TYPES
+
+
+
+################################################################################
 # MAKE SURE FILE PATHS ARE CORRECT
 ################################################################################
 
@@ -38,9 +44,11 @@ getwd()
 #Allie personal computer: "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/Collected/"
 #Allie personal computer: "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
 
-my_path_data <- "X:/Data Collection/SAGU/2023/Collected/"
-my_path_csv <- "X:/Data Collection/SAGU/2023/_CSV_Import to FFI/"
+#my_path_data <- "X:/Data Collection/SAGU/2023/Collected/"
+#my_path_csv <- "X:/Data Collection/SAGU/2023/_CSV_Import to FFI/"
 
+my_path_data <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/SAGU/2023/Collected/"
+my_path_csv <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
 
 ################################################################################
 # CREATE LIST OF DATA NEEDED
@@ -98,4 +106,71 @@ for(i in 1:nrow(file_names_df)) {
 }
 
 
+
+################################################################################
+################################################################################
+# USE THIS CODE IF FILE STRUCTURE DOES NOT INCLUDE MONITORING TYPE SUB FOLDERS
+
+
+
+################################################################################
+# MAKE SURE FILE PATHS ARE CORRECT
+################################################################################
+
+#load in data and name them based on file path
+#Allie personal computer: "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/Collected/"
+#Allie personal computer: "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
+
+#my_path_data <- "X:/Data Collection/WACA/2020/Collected/"
+#my_path_csv <- "X:/Data Collection/WACA/2020/_CSV_Import to FFI/"
+
+my_path_data <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/WACA/2020/Collected/"
+my_path_csv <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/WACA/2020/_CSV_Import to FFI/"
+
+
+################################################################################
+# CREATE LIST OF DATA NEEDED
+################################################################################
+
+#create list of file names
+file_names_list <- list.files(my_path_data)
+
+#specify file path each excel sheet
+file_path <- paste0(my_path_data, file_names_list)
+
+#add file paths and names to a dataframe
+file_names_df <- data.frame(FilePath = file_path, text = file_names_list) %>%
+  separate(text, sep = ".xlsx", into = ("Plot_Status"))
+
+
+################################################################################
+# MAIN CODE / DO THE THING!
+################################################################################
+
+
+#separate excel files into tabs, save as CSVs, and name them appropriately
+for(i in 1:nrow(file_names_df)) {
+  path <- file_names_df[i,1]
+  name <- file_names_df[i,2]
+  my_path_csv_FuelsFWD <- paste0(my_path_csv, name, "_FuelsFWD.csv")
+  my_path_csv_FuelsCWD <- paste0(my_path_csv, name, "_FuelsCWD.csv")
+  my_path_csv_FuelsDuffLitt <- paste0(my_path_csv, name, "_FuelsDuffLitt.csv")
+  #my_path_csv_HerbsCover <- paste0(my_path_csv, name, "_HerbsCover.csv")
+  #my_path_csv_Seedlings <- paste0(my_path_csv, name, "_Seedlings.csv")
+  my_path_csv_Trees <- paste0(my_path_csv, name, "_Trees.csv")
+
+  FuelsFWD <- read_excel(path, sheet = "Surface Fuels FWD")
+  FuelsCWD <- read_excel(path, sheet = "Surface Fuels CWD")
+  FuelsDuffLitt <- read_excel(path, sheet = "Surface Fuels Duff-Litt")
+  #HerbsCover <- read_excel(path, sheet = "Cover")
+  #Seedlings <- read_excel(path, sheet = "Seedlings")
+  Trees <- read_excel(path, sheet = "Trees - Individuals")
+
+  write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)
+  write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE)
+  write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE)
+  #write.csv(HerbsCover, my_path_csv_HerbsCover, quote=FALSE, row.names = FALSE)
+  #write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE)
+  write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE)
+}
 
