@@ -78,6 +78,12 @@ HerbsCover <- read_excel(path, sheet = "Cover")
 Seedlings <- read_excel(path, sheet = "Seedlings")
 Trees <- read_excel(path, sheet = "Trees")
 
+colnames(FuelsFWD) <- c("I", NA, NA, NA, "1", "10", "100", "C", "Fuel Constant")
+colnames(FuelsFWD)[colnames(FuelsFWD) == "1 Hour"] <- "OneHr"
+colnames(FuelsFWD)[colnames(FuelsFWD) == "HunHr"] <- "100 Hour"
+colnames(FuelsFWD)<-c(colnames(FuelsFWD)[1:4],"1 Hour", "10 Hour", "100 Hr", colnames(FuelsFWD)[8:9])
+colnames(FuelsFWD)[5:7]<-c("1 Hour", "10 Hour", "100 Hr")
+
 my_path_csv_FuelsFWD <- paste0(my_path_csv, name, "_FuelsFWD.csv")
 my_path_csv_FuelsCWD <- paste0(my_path_csv, name, "_FuelsCWD.csv")
 my_path_csv_FuelsDuffLitt <- paste0(my_path_csv, name, "_FuelsDuffLitt.csv")
