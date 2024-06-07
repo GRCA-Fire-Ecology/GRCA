@@ -21,14 +21,19 @@
 
 #install packages
 install.packages("tidyverse")
+install.packages("googledrive")
 #load packages
 library(tidyverse)
 library(readxl)
+library(googledrive)
 
 #identify working directory
 #setwd("/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test")
 getwd()
 
+#connect with grandcanyonfirefx@gmail.com google account
+drive_find()
+#not quite working....
 
 ################################################################################
 ################################################################################
@@ -49,6 +54,9 @@ getwd()
 
 my_path_data <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/SAGU/2023/Collected/"
 my_path_csv <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
+
+my_path_data <- "https://drive.google.com/drive/u/1/my-drive"
+drive_up
 
 ################################################################################
 # CREATE LIST OF DATA NEEDED
