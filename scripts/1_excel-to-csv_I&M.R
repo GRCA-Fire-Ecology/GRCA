@@ -1,7 +1,7 @@
 # Created by: Alexandra Lalor
 # Email: alexandra_lalor@nps.gov, allielalor@gmail.com
-# Date Created: 2024-05-01
-# Last Edited: 2024-06-21
+# Date Created: 2024-07-18
+# Last Edited: 2024-07-18
 #
 # To take data from excel files and save individual protocols/tabs as CSVs,
 # and name them appropriately
@@ -40,11 +40,11 @@ getwd()
 #my_path_data <- "X:/Data Collection/GRCA/2024/Collected/"
 #my_path_csv <- "X:/Data Collection/CRCA/2024/_CSV_Import to FFI/"
 
-#my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - FMH/2024/Collected/"
-#my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - FMH/2024/_CSV_Import to FFI/"
+my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - FMH/2024/Collected/"
+my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - FMH/2024/_CSV_Import to FFI/"
 
-my_path_data <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/GRCA/2024/Collected/"
-my_path_csv <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/GRCA/2024/_CSV_Import to FFI/"
+#my_path_data <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/GRCA/2024/Collected/"
+#my_path_csv <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/GRCA/2024/_CSV_Import to FFI/"
 
 
 ################################################################################
@@ -122,15 +122,24 @@ for(i in 1:nrow(file_names_df)) {
     mutate(IsVerified = "TRUE")
 
   #create CSVs, exclude blank data frames
-  ifelse(dim(FuelsFWD)[1] == 0, print("Fuels FWD is empty"), write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE))
-  ifelse(dim(FuelsCWD)[1] == 0, print("Fuels CWD is empty"), write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE))
-  ifelse(dim(FuelsDuffLitt)[1] == 0, print("Fuels Duff-Litt is empty"), write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE))
-  ifelse(dim(HerbsPoints)[1] == 0, print("Herbs Points is empty"), write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE))
-  ifelse(dim(HerbsObs)[1] == 0, print("Herbs Obs is empty"), write.csv(HerbsObs, my_path_csv_HerbsObs, quote=FALSE, row.names = FALSE))
-  ifelse(dim(Shrubs)[1] == 0, print("Shrubs is empty"), write.csv(Shrubs, my_path_csv_Shrubs, quote=FALSE, row.names = FALSE))
-  ifelse(dim(Seedlings)[1] == 0, print("Seedlings is empty"), write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE))
-  ifelse(dim(Trees)[1] == 0, print("Trees is empty"), write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE))
-  ifelse(dim(PostBurn)[1] == 0, print("Post Burn is empty"), write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE))
+  if(dim(FuelsFWD)[1] == 0) {print("Fuels FWD is empty")}
+  else{write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)}
+  if(dim(FuelsCWD)[1] == 0) {print("Fuels CWD is empty")}
+  else{write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE)}
+  if(dim(FuelsDuffLitt)[1] == 0) {print("Fuels Duff-Litt is empty")}
+  else{write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE)}
+  if(dim(HerbsPoints)[1] == 0) {print("Herbs Points is empty")}
+  else{write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE)}
+  if(dim(HerbsObs)[1] == 0) {print("Herbs Obs is empty")}
+  else{write.csv(HerbsObs, my_path_csv_HerbsObs, quote=FALSE, row.names = FALSE)}
+  if(dim(Shrubs)[1] == 0) {print("Shrubs is empty")}
+  else{write.csv(Shrubs, my_path_csv_Shrubs, quote=FALSE, row.names = FALSE)}
+  if(dim(Seedlings)[1] == 0) {print("Seedlings is empty")}
+  else{write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE)}
+  if(dim(Trees)[1] == 0) {print("Trees is empty")}
+  else{write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE)}
+  if(dim(PostBurn)[1] == 0) {print("Post Burn is empty")}
+  else{write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE)}
 }
 
 
@@ -140,8 +149,8 @@ for(i in 1:nrow(file_names_df)) {
 
 
 
-path <- file_names_df[i,1]
-name <- file_names_df[i,2]
+path <- file_names_df[1,1]
+name <- file_names_df[1,2]
 
 #read tabs of excel files, bring them into R
 FuelsFWD <- read_excel(path, sheet = "Fuels FWD")
@@ -193,13 +202,21 @@ Trees <- subset(Trees, Status != "X") %>%
   mutate(IsVerified = "TRUE")
 
 #create CSVs, exclude blank data frames
-ifelse(dim(FuelsFWD)[1] == 0, print("Fuels FWD is empty"), write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE))
-ifelse(dim(FuelsCWD)[1] == 0, print("Fuels CWD is empty"), write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE))
-ifelse(dim(FuelsDuffLitt)[1] == 0, print("Fuels Duff-Litt is empty"), write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE))
-ifelse(dim(HerbsPoints)[1] == 0, print("Herbs Points is empty"), write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE))
-ifelse(dim(HerbsObs)[1] == 0, print("Herbs Obs is empty"), write.csv(HerbsObs, my_path_csv_HerbsObs, quote=FALSE, row.names = FALSE))
-ifelse(dim(Shrubs)[1] == 0, print("Shrubs is empty"), write.csv(Shrubs, my_path_csv_Shrubs, quote=FALSE, row.names = FALSE))
-ifelse(dim(Seedlings)[1] == 0, print("Seedlings is empty"), write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE))
-ifelse(dim(Trees)[1] == 0, print("Trees is empty"), write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE))
-ifelse(dim(PostBurn)[1] == 0, print("Post Burn is empty"), write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE))
-
+if(dim(FuelsFWD)[1] == 0) {print("Fuels FWD is empty")}
+else{write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)}
+if(dim(FuelsCWD)[1] == 0) {print("Fuels CWD is empty")}
+else{write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE)}
+if(dim(FuelsDuffLitt)[1] == 0) {print("Fuels Duff-Litt is empty")}
+else{write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE)}
+if(dim(HerbsPoints)[1] == 0) {print("Herbs Points is empty")}
+else{write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE)}
+if(dim(HerbsObs)[1] == 0) {print("Herbs Obs is empty")}
+else{write.csv(HerbsObs, my_path_csv_HerbsObs, quote=FALSE, row.names = FALSE)}
+if(dim(Shrubs)[1] == 0) {print("Shrubs is empty")}
+else{write.csv(Shrubs, my_path_csv_Shrubs, quote=FALSE, row.names = FALSE)}
+if(dim(Seedlings)[1] == 0) {print("Seedlings is empty")}
+else{write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE)}
+if(dim(Trees)[1] == 0) {print("Trees is empty")}
+else{write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE)}
+if(dim(PostBurn)[1] == 0) {print("Post Burn is empty")}
+else{write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE)}
