@@ -30,16 +30,6 @@ library(googledrive)
 #setwd("/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test")
 getwd()
 
-#connect with grandcanyonfirefx@gmail.com google account
-#not working an not sure how to make it work
-drive_auth(
-  email = "grandcanyonfirefx@gmail.com",
-  path = NULL,
-  scopes = "https://www.googleapis.com/auth/drive",
-  cache = gargle::gargle_oauth_cache(),
-  use_oob = gargle::gargle_oob_default(),
-  token = NULL
-)
 
 ################################################################################
 # MAKE SURE FILE PATHS ARE CORRECT
@@ -104,14 +94,14 @@ for(i in 1:nrow(file_names_df)) {
   my_path_csv_Trees <- paste0(my_path_csv, name, "_Trees.csv")
   #my_path_csv_Collected <- paste0(my_path_csv, name, "_Collected.csv")
 
-  write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)
-  write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE)
-  write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE)
-  write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE)
-  write.csv(HerbsObs, my_path_csv_HerbsObs, quote=FALSE, row.names = FALSE)
-  write.csv(Shrubs, my_path_csv_Shrubs, quote=FALSE, row.names = FALSE)
-  write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE)
-  write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE)
+  write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote = FALSE, row.names = FALSE)
+  write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote = FALSE, row.names = FALSE)
+  write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote = FALSE, row.names = FALSE)
+  write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote = FALSE, row.names = FALSE)
+  write.csv(HerbsObs, my_path_csv_HerbsObs, quote = FALSE, row.names = FALSE)
+  write.csv(Shrubs, my_path_csv_Shrubs, quote = FALSE, row.names = FALSE)
+  write.csv(Seedlings, my_path_csv_Seedlings, quote = FALSE, row.names = FALSE)
+  write.csv(Trees, my_path_csv_Trees, quote = FALSE, row.names = FALSE)
   #write.csv(Collected, my_path_csv_Collected, quote=FALSE, row.names = FALSE)
 }
 
