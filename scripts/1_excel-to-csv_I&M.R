@@ -1,7 +1,7 @@
 # Created by: Alexandra Lalor
 # Email: alexandra_lalor@nps.gov, allielalor@gmail.com
 # Date Created: 2024-07-18
-# Last Edited: 2024-07-18
+# Last Edited: 2024-07-22
 #
 # To take data from excel files and save individual protocols/tabs as CSVs,
 # and name them appropriately
@@ -35,8 +35,8 @@ getwd()
 
 #load in data and name them based on file path
 
-my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/Collected/"
-my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/_CSV_Import to FFI/"
+my_path_data <- "C:/Users/alalor/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/Collected/"
+my_path_csv <- "C:/Users/alalor/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/_CSV_Import to FFI/"
 
 
 
@@ -62,7 +62,6 @@ file_names_df <- data.frame(FilePath = file_path, text = file_names_list) %>%
 ################################################################################
 
 
-#separate excel files into tabs, save as CSVs, and name them appropriately
 for(i in 1:nrow(file_names_df)) {
   path <- file_names_df[i,1]
   name <- file_names_df[i,2]
@@ -91,7 +90,8 @@ for(i in 1:nrow(file_names_df)) {
 
   # QAQC all protocols, minus Trees, Delete empty rows, Change numbers in index column into ascending order
   FuelsFWD <- subset(FuelsFWD, OneHr != "") %>%
-    mutate(Index = row_number())
+    mutate(Index = row_number()) %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   FuelsCWD <- subset(FuelsCWD, Dia != "") %>%
     mutate(Index = row_number())
   FuelsDuffLitt <- subset(FuelsDuffLitt, LittDep != "") %>%
@@ -100,13 +100,17 @@ for(i in 1:nrow(file_names_df)) {
   HerbsPoints <-
     mutate(HerbsPoints, Count = HerbsPointsCount) %>%
     subset(Count != "0") %>%
-    mutate(Index = row_number())
+    mutate(Index = row_number()) %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   HerbsObs <- subset(HerbsObs, Species != "") %>%
-    mutate(Index = row_number())
+    mutate(Index = row_number()) %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   Seedlings <- subset(Seedlings, Species != "") %>%
-    mutate(Index = row_number())
+    mutate(Index = row_number()) %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   Shrubs <- subset(Shrubs, Species != "") %>%
-    mutate(Index = row_number())
+    mutate(Index = row_number()) %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   PostBurn <- subset(PostBurn, Sub != "") %>%
     mutate(Index = row_number())
 
@@ -114,27 +118,28 @@ for(i in 1:nrow(file_names_df)) {
   Trees <- subset(Trees, Status != "X") %>%
     arrange(SubFrac, QTR, TagNo) %>%
     mutate(Index = row_number()) %>%
-    mutate(IsVerified = "TRUE")
+    mutate(IsVerified = "TRUE") %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
 
   #create CSVs, exclude blank data frames
-  if(dim(FuelsFWD)[1] == 0) {print("Fuels FWD is empty")}
-    else{write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)}
-  if(dim(FuelsCWD)[1] == 0) {print("Fuels CWD is empty")}
-    else{write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE)}
-  if(dim(FuelsDuffLitt)[1] == 0) {print("Fuels Duff-Litt is empty")}
-    else{write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE)}
-  if(dim(HerbsPoints)[1] == 0) {print("Herbs Points is empty")}
-    else{write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE)}
-  if(dim(HerbsObs)[1] == 0) {print("Herbs Obs is empty")}
-   else{write.csv(HerbsObs, my_path_csv_HerbsObs, quote=FALSE, row.names = FALSE)}
-  if(dim(Shrubs)[1] == 0) {print("Shrubs is empty")}
-    else{write.csv(Shrubs, my_path_csv_Shrubs, quote=FALSE, row.names = FALSE)}
-  if(dim(Seedlings)[1] == 0) {print("Seedlings is empty")}
-    else{write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE)}
-  if(dim(Trees)[1] == 0) {print("Trees is empty")}
-    else{write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE)}
-  if(dim(PostBurn)[1] == 0) {print("Post Burn is empty")}
-    else{write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE)}
+  if(dim(FuelsFWD)[1] == 0) {print(paste0(name," ","Fuels FWD is empty"))}
+  else{write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)}
+  if(dim(FuelsCWD)[1] == 0) {print(paste0(name," ","Fuels CWD is empty"))}
+  else{write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE)}
+  if(dim(FuelsDuffLitt)[1] == 0) {print(paste0(name," ","Fuels Duff-Litt is empty"))}
+  else{write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE)}
+  if(dim(HerbsPoints)[1] == 0) {print(paste0(name," ","Herbs Points is empty"))}
+  else{write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE)}
+  if(dim(HerbsObs)[1] == 0) {print(paste0(name," ","Herbs Obs is empty"))}
+  else{write.csv(HerbsObs, my_path_csv_HerbsObs, quote=FALSE, row.names = FALSE)}
+  if(dim(Shrubs)[1] == 0) {print(paste0(name," ","Shrubs is empty"))}
+  else{write.csv(Shrubs, my_path_csv_Shrubs, quote=FALSE, row.names = FALSE)}
+  if(dim(Seedlings)[1] == 0) {print(paste0(name," ","Seedlings is empty"))}
+  else{write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE)}
+  if(dim(Trees)[1] == 0) {print(paste0(name," ","Trees is empty"))}
+  else{write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE)}
+  if(dim(PostBurn)[1] == 0) {print(paste0(name," ","Post Burn is empty"))}
+  else{write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE)}
 }
 
 
