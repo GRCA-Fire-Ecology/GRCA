@@ -89,7 +89,7 @@ for(i in 1:nrow(file_names_df)) {
   # QAQC all protocols, minus Trees, Delete empty rows, Change numbers in index column into ascending order
   FuelsFWD <- subset(FuelsFWD, OneHr != "") %>%
     mutate(Index = row_number()) %>%
-    map_df(str_replace, pattern = ",", replacement = ";")
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   FuelsCWD <- subset(FuelsCWD, Dia != "") %>%
     mutate(Index = row_number())
   FuelsDuffLitt <- subset(FuelsDuffLitt, LittDep != "") %>%
@@ -99,16 +99,16 @@ for(i in 1:nrow(file_names_df)) {
     mutate(HerbsPoints, Count = HerbsPointsCount) %>%
     subset(Count != "0") %>%
     mutate(Index = row_number()) %>%
-    map_df(str_replace, pattern = ",", replacement = ";")
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   HerbsObs <- subset(HerbsObs, Species != "") %>%
     mutate(Index = row_number()) %>%
-    map_df(str_replace, pattern = ",", replacement = ";")
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   Seedlings <- subset(Seedlings, Species != "") %>%
     mutate(Index = row_number()) %>%
-    map_df(str_replace, pattern = ",", replacement = ";")
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   Shrubs <- subset(Shrubs, Species != "") %>%
     mutate(Index = row_number()) %>%
-    map_df(str_replace, pattern = ",", replacement = ";")
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   PostBurn <- subset(PostBurn, Sub != "") %>%
     mutate(Index = row_number())
 
@@ -117,11 +117,11 @@ for(i in 1:nrow(file_names_df)) {
     arrange(SubFrac, QTR, TagNo) %>%
     mutate(Index = row_number()) %>%
     mutate(IsVerified = "TRUE") %>%
-    map_df(str_replace, pattern = ",", replacement = ";")
+    map_df(str_replace_all, pattern = ",", replacement = ";")
 
   #create CSVs, exclude blank data frames
   if(dim(FuelsFWD)[1] == 0) {print(paste0(name," ","Fuels FWD is empty"))}
-    else{write.csv2(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)}
+    else{write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE)}
   if(dim(FuelsCWD)[1] == 0) {print(paste0(name," ","Fuels CWD is empty"))}
     else{write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE)}
   if(dim(FuelsDuffLitt)[1] == 0) {print(paste0(name," ","Fuels Duff-Litt is empty"))}
@@ -175,7 +175,7 @@ my_path_csv_PostBurn <- paste0(my_path_csv, name, "_PostBurn.csv")
 # QAQC all protocols, minus Trees, Delete empty rows, Change numbers in index column into ascending order
 FuelsFWD <- subset(FuelsFWD, OneHr != "") %>%
   mutate(Index = row_number()) %>%
-  map_df(str_replace, pattern = ",", replacement = ";")
+  map_df(str_replace_all, pattern = ",", replacement = ";")
 FuelsCWD <- subset(FuelsCWD, Dia != "") %>%
   mutate(Index = row_number())
 FuelsDuffLitt <- subset(FuelsDuffLitt, LittDep != "") %>%
@@ -185,16 +185,16 @@ HerbsPoints <-
   mutate(HerbsPoints, Count = HerbsPointsCount) %>%
   subset(Count != "0") %>%
   mutate(Index = row_number()) %>%
-  map_df(str_replace, pattern = ",", replacement = ";")
+  map_df(str_replace_all, pattern = ",", replacement = ";")
 HerbsObs <- subset(HerbsObs, Species != "") %>%
   mutate(Index = row_number()) %>%
-  map_df(str_replace, pattern = ",", replacement = ";")
+  map_df(str_replace_all, pattern = ",", replacement = ";")
 Seedlings <- subset(Seedlings, Species != "") %>%
   mutate(Index = row_number()) %>%
-  map_df(str_replace, pattern = ",", replacement = ";")
+  map_df(str_replace_all, pattern = ",", replacement = ";")
 Shrubs <- subset(Shrubs, Species != "") %>%
   mutate(Index = row_number()) %>%
-  map_df(str_replace, pattern = ",", replacement = ";")
+  map_df(str_replace_all, pattern = ",", replacement = ";")
 PostBurn <- subset(PostBurn, Sub != "") %>%
   mutate(Index = row_number())
 
@@ -203,7 +203,7 @@ Trees <- subset(Trees, Status != "X") %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number()) %>%
   mutate(IsVerified = "TRUE") %>%
-  map_df(str_replace, pattern = ",", replacement = ";")
+  map_df(str_replace_all, pattern = ",", replacement = ";")
 
 
 
