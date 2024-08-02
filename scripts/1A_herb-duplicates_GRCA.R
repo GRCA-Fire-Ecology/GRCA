@@ -1,7 +1,7 @@
 # Created by: Alexandra Lalor
 # Email: alexandra_lalor@nps.gov, allielalor@gmail.com
 # Date Created: 2024-08-01
-# Last Edited: 2024-08-01
+# Last Edited: 2024-08-02
 #
 # recognize duplicates between herb points and herbs observed
 
@@ -89,10 +89,16 @@ name <- file_names_df[1,2]
 #read tabs of excel files, bring them into R
 HerbsPoints <- read_excel(path, sheet = "Herbs (Points)")
 HerbsObs <- read_excel(path, sheet = "Herbs-Ob (Sp Comp)")
+Shrubs <- read_excel(path, sheet = "Shrubs (Belt)")
+Seedlings <- read_excel(path, sheet = "Seedlings (Quad)")
+Trees <- read_excel(path, sheet = "Trees")
 
 #create csv paths
 my_path_csv_HerbsPoints <- paste0(my_path_csv, name, "_HerbsPoints.csv")
 my_path_csv_HerbsObs<- paste0(my_path_csv, name, "_HerbsObs.csv")
+my_path_csv_Shrubs<- paste0(my_path_csv, name, "_Shrubs.csv")
+my_path_csv_Seedlings <- paste0(my_path_csv, name, "_Seedlings.csv")
+my_path_csv_Trees <- paste0(my_path_csv, name, "_Trees.csv")
 
 # QAQC all protocols, minus Trees, Delete empty rows, Change numbers in index column into ascending order
 #make sure there are hits on the herb line, add these up
@@ -103,12 +109,47 @@ HerbsPoints <-
   subset(Count != "0") %>%
   mutate(Index = row_number()) %>%
   map_df(str_replace_all, pattern = ",", replacement = ";")
+Seedlings <- subset(Seedlings, Species != "") %>%
+  mutate(Index = row_number()) %>%
+  map_df(str_replace_all, pattern = ",", replacement = ";")
+Shrubs <- subset(Shrubs, Species != "") %>%
+  mutate(Index = row_number()) %>%
+  map_df(str_replace_all, pattern = ",", replacement = ";")
+Trees <- subset(Trees, Status != "X") %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  mutate(IsVerified = "TRUE") %>%
+  map_df(str_replace_all, pattern = ",", replacement = ";")
+
+
+
 #identify duplicate species in Herbs Obs
 DuplicateHerbs <-
   merge(HerbsPoints, HerbsObs, by = "Species") %>%
-  select(Species)
+  select(Species) %>%
+  distinct(Species)
+
+DuplicateShrubs <-
+  merge(Shrubs, HerbsObs, by = "Species") %>%
+  select(Species) %>%
+  distinct(Species)
+
+DuplicateSeedlings <-
+  merge(Seedlings, HerbsObs, by = "Species") %>%
+  select(Species) %>%
+  distinct(Species)
+
+DuplicateTrees <-
+  merge(Trees, HerbsObs, by = "Species") %>%
+  select(Species) %>%
+  distinct(Species)
+
+DuplicateSpecies <- rbind(DuplicateHerbs, DuplicateShrubs, DuplicateSeedlings, DuplicateTrees)
+
 #remove duplicate species from Herbs Obs
-HerbsObs <- anti_join(HerbsObs, DuplicateHerbs, by = "Species")
+HerbsObs <- anti_join(HerbsObs, DuplicateSpecies, by = "Species")
+
+
 #remove data if = 0, update index, replace , with ;
 HerbsObs <- subset(HerbsObs, Species != "") %>%
   mutate(Index = row_number()) %>%
