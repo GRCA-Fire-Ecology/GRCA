@@ -1,7 +1,7 @@
 # Created by: Alexandra Lalor
 # Email: alexandra_lalor@nps.gov, allielalor@gmail.com
 # Date Created: 2024-05-01
-# Last Edited: 2024-07-22
+# Last Edited: 2024-08-02
 #
 # To take data from excel files and save individual protocols/tabs as CSVs,
 # and name them appropriately
@@ -73,7 +73,7 @@ for(i in 1:nrow(file_names_df)) {
   Shrubs <- read_excel(path, sheet = "Shrubs (Belt)")
   Seedlings <- read_excel(path, sheet = "Seedlings (Quad)")
   Trees <- read_excel(path, sheet = "Trees")
-  PostBurn <- read_excel(path, sheet = "Post Burn")
+  #PostBurn <- read_excel(path, sheet = "Post Burn")
 
   #create csv paths
   my_path_csv_FuelsFWD <- paste0(my_path_csv, name, "_FuelsFWD.csv")
@@ -86,7 +86,7 @@ for(i in 1:nrow(file_names_df)) {
   my_path_csv_Trees <- paste0(my_path_csv, name, "_Trees.csv")
   my_path_csv_PostBurn <- paste0(my_path_csv, name, "_PostBurn.csv")
 
-  # QAQC all protocols, minus Trees, Delete empty rows, Change numbers in index column into ascending order
+  # QAQC all protocols: Delete empty rows, Change numbers in index column into ascending order
   FuelsFWD <- subset(FuelsFWD, OneHr != "") %>%
     mutate(Index = row_number()) %>%
     map_df(str_replace_all, pattern = ",", replacement = ";")
@@ -100,9 +100,9 @@ for(i in 1:nrow(file_names_df)) {
     subset(Count != "0") %>%
     mutate(Index = row_number()) %>%
     map_df(str_replace_all, pattern = ",", replacement = ";")
-  HerbsObs <- subset(HerbsObs, Species != "") %>%
-    mutate(Index = row_number()) %>%
-    map_df(str_replace_all, pattern = ",", replacement = ";")
+  # HerbsObs <- subset(HerbsObs, Species != "") %>%
+  #   mutate(Index = row_number()) %>%
+  #   map_df(str_replace_all, pattern = ",", replacement = ";")
   Seedlings <- subset(Seedlings, Species != "") %>%
     mutate(Index = row_number()) %>%
     map_df(str_replace_all, pattern = ",", replacement = ";")
@@ -111,13 +111,38 @@ for(i in 1:nrow(file_names_df)) {
     map_df(str_replace_all, pattern = ",", replacement = ";")
   PostBurn <- subset(PostBurn, Sub != "") %>%
     mutate(Index = row_number())
-
-  # Trees, Ensure tree order is triple sorted by “SubFrac”, “QTR”, and “TagNo” (smallest to largest), Check that index is in ascending order from top to bottom (1, 2, 3, …). Trees are commonly unsorted, “IsVerified” column is TRUE
   Trees <- subset(Trees, Status != "X") %>%
     arrange(SubFrac, QTR, TagNo) %>%
     mutate(Index = row_number()) %>%
     mutate(IsVerified = "TRUE") %>%
     map_df(str_replace_all, pattern = ",", replacement = ";")
+
+  #identify duplicate species in Herbs Obs
+  DuplicateHerbs <-
+    merge(HerbsPoints, HerbsObs, by = "Species") %>%
+    select(Species) %>%
+    distinct(Species)
+  DuplicateShrubs <-
+    merge(Shrubs, HerbsObs, by = "Species") %>%
+    select(Species) %>%
+    distinct(Species)
+  DuplicateSeedlings <-
+    merge(Seedlings, HerbsObs, by = "Species") %>%
+    select(Species) %>%
+    distinct(Species)
+  DuplicateTrees <-
+    merge(Trees, HerbsObs, by = "Species") %>%
+    select(Species) %>%
+    distinct(Species)
+  #create master list of duplicate species
+  DuplicateSpecies <- rbind(DuplicateHerbs, DuplicateShrubs, DuplicateSeedlings, DuplicateTrees)
+  #remove duplicate species from Herbs Obs
+  HerbsObs <- anti_join(HerbsObs, DuplicateSpecies, by = "Species")
+  #QAQC for HerbsObs: remove data if = 0, update index, replace , with ;
+  HerbsObs <- subset(HerbsObs, Species != "") %>%
+    mutate(Index = row_number()) %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
+
 
   #create CSVs, exclude blank data frames
   if(dim(FuelsFWD)[1] == 0) {print(paste0(name," ","Fuels FWD is empty"))}
@@ -186,9 +211,9 @@ HerbsPoints <-
   subset(Count != "0") %>%
   mutate(Index = row_number()) %>%
   map_df(str_replace_all, pattern = ",", replacement = ";")
-HerbsObs <- subset(HerbsObs, Species != "") %>%
-  mutate(Index = row_number()) %>%
-  map_df(str_replace_all, pattern = ",", replacement = ";")
+# HerbsObs <- subset(HerbsObs, Species != "") %>%
+#   mutate(Index = row_number()) %>%
+#   map_df(str_replace_all, pattern = ",", replacement = ";")
 Seedlings <- subset(Seedlings, Species != "") %>%
   mutate(Index = row_number()) %>%
   map_df(str_replace_all, pattern = ",", replacement = ";")
@@ -197,7 +222,6 @@ Shrubs <- subset(Shrubs, Species != "") %>%
   map_df(str_replace_all, pattern = ",", replacement = ";")
 PostBurn <- subset(PostBurn, Sub != "") %>%
   mutate(Index = row_number())
-
 # Trees, Ensure tree order is triple sorted by “SubFrac”, “QTR”, and “TagNo” (smallest to largest), Check that index is in ascending order from top to bottom (1, 2, 3, …). Trees are commonly unsorted, “IsVerified” column is TRUE
 Trees <- subset(Trees, Status != "X") %>%
   arrange(SubFrac, QTR, TagNo) %>%
@@ -205,8 +229,33 @@ Trees <- subset(Trees, Status != "X") %>%
   mutate(IsVerified = "TRUE") %>%
   map_df(str_replace_all, pattern = ",", replacement = ";")
 
+#identify duplicate species in Herbs Obs
+DuplicateHerbs <-
+  merge(HerbsPoints, HerbsObs, by = "Species") %>%
+  select(Species) %>%
+  distinct(Species)
+DuplicateShrubs <-
+  merge(Shrubs, HerbsObs, by = "Species") %>%
+  select(Species) %>%
+  distinct(Species)
+DuplicateSeedlings <-
+  merge(Seedlings, HerbsObs, by = "Species") %>%
+  select(Species) %>%
+  distinct(Species)
+DuplicateTrees <-
+  merge(Trees, HerbsObs, by = "Species") %>%
+  select(Species) %>%
+  distinct(Species)
+#create master list of duplicate species
+DuplicateSpecies <- rbind(DuplicateHerbs, DuplicateShrubs, DuplicateSeedlings, DuplicateTrees)
+#remove duplicate species from Herbs Obs
+HerbsObs <- anti_join(HerbsObs, DuplicateSpecies, by = "Species")
+#remove data if = 0, update index, replace , with ;
+HerbsObs <- subset(HerbsObs, Species != "") %>%
+  mutate(Index = row_number()) %>%
+  map_df(str_replace_all, pattern = ",", replacement = ";")
 
-
+#save CSVs
 if(dim(FuelsFWD)[1] == 0) {print(paste0(name," ","Fuels FWD is empty"))}else{write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE, na = "")}
 if(dim(FuelsCWD)[1] == 0) {print(paste0(name," ","Fuels CWD is empty"))}else{write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE, na = "")}
 if(dim(FuelsDuffLitt)[1] == 0) {print(paste0(name," ","Fuels Duff-Litt is empty"))}else{write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE, na = "")}
