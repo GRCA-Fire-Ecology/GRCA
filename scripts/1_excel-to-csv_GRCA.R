@@ -72,7 +72,7 @@ for(i in 1:nrow(file_names_df)) {
   Shrubs <- read_excel(path, sheet = "Shrubs (Belt)")
   Seedlings <- read_excel(path, sheet = "Seedlings (Quad)")
   Trees <- read_excel(path, sheet = "Trees")
-  #PostBurn <- read_excel(path, sheet = "Post Burn")
+  PostBurn <- read_excel(path, sheet = "Post Burn")
 
   #create csv paths
   my_path_csv_FuelsFWD <- paste0(my_path_csv, name, "_FuelsFWD.csv")
@@ -83,7 +83,7 @@ for(i in 1:nrow(file_names_df)) {
   my_path_csv_Shrubs<- paste0(my_path_csv, name, "_Shrubs.csv")
   my_path_csv_Seedlings <- paste0(my_path_csv, name, "_Seedlings.csv")
   my_path_csv_Trees <- paste0(my_path_csv, name, "_Trees.csv")
-  #my_path_csv_PostBurn <- paste0(my_path_csv, name, "_PostBurn.csv")
+  my_path_csv_PostBurn <- paste0(my_path_csv, name, "_PostBurn.csv")
 
   #identify duplicate species in HerbsObs
   DuplicateHerbs <-
@@ -103,10 +103,11 @@ for(i in 1:nrow(file_names_df)) {
     select(Species) %>%
     distinct(Species)
 
-  # Prep for QAQC (count Herb heights to make sure some data is present, remove duplicate species from Herbs Obs)
-  HerbsPointsCount <- sum(!is.na(HerbsPoints$Height))
+  # Remove duplicate species from Herbs Obs)
   DuplicateSpecies <- rbind(DuplicateHerbs, DuplicateShrubs, DuplicateSeedlings, DuplicateTrees)
   HerbsObs <- anti_join(HerbsObs, DuplicateSpecies, by = "Species")
+  # Count Herb heights to make sure some data is present
+  HerbsPointsCount <- sum(!is.na(HerbsPoints$Height))
 
   # QAQC all protocols: Delete empty rows, Change numbers in index column into ascending order
   FuelsFWD <- subset(FuelsFWD, OneHr != "") %>%
@@ -135,8 +136,8 @@ for(i in 1:nrow(file_names_df)) {
     mutate(Index = row_number()) %>%
     mutate(IsVerified = "TRUE") %>%
     map_df(str_replace_all, pattern = ",", replacement = ";")
-  # PostBurn <- subset(PostBurn, Sub != "") %>%
-  #   mutate(Index = row_number())
+  PostBurn <- subset(PostBurn, Sub != "") %>%
+    mutate(Index = row_number())
 
   #create CSVs, exclude blank data frames
   if(dim(FuelsFWD)[1] == 0) {print(paste0(name," ","Fuels FWD is empty"))}
@@ -155,8 +156,8 @@ for(i in 1:nrow(file_names_df)) {
      else{write.csv(Seedlings, my_path_csv_Seedlings, quote=FALSE, row.names = FALSE, na = "")}
   if(dim(Trees)[1] == 0) {print(paste0(name," ","Trees is empty"))}
     else{write.csv(Trees, my_path_csv_Trees, quote=FALSE, row.names = FALSE, na = "")}
-  # if(dim(PostBurn)[1] == 0) {print(paste0(name," ","Post Burn is empty"))}
-  #   else{write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE, na = "")}
+  if(dim(PostBurn)[1] == 0) {print(paste0(name," ","Post Burn is empty"))}
+    else{write.csv(PostBurn, my_path_csv_PostBurn, quote = FALSE, row.names = FALSE, na = "")}
   }
 
 
