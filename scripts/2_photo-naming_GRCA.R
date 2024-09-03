@@ -1,7 +1,7 @@
 # Created by: Alexandra Lalor
 # Email: alexandra_lalor@nps.gov, allielalor@gmail.com
 # Date Created: 2024-08-02
-# Last Edited: 2024-08-02
+# Last Edited: 2024-09-03
 #
 # test out photo naming efficiency
 
@@ -45,14 +45,25 @@ file_path_old <- paste0(my_path, file_names_old)
 file_names_df <- data.frame(FilePath = file_path_old, OldNames = file_names_old) %>%
   separate(FilePath, sep = "/", into = c("Drive","Users","User","Desktop","R","GRCA","test","photos",
                                          "MonitoringType","PlotDelete","JPG"), remove = FALSE) %>%
+  mutate(OldNames = toupper(OldNames)) %>%
   separate(OldNames, sep = ".JPG", into = ("Plot_Status"), remove = FALSE) %>%
   separate(Plot_Status, sep = "_", into = c("Plot", "Read", "PhotoPoint")) %>%
-  select(c("FilePath", "MonitoringType", "Plot", "Read", "PhotoPoint", "OldNames")) %>%
-  mutate(NewNames = paste0(MonitoringType,"_",Plot,"_",Read,"_",PhotoPoint,".JPG"))
+  select(c("FilePath", "MonitoringType", "Plot", "Read", "PhotoPoint", "OldNames"))
 
-#data check with 01 reads and formating
+
+################################################################################
+# ENSURE CONSISTENT FORMATTING
+################################################################################
+
+#data check with 01 reads and formatting
 file_names_df <- file_names_df %>%
-  mutate(Read = tolower(Read))
+  mutate(Update = ifelse(grepl("^[0-9]", file_names_df$Read), "Yes", "No")) %>%
+  mutate(Update = ifelse(Read == "PRE", "Yes", Update)) %>%
+  mutate(Read = case_when((Update == "No" ~ paste0("01", Read)),
+                                (Update == "Yes" ~ Read))) %>%
+  mutate(Read = tolower(Read)) %>%
+  mutate(PhotoPoint = toupper(PhotoPoint)) %>%
+  mutate(NewNames = paste0(MonitoringType,"_",Plot,"_",Read,"_",PhotoPoint,".JPG"))
 
 
 ################################################################################
