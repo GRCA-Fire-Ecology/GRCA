@@ -1,0 +1,66 @@
+{
+    "access": "shared",
+    "accessInformation": null,
+    "advancedSettings": null,
+    "appCategories": [
+    ],
+    "avgRating": 0,
+    "banner": null,
+    "categories": [
+    ],
+    "classification": null,
+    "commentsEnabled": true,
+    "created": 1716241193000,
+    "culture": "en-us",
+    "description": "\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Klamath Network (CRLA, LABE, LAVO, ORCA, REDW, and WHIS) Fire Effects and Ecology photo monitoring survey. Launches from Field Maps and passes gis data to the Survey123 form. Survey used for taking and organizing photos associated with the burn plots.</p>",
+    "documentation": null,
+    "extent": [
+    ],
+    "groupDesignations": null,
+    "guid": null,
+    "id": "dcdccaf484ad42f8aa699c6b85e1368e",
+    "industries": [
+    ],
+    "isOrgItem": true,
+    "itemControl": "admin",
+    "languages": [
+    ],
+    "largeThumbnail": null,
+    "lastViewed": 1716908400000,
+    "licenseInfo": null,
+    "listed": false,
+    "modified": 1718225225000,
+    "name": "KLMN_FE_Photo_Mon_v1_1.zip",
+    "numComments": 0,
+    "numRatings": 0,
+    "numViews": 5,
+    "orgId": "fBc8EJBxQRMcHlei",
+    "owner": "djones@nps.gov_nps",
+    "ownerFolder": "cc9232d2132e41b39d857a8db68ab2ff",
+    "properties": {
+        "connectVersion": "3.20.63"
+    },
+    "protected": false,
+    "proxyFilter": null,
+    "scoreCompleteness": 55,
+    "screenshots": [
+    ],
+    "size": 77026,
+    "snippet": "KLMN FIRE Photo Monitoring Survey",
+    "spatialReference": null,
+    "subInfo": 0,
+    "tags": [
+    ],
+    "thumbnail": "thumbnail/KLMN_FE_Photo_Mon_v1_1.png",
+    "title": "KLMN FE Photo Mon v1_1",
+    "token1ExpirationDate": -1,
+    "token2ExpirationDate": -1,
+    "type": "Form",
+    "typeKeywords": [
+        "Form",
+        "Survey123",
+        "Survey123 Connect",
+        "xForm"
+    ],
+    "url": null
+}

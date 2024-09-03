@@ -1,0 +1,62 @@
+{
+    "layers": [
+        {
+            "id": 0,
+            "name": null,
+            "relationships": [
+                {
+                    "cardinality": "esriRelCardinalityOneToMany",
+                    "composite": true,
+                    "id": 1,
+                    "keyField": "globalid",
+                    "name": "RR_FOR_Cruise_Survey___Test_c_plot",
+                    "relatedTableId": 1,
+                    "relatedTableName": null,
+                    "role": "esriRelRoleOrigin"
+                },
+                {
+                    "cardinality": "esriRelCardinalityOneToMany",
+                    "composite": true,
+                    "id": 2,
+                    "keyField": "globalid",
+                    "name": "RR_FOR_Cruise_Survey___Test_m_plot",
+                    "relatedTableId": 2,
+                    "relatedTableName": null,
+                    "role": "esriRelRoleOrigin"
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": null,
+            "relationships": [
+                {
+                    "cardinality": "esriRelCardinalityOneToMany",
+                    "composite": true,
+                    "id": 1,
+                    "keyField": "parentglobalid",
+                    "name": "RR_FOR_Cruise_Survey___Test_c_plot",
+                    "relatedTableId": 0,
+                    "relatedTableName": null,
+                    "role": "esriRelRoleDestination"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": null,
+            "relationships": [
+                {
+                    "cardinality": "esriRelCardinalityOneToMany",
+                    "composite": true,
+                    "id": 2,
+                    "keyField": "parentglobalid",
+                    "name": "RR_FOR_Cruise_Survey___Test_m_plot",
+                    "relatedTableId": 0,
+                    "relatedTableName": null,
+                    "role": "esriRelRoleDestination"
+                }
+            ]
+        }
+    ]
+}

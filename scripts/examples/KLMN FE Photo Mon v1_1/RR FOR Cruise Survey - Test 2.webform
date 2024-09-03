@@ -1,0 +1,2171 @@
+{
+  "form": "<form autocomplete=\"off\" novalidate=\"novalidate\" class=\"or clearfix pages dynamic-grid\" dir=\"ltr\" data-form-id=\"RR_FOR_Cruise_Survey___Test\">\n<!--This form was created by transforming an ODK/OpenRosa-flavored (X)Form using an XSL stylesheet created by Enketo LLC.--><section class=\"form-logo\"></section><h3 dir=\"auto\" id=\"form-title\">REDW Cruise Card</h3>\n  \n  \n    <section class=\"or-group or-appearance-w2 or-appearance-field-list\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm2308592\">General Info</span></h4><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm2307728\">Date</span><span class=\"required\" id=\"idp44421216\">*</span><span lang=\"\" class=\"or-hint active\" id=\"idm2315424\">When did the observation take place?</span><input type=\"datetime-local\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/_date\" data-required=\"true()\" data-type-xml=\"dateTime\" id=\"idm2308160\"><span lang=\"\" class=\"or-required-msg active\" id=\"idp44421088\">This is a required question</span></label><label class=\"question non-select or-appearance-hidden\"><span lang=\"\" class=\"question-label active\" id=\"idm2314272\">Regular Date</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/reg_date\" data-calculate=\"format-date( /RR_FOR_Cruise_Survey___Test/group_gen_info/_date ,'%m, %d, %Y %H:%M')\" data-type-xml=\"string\" id=\"idm2314848\"></label><label class=\"question non-select or-appearance-hidden type-time\"><span lang=\"\" class=\"question-label active\" id=\"idm2313120\">Observation time</span><span lang=\"\" class=\"or-hint active\" id=\"idm2312688\">What time did the observation take place?</span><input type=\"time\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/obs_time\" data-calculate=\"format-date( /RR_FOR_Cruise_Survey___Test/group_gen_info/_date ,'%H:%M')\" data-type-xml=\"time\" id=\"idm2313696\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0ZM8 15C4.15 15 1 11.85 1 8C1 4.15 4.15 1 8 1C11.85 1 15 4.15 15 8C15 11.85 11.85 15 8 15ZM11.8254 11.1204L8.5 8.27003V4H7.5V8.72997L11.1746 11.8796L11.8254 11.1204Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm4646192\">Who did the work</span><span class=\"required\" id=\"idp44422560\">*</span><span lang=\"\" class=\"or-hint active\" id=\"idm4645760\">Names of the people observing/surveying</span><select multiple=\"\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/crew\" data-required=\"true()\" data-type-xml=\"select\" id=\"idm2312112\"><option value=\"\">...</option><option value=\"galen_hammitt\">Galen</option><option value=\"mari_takehara\">Mari</option><option value=\"Other\">Other</option></select><span class=\"or-option-translations\" style=\"display:none;\">\n                </span><span lang=\"\" class=\"or-required-msg active\" id=\"idp44422448\">This is a required question</span></label><label class=\"question or-branch pre-init non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm4648848\">Other</span><span lang=\"\" class=\"or-hint active\" id=\"idm4648416\">Other people involved in observing/surveying</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/crew_other\" data-relevant=\"selected( /RR_FOR_Cruise_Survey___Test/group_gen_info/crew , 'Other')\" data-type-xml=\"string\" id=\"idm4649424\"></label><label class=\"question non-select or-appearance-predictivetext\"><span lang=\"\" class=\"question-label active\" id=\"idm4647264\">crew_pick</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/crew_pick\" data-calculate=\"if( /RR_FOR_Cruise_Survey___Test/group_gen_info/crew_other =&quot;&quot;,  /RR_FOR_Cruise_Survey___Test/group_gen_info/crew , concat( /RR_FOR_Cruise_Survey___Test/group_gen_info/crew ,', ', /RR_FOR_Cruise_Survey___Test/group_gen_info/crew_other ))\" data-type-xml=\"string\" id=\"idm4647840\"></label><label class=\"question non-select or-appearance-w2 or-appearance-hide-input or-appearance-press-to-locate\"><span lang=\"\" class=\"question-label active\" id=\"idm4654240\">Location</span><span class=\"required\" id=\"idm4609008\">*</span><span lang=\"\" class=\"or-hint active\" id=\"idm4653808\">Where was the observation/survey made?</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/location\" data-required=\"true()\" data-type-xml=\"geopoint\" id=\"idm4646688\"><span lang=\"\" class=\"or-required-msg active\" id=\"idm4609120\">This is a required question</span></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4652656\">Longitude</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/Longitude\" data-calculate=\"pulldata(&quot;@geopoint&quot;,  /RR_FOR_Cruise_Survey___Test/group_gen_info/location , &quot;x&quot;)\" data-type-xml=\"decimal\" step=\"any\" readonly=\"\" id=\"idm4653232\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4651504\">Latitude</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_gen_info/Latitude\" data-calculate=\"pulldata(&quot;@geopoint&quot;,  /RR_FOR_Cruise_Survey___Test/group_gen_info/location , &quot;y&quot;)\" data-type-xml=\"decimal\" step=\"any\" readonly=\"\" id=\"idm4652080\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label>\n            </section><!--end of group -->\n    <section class=\"or-group or-appearance-w2 or-appearance-field-list\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm4658336\">Plot Info</span></h4><label class=\"question or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm4657328\">Sector</span><select name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/sector\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/sector\" data-type-xml=\"select1\" id=\"idm4657904\"><option value=\"\">...</option><option value=\"upper_gpc\">Upper GPC</option><option value=\"berry_glen\">Berry Glen</option><option value=\"s_davison_road\">S. of Davison Rd</option><option value=\"maple_creek\">Maple Creek</option><option value=\"bald_hills\">Bald Hills</option></select><span class=\"or-option-translations\" style=\"display:none;\">\n                </span></label><label class=\"question or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm4665952\">Plot Type</span><select name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type\" data-type-xml=\"select1\" id=\"idm4666528\"><option value=\"\">...</option><option value=\"Count\">Count</option><option value=\"Measure\">Measure</option></select><span class=\"or-option-translations\" style=\"display:none;\">\n                </span></label><label class=\"question or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm4670336\">Unit</span><span class=\"required\" id=\"idm4607312\">*</span><select name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/unit_num\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/unit_num\" data-required=\"true()\" data-type-xml=\"select1\" id=\"idm4670912\"><option value=\"\">...</option><option value=\"6\">6</option></select><span class=\"or-option-translations\" style=\"display:none;\">\n                </span><span class=\"or-required-msg active\" lang=\"\" id=\"idm4670912\" data-i18n=\"constraint.required\">This field is required</span></label><label class=\"question or-appearance-w1 or-appearance-autocomplete\"><span lang=\"\" class=\"question-label active\" id=\"idm4667888\">Plot Num</span><span class=\"required\" id=\"idm4606976\">*</span><input name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_num\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_num\" data-required=\"true()\" data-type-xml=\"select1\" id=\"idm4668464\" type=\"text\" list=\"RRFORCruiseSurveyTestgroupplotinfoplotnum\"><datalist id=\"RRFORCruiseSurveyTestgroupplotinfoplotnum\"><option value=\"\">...</option><option value=\"A09\">A09</option><option value=\"AA01\">AA01</option><option value=\"AA02\">AA02</option><option value=\"AA03\">AA03</option><option value=\"AA04\">AA04</option><option value=\"AA05\">AA05</option><option value=\"AA06\">AA06</option><option value=\"AA07\">AA07</option><option value=\"AA08\">AA08</option><option value=\"AA09\">AA09</option><option value=\"AA10\">AA10</option><option value=\"B08\">B08</option><option value=\"BB03\">BB03</option><option value=\"BB04\">BB04</option><option value=\"BB05\">BB05</option><option value=\"BB06\">BB06</option><option value=\"BB07\">BB07</option><option value=\"BB08\">BB08</option><option value=\"BB09\">BB09</option><option value=\"BB10\">BB10</option><option value=\"BB11\">BB11</option><option value=\"CC02\">CC02</option><option value=\"CC05\">CC05</option><option value=\"CC06\">CC06</option><option value=\"CC07\">CC07</option><option value=\"CC08\">CC08</option><option value=\"CC09\">CC09</option><option value=\"CC10\">CC10</option><option value=\"CC11\">CC11</option><option value=\"D07\">D07</option><option value=\"D08\">D08</option><option value=\"D09\">D09</option><option value=\"DD06\">DD06</option><option value=\"DD07\">DD07</option><option value=\"DD08\">DD08</option><option value=\"DD09\">DD09</option><option value=\"DD10\">DD10</option><option value=\"E06\">E06</option><option value=\"E07\">E07</option><option value=\"E08\">E08</option><option value=\"E09\">E09</option><option value=\"E10\">E10</option><option value=\"EE07\">EE07</option><option value=\"EE08\">EE08</option><option value=\"F04\">F04</option><option value=\"F05\">F05</option><option value=\"F06\">F06</option><option value=\"F07\">F07</option><option value=\"F08\">F08</option><option value=\"F09\">F09</option><option value=\"F10\">F10</option><option value=\"F11\">F11</option><option value=\"FF07\">FF07</option><option value=\"G03\">G03</option><option value=\"G04\">G04</option><option value=\"G05\">G05</option><option value=\"G06\">G06</option><option value=\"G07\">G07</option><option value=\"G08\">G08</option><option value=\"G09\">G09</option><option value=\"G10\">G10</option><option value=\"G11\">G11</option><option value=\"H03\">H03</option><option value=\"H04\">H04</option><option value=\"H05\">H05</option><option value=\"H06\">H06</option><option value=\"H07\">H07</option><option value=\"H08\">H08</option><option value=\"H09\">H09</option><option value=\"H10\">H10</option><option value=\"H11\">H11</option><option value=\"I03\">I03</option><option value=\"I04\">I04</option><option value=\"I05\">I05</option><option value=\"I06\">I06</option><option value=\"I07\">I07</option><option value=\"I08\">I08</option><option value=\"I10\">I10</option><option value=\"J03\">J03</option><option value=\"J04\">J04</option><option value=\"J05\">J05</option><option value=\"J06\">J06</option><option value=\"J07\">J07</option><option value=\"J08\">J08</option><option value=\"J09\">J09</option><option value=\"J10\">J10</option><option value=\"K03\">K03</option><option value=\"K04\">K04</option><option value=\"K05\">K05</option><option value=\"K06\">K06</option><option value=\"K07\">K07</option><option value=\"K08\">K08</option><option value=\"K09\">K09</option><option value=\"L04\">L04</option><option value=\"L05\">L05</option><option value=\"L06\">L06</option><option value=\"L07\">L07</option><option value=\"L08\">L08</option><option value=\"L09\">L09</option><option value=\"L10\">L10</option><option value=\"M06\">M06</option><option value=\"M07\">M07</option><option value=\"M08\">M08</option><option value=\"M09\">M09</option><option value=\"N06\">N06</option><option value=\"N07\">N07</option><option value=\"N08\">N08</option><option value=\"N09\">N09</option><option value=\"N11\">N11</option><option value=\"O06\">O06</option><option value=\"O07\">O07</option><option value=\"O08\">O08</option><option value=\"O09\">O09</option><option value=\"O10\">O10</option><option value=\"P06\">P06</option><option value=\"P07\">P07</option><option value=\"P08\">P08</option><option value=\"P09\">P09</option><option value=\"P10\">P10</option><option value=\"Q06\">Q06</option><option value=\"Q07\">Q07</option><option value=\"Q08\">Q08</option><option value=\"Q09\">Q09</option><option value=\"Q10\">Q10</option><option value=\"R06\">R06</option><option value=\"R07\">R07</option><option value=\"R08\">R08</option><option value=\"R09\">R09</option><option value=\"R10\">R10</option><option value=\"S06\">S06</option><option value=\"S07\">S07</option><option value=\"S08\">S08</option><option value=\"S09\">S09</option><option value=\"T03\">T03</option><option value=\"T04\">T04</option><option value=\"T05\">T05</option><option value=\"T06\">T06</option><option value=\"T07\">T07</option><option value=\"T08\">T08</option><option value=\"T09\">T09</option><option value=\"T10\">T10</option><option value=\"U03\">U03</option><option value=\"U04\">U04</option><option value=\"U05\">U05</option><option value=\"U06\">U06</option><option value=\"U07\">U07</option><option value=\"U08\">U08</option><option value=\"U10\">U10</option><option value=\"V02\">V02</option><option value=\"V03\">V03</option><option value=\"V04\">V04</option><option value=\"V05\">V05</option><option value=\"V06\">V06</option><option value=\"V07\">V07</option><option value=\"V08\">V08</option><option value=\"V10\">V10</option><option value=\"W02\">W02</option><option value=\"W03\">W03</option><option value=\"W04\">W04</option><option value=\"W05\">W05</option><option value=\"W06\">W06</option><option value=\"W07\">W07</option><option value=\"W08\">W08</option><option value=\"W11\">W11</option><option value=\"X01\">X01</option><option value=\"X02\">X02</option><option value=\"X03\">X03</option><option value=\"X04\">X04</option><option value=\"X05\">X05</option><option value=\"X06\">X06</option><option value=\"X07\">X07</option><option value=\"X08\">X08</option><option value=\"X09\">X09</option><option value=\"X10\">X10</option><option value=\"X12\">X12</option><option value=\"Y01\">Y01</option><option value=\"Y02\">Y02</option><option value=\"Y03\">Y03</option><option value=\"Y04\">Y04</option><option value=\"Y05\">Y05</option><option value=\"Y06\">Y06</option><option value=\"Y07\">Y07</option><option value=\"Y08\">Y08</option><option value=\"Y09\">Y09</option><option value=\"Y10\">Y10</option><option value=\"Y11\">Y11</option><option value=\"Y12\">Y12</option><option value=\"Z02\">Z02</option><option value=\"Z03\">Z03</option><option value=\"Z04\">Z04</option><option value=\"Z05\">Z05</option><option value=\"Z06\">Z06</option><option value=\"Z07\">Z07</option><option value=\"Z08\">Z08</option><option value=\"Z09\">Z09</option><option value=\"Z10\">Z10</option><option value=\"Z11\">Z11</option><option value=\"Z12\">Z12</option></datalist><span class=\"or-option-translations\" style=\"display:none;\">\n                </span><span class=\"or-required-msg active\" lang=\"\" id=\"idm4668464\" data-i18n=\"constraint.required\">This field is required</span></label><label class=\"question non-select or-appearance-w1 or-appearance-numbers type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4930320\">BAF</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/baf\" data-type-xml=\"int\" id=\"idm4930896\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question or-branch pre-init non-select or-appearance-w1 or-appearance-spinner type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4929168\">CP Total Count</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/cp_tot_count\" data-relevant=\"selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Count')\" data-calculate=\"sum( /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_count )\" data-type-xml=\"int\" readonly=\"\" id=\"idm4929744\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question or-branch pre-init non-select or-appearance-w1 or-appearance-spinner type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4936144\">MP Total Count</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/mp_tot_count\" data-relevant=\"selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Measure')\" data-calculate=\"count-non-empty( /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp )\" data-type-xml=\"int\" readonly=\"\" id=\"idm4936720\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><section class=\"or-group or-branch pre-init \" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot\" data-relevant=\"selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Count')\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm4935136\">Count Plot</span></h4><section class=\"or-repeat or-appearance-w2:2\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot\"><label class=\"question or-appearance-w2 or-appearance-autocomplete\"><span lang=\"\" class=\"question-label active\" id=\"idm4933408\">CP Spp</span><input name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp\" data-type-xml=\"select1\" id=\"idm4933984\" type=\"text\" list=\"RRFORCruiseSurveyTestgroupplotinfocplotcpspp\"><datalist id=\"RRFORCruiseSurveyTestgroupplotinfocplotcpspp\"><option value=\"\">...</option><option value=\"RWOG\">RWOG</option><option value=\"RW\">RW</option><option value=\"SS\">SS</option><option value=\"DF\">DF</option><option value=\"HL\">HL</option><option value=\"ALRU\">ALRU</option><option value=\"Other\">Other</option></datalist><span class=\"or-option-translations\" style=\"display:none;\">\n                </span></label><label class=\"question or-branch pre-init non-select or-appearance-w2 or-appearance-predictivetext\"><span lang=\"\" class=\"question-label active\" id=\"idm4947568\">CP Spp Other</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_other\" data-relevant=\"selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp , 'Other')\" data-type-xml=\"string\" id=\"idm4948144\"></label><label class=\"question non-select or-appearance-hidden\"><span lang=\"\" class=\"question-label active\" id=\"idm4946416\">CP Spp Pick</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_pick\" data-calculate=\"if( /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_other =&quot;&quot;,  /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp ,  /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_other )\" data-type-xml=\"string\" id=\"idm4946992\"></label><label class=\"question non-select or-appearance-w2 or-appearance-spinner type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4953392\">CP Spp Count</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_count\" data-type-xml=\"int\" id=\"idm4945840\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label>\n            </section><div class=\"or-repeat-info\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot\"></div>\n            </section><!--end of group --><section class=\"or-group or-branch pre-init \" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot\" data-relevant=\"selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Measure')\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm4952096\">Measure Plot</span></h4><section class=\"or-repeat or-appearance-w2 or-appearance-minimal\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot\"><label class=\"question non-select or-appearance-numbers type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4950512\">MP Tree Num</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_tree_num\" data-type-xml=\"int\" id=\"idm4951088\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question or-appearance-autocomplete\"><span lang=\"\" class=\"question-label active\" id=\"idm4957488\">MP Spp</span><input name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp\" data-type-xml=\"select1\" id=\"idm4949936\" type=\"text\" list=\"RRFORCruiseSurveyTestgroupplotinfomplotmpspp\"><datalist id=\"RRFORCruiseSurveyTestgroupplotinfomplotmpspp\"><option value=\"\">...</option><option value=\"RWOG\">RWOG</option><option value=\"RW\">RW</option><option value=\"SS\">SS</option><option value=\"DF\">DF</option><option value=\"HL\">HL</option><option value=\"ALRU\">ALRU</option><option value=\"Other\">Other</option></datalist><span class=\"or-option-translations\" style=\"display:none;\">\n                </span></label><label class=\"question or-branch pre-init non-select or-appearance-predictivetext\"><span lang=\"\" class=\"question-label active\" id=\"idm4963520\">MP Spp Other</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_other\" data-relevant=\"selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp , 'Other')\" data-type-xml=\"string\" id=\"idm4964096\"></label><label class=\"question non-select or-appearance-hidden\"><span lang=\"\" class=\"question-label active\" id=\"idm4962368\">MP Spp Pick</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_pick\" data-calculate=\"if( /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_other =&quot;&quot;,  /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp ,  /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_other )\" data-type-xml=\"string\" id=\"idm4962944\"></label><label class=\"question non-select or-appearance-numbers type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4969344\">MP Spp DBH</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_dbh\" data-type-xml=\"decimal\" step=\"any\" id=\"idm4969920\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question non-select or-appearance-numbers type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm4968192\">MP Spp HT</span><input type=\"number\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_ht\" data-type-xml=\"int\" id=\"idm4968768\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question non-select or-appearance-predictivetext\"><span lang=\"\" class=\"question-label active\" id=\"idm4967040\">MP Spp Notes</span><input type=\"text\" name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_notes\" data-type-xml=\"string\" id=\"idm4967616\"></label>\n            </section><div class=\"or-repeat-info\" data-name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot\"></div>\n            </section><!--end of group --><label class=\"question non-select or-appearance-w2 or-appearance-multiline\"><span lang=\"\" class=\"question-label active\" id=\"idm4973728\">Plot Notes</span><textarea name=\"/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_notes\" data-type-xml=\"string\" id=\"idm4966176\"></textarea></label>\n            </section><!--end of group -->\n  \n<fieldset id=\"or-calculated-items\" style=\"display:none;\"><label class=\"calculation non-select \"><input type=\"hidden\" name=\"/RR_FOR_Cruise_Survey___Test/meta/instanceID\" data-calculate=\"concat('uuid:', uuid())\" data-type-xml=\"string\" id=\"idm2311472\"></label><label class=\"calculation non-select \"><input type=\"hidden\" name=\"/RR_FOR_Cruise_Survey___Test/meta/instanceName\" data-calculate=\"concat( /RR_FOR_Cruise_Survey___Test/group_gen_info/reg_date ,' ', /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_num ,' ', /RR_FOR_Cruise_Survey___Test/group_gen_info/crew_pick )\" data-type-xml=\"string\" id=\"idm2310608\"></label></fieldset></form>",
+  "languageMap": {},
+  "model": "<model><instance>\n        <RR_FOR_Cruise_Survey___Test xmlns:esri=\"http://esri.com/xforms\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\" id=\"RR_FOR_Cruise_Survey___Test\">\n          <group_gen_info>\n            <_date>now()</_date>\n            <reg_date/>\n            <obs_time/>\n            <crew/>\n            <crew_other/>\n            <crew_pick/>\n            <location/>\n            <Longitude/>\n            <Latitude/>\n          </group_gen_info>\n          <group_plot_info>\n            <sector/>\n            <plot_type>Count</plot_type>\n            <unit_num/>\n            <plot_num/>\n            <baf>90</baf>\n            <cp_tot_count/>\n            <mp_tot_count/>\n            <c_plot jr:template=\"\">\n              <cp_spp/>\n              <cp_spp_other/>\n              <cp_spp_pick/>\n              <cp_spp_count/>\n            </c_plot>\n            <m_plot jr:template=\"\">\n              <mp_tree_num/>\n              <mp_spp/>\n              <mp_spp_other/>\n              <mp_spp_pick/>\n              <mp_dbh/>\n              <mp_ht/>\n              <mp_notes/>\n            </m_plot>\n            <plot_notes/>\n          </group_plot_info>\n          <meta>\n            <instanceID/>\n            <instanceName/>\n          </meta>\n        </RR_FOR_Cruise_Survey___Test>\n      </instance><instance id=\"@geopoint\" >\n        <root xmlns:esri=\"http://esri.com/xforms\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\">\n          <item>\n            <name>_</name>\n            <label>_</label>\n          </item>\n        </root>\n      </instance></model>",
+  "success": true,
+  "surveyFormJson": {
+    "footer": {
+      "content": "",
+      "isVisible": true
+    },
+    "header": {
+      "content": "<p>REDW Cruise Card</p>",
+      "isVisible": true
+    },
+    "isCreatedByExistingFeatureService": false,
+    "layerName": "RR_FOR_Cruise_Survey___Test",
+    "locales": [
+      {
+        "code": "en-us",
+        "isDefault": true,
+        "label": "English-US"
+      }
+    ],
+    "portalUrl": "https://www.arcgis.com",
+    "questions": [
+      {
+        "appearance": {
+          "layout": "expanded"
+        },
+        "description": null,
+        "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info",
+        "label": "General Info",
+        "name": "group_gen_info",
+        "position": 10,
+        "questions": [
+          {
+            "appearance": {
+              "layout": "day-month-year"
+            },
+            "defaultValue": "now()",
+            "description": null,
+            "fieldName": "_date",
+            "fieldType": "esriFieldTypeDate",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/_date",
+            "isRequired": true,
+            "label": "Date",
+            "name": "_date",
+            "position": 1,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeDateTime",
+            "validation": {
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "format-date( /RR_FOR_Cruise_Survey___Test/group_gen_info/_date ,'%m, %d, %Y %H:%M')",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "reg_date",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/reg_date",
+            "isRequired": false,
+            "label": "Regular Date",
+            "name": "reg_date",
+            "position": 2,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            },
+            "visibility": {
+              "expression": "false()",
+              "type": "xform"
+            }
+          },
+          {
+            "calculation": {
+              "expression": "format-date( /RR_FOR_Cruise_Survey___Test/group_gen_info/_date ,'%H:%M')",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "obs_time",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/obs_time",
+            "isRequired": false,
+            "label": "Observation time",
+            "name": "obs_time",
+            "position": 3,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeTime",
+            "visibility": {
+              "expression": "false()",
+              "type": "xform"
+            }
+          },
+          {
+            "appearance": {
+              "layout": "minimal"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "Galen",
+                  "position": 0,
+                  "value": "galen_hammitt"
+                },
+                {
+                  "label": "Mari",
+                  "position": 1,
+                  "value": "mari_takehara"
+                },
+                {
+                  "label": "Other",
+                  "position": 2,
+                  "value": "Other"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "description": null,
+            "fieldLength": "255",
+            "fieldName": "crew",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/crew",
+            "isRequired": true,
+            "label": "Who did the work",
+            "name": "crew",
+            "position": 4,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeMultiChoice",
+            "validation": {
+              "inputCount": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "crew_other",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/crew_other",
+            "isRequired": false,
+            "label": "Other",
+            "name": "crew_other",
+            "position": 5,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": "selected( /RR_FOR_Cruise_Survey___Test/group_gen_info/crew , 'Other')",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "if( /RR_FOR_Cruise_Survey___Test/group_gen_info/crew_other =\"\",  /RR_FOR_Cruise_Survey___Test/group_gen_info/crew , concat( /RR_FOR_Cruise_Survey___Test/group_gen_info/crew ,', ', /RR_FOR_Cruise_Survey___Test/group_gen_info/crew_other ))",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "crew_pick",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/crew_pick",
+            "isRequired": false,
+            "label": "crew_pick",
+            "name": "crew_pick",
+            "position": 6,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "",
+              "type": "xform"
+            },
+            "defaultExtent": {
+              "spatialReference": {}
+            },
+            "defaultMap": {
+              "name": "undefined",
+              "type": "linkedItem"
+            },
+            "defaultValue": null,
+            "description": null,
+            "deviceLocation": {
+              "trigger": "interaction"
+            },
+            "displayFormats": [
+              "DD"
+            ],
+            "fieldType": "esriFieldTypeGeometry",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/location",
+            "inputTools": [
+              "pin",
+              "search",
+              "locate"
+            ],
+            "isRequired": true,
+            "label": "Location",
+            "maps": [
+              {
+                "name": "undefined",
+                "type": "linkedItem"
+              }
+            ],
+            "name": "location",
+            "position": 7,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "search": {
+              "sources": []
+            },
+            "snapping": {
+              "isEnabled": false,
+              "modes": []
+            },
+            "type": "esriQuestionTypeGeoPoint"
+          },
+          {
+            "calculation": {
+              "expression": "pulldata(\"@geopoint\",  /RR_FOR_Cruise_Survey___Test/group_gen_info/location , \"x\")",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "Longitude",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/Longitude",
+            "isRequired": false,
+            "label": "Longitude",
+            "name": "Longitude",
+            "position": 8,
+            "readOnly": {
+              "expression": "true()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": false,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "pulldata(\"@geopoint\",  /RR_FOR_Cruise_Survey___Test/group_gen_info/location , \"y\")",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "Latitude",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_gen_info/Latitude",
+            "isRequired": false,
+            "label": "Latitude",
+            "name": "Latitude",
+            "position": 9,
+            "readOnly": {
+              "expression": "true()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": false,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          }
+        ],
+        "relevant": {
+          "expression": null,
+          "type": "xform"
+        },
+        "type": "esriQuestionTypeGroup"
+      },
+      {
+        "appearance": {
+          "layout": "expanded"
+        },
+        "description": null,
+        "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info",
+        "label": "Plot Info",
+        "name": "group_plot_info",
+        "position": 32,
+        "questions": [
+          {
+            "appearance": {
+              "layout": "minimal"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "Upper GPC",
+                  "position": 0,
+                  "value": "upper_gpc"
+                },
+                {
+                  "label": "Berry Glen",
+                  "position": 1,
+                  "value": "berry_glen"
+                },
+                {
+                  "label": "S. of Davison Rd",
+                  "position": 2,
+                  "value": "s_davison_road"
+                },
+                {
+                  "label": "Maple Creek",
+                  "position": 3,
+                  "value": "maple_creek"
+                },
+                {
+                  "label": "Bald Hills",
+                  "position": 4,
+                  "value": "bald_hills"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "description": null,
+            "fieldName": "sector",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/sector",
+            "isRequired": false,
+            "label": "Sector",
+            "name": "sector",
+            "position": 11,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeSingleChoice"
+          },
+          {
+            "appearance": {
+              "layout": "minimal"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "Count",
+                  "position": 0,
+                  "value": "Count"
+                },
+                {
+                  "label": "Measure",
+                  "position": 1,
+                  "value": "Measure"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "defaultValue": "Count",
+            "description": null,
+            "fieldName": "plot_type",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type",
+            "isRequired": false,
+            "label": "Plot Type",
+            "name": "plot_type",
+            "position": 12,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeSingleChoice"
+          },
+          {
+            "appearance": {
+              "layout": "minimal"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "6",
+                  "position": 0,
+                  "value": "6"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "description": null,
+            "fieldName": "unit_num",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/unit_num",
+            "isRequired": true,
+            "label": "Unit",
+            "name": "unit_num",
+            "position": 13,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeSingleChoice"
+          },
+          {
+            "appearance": {
+              "layout": "autocomplete"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "A09",
+                  "position": 0,
+                  "value": "A09"
+                },
+                {
+                  "label": "AA01",
+                  "position": 1,
+                  "value": "AA01"
+                },
+                {
+                  "label": "AA02",
+                  "position": 2,
+                  "value": "AA02"
+                },
+                {
+                  "label": "AA03",
+                  "position": 3,
+                  "value": "AA03"
+                },
+                {
+                  "label": "AA04",
+                  "position": 4,
+                  "value": "AA04"
+                },
+                {
+                  "label": "AA05",
+                  "position": 5,
+                  "value": "AA05"
+                },
+                {
+                  "label": "AA06",
+                  "position": 6,
+                  "value": "AA06"
+                },
+                {
+                  "label": "AA07",
+                  "position": 7,
+                  "value": "AA07"
+                },
+                {
+                  "label": "AA08",
+                  "position": 8,
+                  "value": "AA08"
+                },
+                {
+                  "label": "AA09",
+                  "position": 9,
+                  "value": "AA09"
+                },
+                {
+                  "label": "AA10",
+                  "position": 10,
+                  "value": "AA10"
+                },
+                {
+                  "label": "B08",
+                  "position": 11,
+                  "value": "B08"
+                },
+                {
+                  "label": "BB03",
+                  "position": 12,
+                  "value": "BB03"
+                },
+                {
+                  "label": "BB04",
+                  "position": 13,
+                  "value": "BB04"
+                },
+                {
+                  "label": "BB05",
+                  "position": 14,
+                  "value": "BB05"
+                },
+                {
+                  "label": "BB06",
+                  "position": 15,
+                  "value": "BB06"
+                },
+                {
+                  "label": "BB07",
+                  "position": 16,
+                  "value": "BB07"
+                },
+                {
+                  "label": "BB08",
+                  "position": 17,
+                  "value": "BB08"
+                },
+                {
+                  "label": "BB09",
+                  "position": 18,
+                  "value": "BB09"
+                },
+                {
+                  "label": "BB10",
+                  "position": 19,
+                  "value": "BB10"
+                },
+                {
+                  "label": "BB11",
+                  "position": 20,
+                  "value": "BB11"
+                },
+                {
+                  "label": "CC02",
+                  "position": 21,
+                  "value": "CC02"
+                },
+                {
+                  "label": "CC05",
+                  "position": 22,
+                  "value": "CC05"
+                },
+                {
+                  "label": "CC06",
+                  "position": 23,
+                  "value": "CC06"
+                },
+                {
+                  "label": "CC07",
+                  "position": 24,
+                  "value": "CC07"
+                },
+                {
+                  "label": "CC08",
+                  "position": 25,
+                  "value": "CC08"
+                },
+                {
+                  "label": "CC09",
+                  "position": 26,
+                  "value": "CC09"
+                },
+                {
+                  "label": "CC10",
+                  "position": 27,
+                  "value": "CC10"
+                },
+                {
+                  "label": "CC11",
+                  "position": 28,
+                  "value": "CC11"
+                },
+                {
+                  "label": "D07",
+                  "position": 29,
+                  "value": "D07"
+                },
+                {
+                  "label": "D08",
+                  "position": 30,
+                  "value": "D08"
+                },
+                {
+                  "label": "D09",
+                  "position": 31,
+                  "value": "D09"
+                },
+                {
+                  "label": "DD06",
+                  "position": 32,
+                  "value": "DD06"
+                },
+                {
+                  "label": "DD07",
+                  "position": 33,
+                  "value": "DD07"
+                },
+                {
+                  "label": "DD08",
+                  "position": 34,
+                  "value": "DD08"
+                },
+                {
+                  "label": "DD09",
+                  "position": 35,
+                  "value": "DD09"
+                },
+                {
+                  "label": "DD10",
+                  "position": 36,
+                  "value": "DD10"
+                },
+                {
+                  "label": "E06",
+                  "position": 37,
+                  "value": "E06"
+                },
+                {
+                  "label": "E07",
+                  "position": 38,
+                  "value": "E07"
+                },
+                {
+                  "label": "E08",
+                  "position": 39,
+                  "value": "E08"
+                },
+                {
+                  "label": "E09",
+                  "position": 40,
+                  "value": "E09"
+                },
+                {
+                  "label": "E10",
+                  "position": 41,
+                  "value": "E10"
+                },
+                {
+                  "label": "EE07",
+                  "position": 42,
+                  "value": "EE07"
+                },
+                {
+                  "label": "EE08",
+                  "position": 43,
+                  "value": "EE08"
+                },
+                {
+                  "label": "F04",
+                  "position": 44,
+                  "value": "F04"
+                },
+                {
+                  "label": "F05",
+                  "position": 45,
+                  "value": "F05"
+                },
+                {
+                  "label": "F06",
+                  "position": 46,
+                  "value": "F06"
+                },
+                {
+                  "label": "F07",
+                  "position": 47,
+                  "value": "F07"
+                },
+                {
+                  "label": "F08",
+                  "position": 48,
+                  "value": "F08"
+                },
+                {
+                  "label": "F09",
+                  "position": 49,
+                  "value": "F09"
+                },
+                {
+                  "label": "F10",
+                  "position": 50,
+                  "value": "F10"
+                },
+                {
+                  "label": "F11",
+                  "position": 51,
+                  "value": "F11"
+                },
+                {
+                  "label": "FF07",
+                  "position": 52,
+                  "value": "FF07"
+                },
+                {
+                  "label": "G03",
+                  "position": 53,
+                  "value": "G03"
+                },
+                {
+                  "label": "G04",
+                  "position": 54,
+                  "value": "G04"
+                },
+                {
+                  "label": "G05",
+                  "position": 55,
+                  "value": "G05"
+                },
+                {
+                  "label": "G06",
+                  "position": 56,
+                  "value": "G06"
+                },
+                {
+                  "label": "G07",
+                  "position": 57,
+                  "value": "G07"
+                },
+                {
+                  "label": "G08",
+                  "position": 58,
+                  "value": "G08"
+                },
+                {
+                  "label": "G09",
+                  "position": 59,
+                  "value": "G09"
+                },
+                {
+                  "label": "G10",
+                  "position": 60,
+                  "value": "G10"
+                },
+                {
+                  "label": "G11",
+                  "position": 61,
+                  "value": "G11"
+                },
+                {
+                  "label": "H03",
+                  "position": 62,
+                  "value": "H03"
+                },
+                {
+                  "label": "H04",
+                  "position": 63,
+                  "value": "H04"
+                },
+                {
+                  "label": "H05",
+                  "position": 64,
+                  "value": "H05"
+                },
+                {
+                  "label": "H06",
+                  "position": 65,
+                  "value": "H06"
+                },
+                {
+                  "label": "H07",
+                  "position": 66,
+                  "value": "H07"
+                },
+                {
+                  "label": "H08",
+                  "position": 67,
+                  "value": "H08"
+                },
+                {
+                  "label": "H09",
+                  "position": 68,
+                  "value": "H09"
+                },
+                {
+                  "label": "H10",
+                  "position": 69,
+                  "value": "H10"
+                },
+                {
+                  "label": "H11",
+                  "position": 70,
+                  "value": "H11"
+                },
+                {
+                  "label": "I03",
+                  "position": 71,
+                  "value": "I03"
+                },
+                {
+                  "label": "I04",
+                  "position": 72,
+                  "value": "I04"
+                },
+                {
+                  "label": "I05",
+                  "position": 73,
+                  "value": "I05"
+                },
+                {
+                  "label": "I06",
+                  "position": 74,
+                  "value": "I06"
+                },
+                {
+                  "label": "I07",
+                  "position": 75,
+                  "value": "I07"
+                },
+                {
+                  "label": "I08",
+                  "position": 76,
+                  "value": "I08"
+                },
+                {
+                  "label": "I10",
+                  "position": 77,
+                  "value": "I10"
+                },
+                {
+                  "label": "J03",
+                  "position": 78,
+                  "value": "J03"
+                },
+                {
+                  "label": "J04",
+                  "position": 79,
+                  "value": "J04"
+                },
+                {
+                  "label": "J05",
+                  "position": 80,
+                  "value": "J05"
+                },
+                {
+                  "label": "J06",
+                  "position": 81,
+                  "value": "J06"
+                },
+                {
+                  "label": "J07",
+                  "position": 82,
+                  "value": "J07"
+                },
+                {
+                  "label": "J08",
+                  "position": 83,
+                  "value": "J08"
+                },
+                {
+                  "label": "J09",
+                  "position": 84,
+                  "value": "J09"
+                },
+                {
+                  "label": "J10",
+                  "position": 85,
+                  "value": "J10"
+                },
+                {
+                  "label": "K03",
+                  "position": 86,
+                  "value": "K03"
+                },
+                {
+                  "label": "K04",
+                  "position": 87,
+                  "value": "K04"
+                },
+                {
+                  "label": "K05",
+                  "position": 88,
+                  "value": "K05"
+                },
+                {
+                  "label": "K06",
+                  "position": 89,
+                  "value": "K06"
+                },
+                {
+                  "label": "K07",
+                  "position": 90,
+                  "value": "K07"
+                },
+                {
+                  "label": "K08",
+                  "position": 91,
+                  "value": "K08"
+                },
+                {
+                  "label": "K09",
+                  "position": 92,
+                  "value": "K09"
+                },
+                {
+                  "label": "L04",
+                  "position": 93,
+                  "value": "L04"
+                },
+                {
+                  "label": "L05",
+                  "position": 94,
+                  "value": "L05"
+                },
+                {
+                  "label": "L06",
+                  "position": 95,
+                  "value": "L06"
+                },
+                {
+                  "label": "L07",
+                  "position": 96,
+                  "value": "L07"
+                },
+                {
+                  "label": "L08",
+                  "position": 97,
+                  "value": "L08"
+                },
+                {
+                  "label": "L09",
+                  "position": 98,
+                  "value": "L09"
+                },
+                {
+                  "label": "L10",
+                  "position": 99,
+                  "value": "L10"
+                },
+                {
+                  "label": "M06",
+                  "position": 100,
+                  "value": "M06"
+                },
+                {
+                  "label": "M07",
+                  "position": 101,
+                  "value": "M07"
+                },
+                {
+                  "label": "M08",
+                  "position": 102,
+                  "value": "M08"
+                },
+                {
+                  "label": "M09",
+                  "position": 103,
+                  "value": "M09"
+                },
+                {
+                  "label": "N06",
+                  "position": 104,
+                  "value": "N06"
+                },
+                {
+                  "label": "N07",
+                  "position": 105,
+                  "value": "N07"
+                },
+                {
+                  "label": "N08",
+                  "position": 106,
+                  "value": "N08"
+                },
+                {
+                  "label": "N09",
+                  "position": 107,
+                  "value": "N09"
+                },
+                {
+                  "label": "N11",
+                  "position": 108,
+                  "value": "N11"
+                },
+                {
+                  "label": "O06",
+                  "position": 109,
+                  "value": "O06"
+                },
+                {
+                  "label": "O07",
+                  "position": 110,
+                  "value": "O07"
+                },
+                {
+                  "label": "O08",
+                  "position": 111,
+                  "value": "O08"
+                },
+                {
+                  "label": "O09",
+                  "position": 112,
+                  "value": "O09"
+                },
+                {
+                  "label": "O10",
+                  "position": 113,
+                  "value": "O10"
+                },
+                {
+                  "label": "P06",
+                  "position": 114,
+                  "value": "P06"
+                },
+                {
+                  "label": "P07",
+                  "position": 115,
+                  "value": "P07"
+                },
+                {
+                  "label": "P08",
+                  "position": 116,
+                  "value": "P08"
+                },
+                {
+                  "label": "P09",
+                  "position": 117,
+                  "value": "P09"
+                },
+                {
+                  "label": "P10",
+                  "position": 118,
+                  "value": "P10"
+                },
+                {
+                  "label": "Q06",
+                  "position": 119,
+                  "value": "Q06"
+                },
+                {
+                  "label": "Q07",
+                  "position": 120,
+                  "value": "Q07"
+                },
+                {
+                  "label": "Q08",
+                  "position": 121,
+                  "value": "Q08"
+                },
+                {
+                  "label": "Q09",
+                  "position": 122,
+                  "value": "Q09"
+                },
+                {
+                  "label": "Q10",
+                  "position": 123,
+                  "value": "Q10"
+                },
+                {
+                  "label": "R06",
+                  "position": 124,
+                  "value": "R06"
+                },
+                {
+                  "label": "R07",
+                  "position": 125,
+                  "value": "R07"
+                },
+                {
+                  "label": "R08",
+                  "position": 126,
+                  "value": "R08"
+                },
+                {
+                  "label": "R09",
+                  "position": 127,
+                  "value": "R09"
+                },
+                {
+                  "label": "R10",
+                  "position": 128,
+                  "value": "R10"
+                },
+                {
+                  "label": "S06",
+                  "position": 129,
+                  "value": "S06"
+                },
+                {
+                  "label": "S07",
+                  "position": 130,
+                  "value": "S07"
+                },
+                {
+                  "label": "S08",
+                  "position": 131,
+                  "value": "S08"
+                },
+                {
+                  "label": "S09",
+                  "position": 132,
+                  "value": "S09"
+                },
+                {
+                  "label": "T03",
+                  "position": 133,
+                  "value": "T03"
+                },
+                {
+                  "label": "T04",
+                  "position": 134,
+                  "value": "T04"
+                },
+                {
+                  "label": "T05",
+                  "position": 135,
+                  "value": "T05"
+                },
+                {
+                  "label": "T06",
+                  "position": 136,
+                  "value": "T06"
+                },
+                {
+                  "label": "T07",
+                  "position": 137,
+                  "value": "T07"
+                },
+                {
+                  "label": "T08",
+                  "position": 138,
+                  "value": "T08"
+                },
+                {
+                  "label": "T09",
+                  "position": 139,
+                  "value": "T09"
+                },
+                {
+                  "label": "T10",
+                  "position": 140,
+                  "value": "T10"
+                },
+                {
+                  "label": "U03",
+                  "position": 141,
+                  "value": "U03"
+                },
+                {
+                  "label": "U04",
+                  "position": 142,
+                  "value": "U04"
+                },
+                {
+                  "label": "U05",
+                  "position": 143,
+                  "value": "U05"
+                },
+                {
+                  "label": "U06",
+                  "position": 144,
+                  "value": "U06"
+                },
+                {
+                  "label": "U07",
+                  "position": 145,
+                  "value": "U07"
+                },
+                {
+                  "label": "U08",
+                  "position": 146,
+                  "value": "U08"
+                },
+                {
+                  "label": "U10",
+                  "position": 147,
+                  "value": "U10"
+                },
+                {
+                  "label": "V02",
+                  "position": 148,
+                  "value": "V02"
+                },
+                {
+                  "label": "V03",
+                  "position": 149,
+                  "value": "V03"
+                },
+                {
+                  "label": "V04",
+                  "position": 150,
+                  "value": "V04"
+                },
+                {
+                  "label": "V05",
+                  "position": 151,
+                  "value": "V05"
+                },
+                {
+                  "label": "V06",
+                  "position": 152,
+                  "value": "V06"
+                },
+                {
+                  "label": "V07",
+                  "position": 153,
+                  "value": "V07"
+                },
+                {
+                  "label": "V08",
+                  "position": 154,
+                  "value": "V08"
+                },
+                {
+                  "label": "V10",
+                  "position": 155,
+                  "value": "V10"
+                },
+                {
+                  "label": "W02",
+                  "position": 156,
+                  "value": "W02"
+                },
+                {
+                  "label": "W03",
+                  "position": 157,
+                  "value": "W03"
+                },
+                {
+                  "label": "W04",
+                  "position": 158,
+                  "value": "W04"
+                },
+                {
+                  "label": "W05",
+                  "position": 159,
+                  "value": "W05"
+                },
+                {
+                  "label": "W06",
+                  "position": 160,
+                  "value": "W06"
+                },
+                {
+                  "label": "W07",
+                  "position": 161,
+                  "value": "W07"
+                },
+                {
+                  "label": "W08",
+                  "position": 162,
+                  "value": "W08"
+                },
+                {
+                  "label": "W11",
+                  "position": 163,
+                  "value": "W11"
+                },
+                {
+                  "label": "X01",
+                  "position": 164,
+                  "value": "X01"
+                },
+                {
+                  "label": "X02",
+                  "position": 165,
+                  "value": "X02"
+                },
+                {
+                  "label": "X03",
+                  "position": 166,
+                  "value": "X03"
+                },
+                {
+                  "label": "X04",
+                  "position": 167,
+                  "value": "X04"
+                },
+                {
+                  "label": "X05",
+                  "position": 168,
+                  "value": "X05"
+                },
+                {
+                  "label": "X06",
+                  "position": 169,
+                  "value": "X06"
+                },
+                {
+                  "label": "X07",
+                  "position": 170,
+                  "value": "X07"
+                },
+                {
+                  "label": "X08",
+                  "position": 171,
+                  "value": "X08"
+                },
+                {
+                  "label": "X09",
+                  "position": 172,
+                  "value": "X09"
+                },
+                {
+                  "label": "X10",
+                  "position": 173,
+                  "value": "X10"
+                },
+                {
+                  "label": "X12",
+                  "position": 174,
+                  "value": "X12"
+                },
+                {
+                  "label": "Y01",
+                  "position": 175,
+                  "value": "Y01"
+                },
+                {
+                  "label": "Y02",
+                  "position": 176,
+                  "value": "Y02"
+                },
+                {
+                  "label": "Y03",
+                  "position": 177,
+                  "value": "Y03"
+                },
+                {
+                  "label": "Y04",
+                  "position": 178,
+                  "value": "Y04"
+                },
+                {
+                  "label": "Y05",
+                  "position": 179,
+                  "value": "Y05"
+                },
+                {
+                  "label": "Y06",
+                  "position": 180,
+                  "value": "Y06"
+                },
+                {
+                  "label": "Y07",
+                  "position": 181,
+                  "value": "Y07"
+                },
+                {
+                  "label": "Y08",
+                  "position": 182,
+                  "value": "Y08"
+                },
+                {
+                  "label": "Y09",
+                  "position": 183,
+                  "value": "Y09"
+                },
+                {
+                  "label": "Y10",
+                  "position": 184,
+                  "value": "Y10"
+                },
+                {
+                  "label": "Y11",
+                  "position": 185,
+                  "value": "Y11"
+                },
+                {
+                  "label": "Y12",
+                  "position": 186,
+                  "value": "Y12"
+                },
+                {
+                  "label": "Z02",
+                  "position": 187,
+                  "value": "Z02"
+                },
+                {
+                  "label": "Z03",
+                  "position": 188,
+                  "value": "Z03"
+                },
+                {
+                  "label": "Z04",
+                  "position": 189,
+                  "value": "Z04"
+                },
+                {
+                  "label": "Z05",
+                  "position": 190,
+                  "value": "Z05"
+                },
+                {
+                  "label": "Z06",
+                  "position": 191,
+                  "value": "Z06"
+                },
+                {
+                  "label": "Z07",
+                  "position": 192,
+                  "value": "Z07"
+                },
+                {
+                  "label": "Z08",
+                  "position": 193,
+                  "value": "Z08"
+                },
+                {
+                  "label": "Z09",
+                  "position": 194,
+                  "value": "Z09"
+                },
+                {
+                  "label": "Z10",
+                  "position": 195,
+                  "value": "Z10"
+                },
+                {
+                  "label": "Z11",
+                  "position": 196,
+                  "value": "Z11"
+                },
+                {
+                  "label": "Z12",
+                  "position": 197,
+                  "value": "Z12"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "description": null,
+            "fieldName": "plot_num",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_num",
+            "isRequired": true,
+            "label": "Plot Num",
+            "name": "plot_num",
+            "position": 14,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeSingleChoice"
+          },
+          {
+            "defaultValue": 90,
+            "description": null,
+            "fieldName": "baf",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/baf",
+            "isRequired": false,
+            "label": "BAF",
+            "name": "baf",
+            "position": 15,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": true,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "sum( /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_count )",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "cp_tot_count",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/cp_tot_count",
+            "isRequired": false,
+            "label": "CP Total Count",
+            "name": "cp_tot_count",
+            "position": 16,
+            "readOnly": {
+              "expression": "true()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": "selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Count')",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": true,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "count( /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp )",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "mp_tot_count",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/mp_tot_count",
+            "isRequired": false,
+            "label": "MP Total Count",
+            "name": "mp_tot_count",
+            "position": 17,
+            "readOnly": {
+              "expression": "true()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": "selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Measure')",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": true,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "appearance": {
+              "layout": "w2:2"
+            },
+            "description": null,
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot",
+            "isRequired": false,
+            "label": "Count Plot",
+            "name": "c_plot",
+            "position": 22,
+            "questions": [
+              {
+                "appearance": {
+                  "layout": "autocomplete"
+                },
+                "choices": {
+                  "items": [
+                    {
+                      "label": "RWOG",
+                      "position": 0,
+                      "value": "RWOG"
+                    },
+                    {
+                      "label": "RW",
+                      "position": 1,
+                      "value": "RW"
+                    },
+                    {
+                      "label": "SS",
+                      "position": 2,
+                      "value": "SS"
+                    },
+                    {
+                      "label": "DF",
+                      "position": 3,
+                      "value": "DF"
+                    },
+                    {
+                      "label": "HL",
+                      "position": 4,
+                      "value": "HL"
+                    },
+                    {
+                      "label": "ALRU",
+                      "position": 5,
+                      "value": "ALRU"
+                    },
+                    {
+                      "label": "Other",
+                      "position": 6,
+                      "value": "Other"
+                    }
+                  ],
+                  "other": {
+                    "isEnabled": false,
+                    "label": null
+                  }
+                },
+                "choicesOrder": {
+                  "type": "default"
+                },
+                "description": null,
+                "fieldName": "cp_spp",
+                "fieldType": "esriFieldTypeString",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp",
+                "isRequired": false,
+                "label": "CP Spp",
+                "name": "cp_spp",
+                "position": 18,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeSingleChoice"
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "cp_spp_other",
+                "fieldType": "esriFieldTypeString",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_other",
+                "isRequired": false,
+                "label": "CP Spp Other",
+                "name": "cp_spp_other",
+                "position": 19,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": "selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp , 'Other')",
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "calculation": {
+                  "expression": "if( /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_other =\"\",  /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp ,  /RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_other )",
+                  "type": "xform"
+                },
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "cp_spp_pick",
+                "fieldType": "esriFieldTypeString",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_pick",
+                "isRequired": false,
+                "label": "CP Spp Pick",
+                "name": "cp_spp_pick",
+                "position": 20,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                },
+                "visibility": {
+                  "expression": "false()",
+                  "type": "xform"
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "cp_spp_count",
+                "fieldType": "esriFieldTypeDouble",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/c_plot/cp_spp_count",
+                "isRequired": false,
+                "label": "CP Spp Count",
+                "name": "cp_spp_count",
+                "position": 21,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeNumber",
+                "validation": {
+                  "isInteger": true,
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              }
+            ],
+            "relevant": {
+              "expression": "selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Count')",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeRepeat",
+            "validation": {
+              "inputCount": {
+                "isEnabled": false,
+                "max": -1,
+                "min": -1
+              }
+            }
+          },
+          {
+            "appearance": {
+              "layout": "w2 minimal"
+            },
+            "description": null,
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot",
+            "isRequired": false,
+            "label": "Measure Plot",
+            "name": "m_plot",
+            "position": 30,
+            "questions": [
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "mp_tree_num",
+                "fieldType": "esriFieldTypeDouble",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_tree_num",
+                "isRequired": false,
+                "label": "MP Tree Num",
+                "name": "mp_tree_num",
+                "position": 23,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeNumber",
+                "validation": {
+                  "isInteger": true,
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "appearance": {
+                  "layout": "autocomplete"
+                },
+                "choices": {
+                  "items": [
+                    {
+                      "label": "RWOG",
+                      "position": 0,
+                      "value": "RWOG"
+                    },
+                    {
+                      "label": "RW",
+                      "position": 1,
+                      "value": "RW"
+                    },
+                    {
+                      "label": "SS",
+                      "position": 2,
+                      "value": "SS"
+                    },
+                    {
+                      "label": "DF",
+                      "position": 3,
+                      "value": "DF"
+                    },
+                    {
+                      "label": "HL",
+                      "position": 4,
+                      "value": "HL"
+                    },
+                    {
+                      "label": "ALRU",
+                      "position": 5,
+                      "value": "ALRU"
+                    },
+                    {
+                      "label": "Other",
+                      "position": 6,
+                      "value": "Other"
+                    }
+                  ],
+                  "other": {
+                    "isEnabled": false,
+                    "label": null
+                  }
+                },
+                "choicesOrder": {
+                  "type": "default"
+                },
+                "description": null,
+                "fieldName": "mp_spp",
+                "fieldType": "esriFieldTypeString",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp",
+                "isRequired": false,
+                "label": "MP Spp",
+                "name": "mp_spp",
+                "position": 24,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeSingleChoice"
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "mp_spp_other",
+                "fieldType": "esriFieldTypeString",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_other",
+                "isRequired": false,
+                "label": "MP Spp Other",
+                "name": "mp_spp_other",
+                "position": 25,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": "selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp , 'Other')",
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "calculation": {
+                  "expression": "if( /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_other =\"\",  /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp ,  /RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_other )",
+                  "type": "xform"
+                },
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "mp_spp_pick",
+                "fieldType": "esriFieldTypeString",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_spp_pick",
+                "isRequired": false,
+                "label": "MP Spp Pick",
+                "name": "mp_spp_pick",
+                "position": 26,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                },
+                "visibility": {
+                  "expression": "false()",
+                  "type": "xform"
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "mp_dbh",
+                "fieldType": "esriFieldTypeDouble",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_dbh",
+                "isRequired": false,
+                "label": "MP Spp DBH",
+                "name": "mp_dbh",
+                "position": 27,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeNumber",
+                "validation": {
+                  "isInteger": false,
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "mp_ht",
+                "fieldType": "esriFieldTypeDouble",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_ht",
+                "isRequired": false,
+                "label": "MP Spp HT",
+                "name": "mp_ht",
+                "position": 28,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeNumber",
+                "validation": {
+                  "isInteger": true,
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "mp_notes",
+                "fieldType": "esriFieldTypeString",
+                "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/m_plot/mp_notes",
+                "isRequired": false,
+                "label": "MP Spp Notes",
+                "name": "mp_notes",
+                "position": 29,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              }
+            ],
+            "relevant": {
+              "expression": "selected( /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_type , 'Measure')",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeRepeat",
+            "validation": {
+              "inputCount": {
+                "isEnabled": false,
+                "max": -1,
+                "min": -1
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "plot_notes",
+            "fieldType": "esriFieldTypeString",
+            "id": "/RR_FOR_Cruise_Survey___Test/group_plot_info/plot_notes",
+            "isRequired": false,
+            "label": "Plot Notes",
+            "name": "plot_notes",
+            "position": 31,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeTextArea",
+            "validation": {
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          }
+        ],
+        "relevant": {
+          "expression": null,
+          "type": "xform"
+        },
+        "type": "esriQuestionTypeGroup"
+      }
+    ],
+    "settings": {
+      "captcha": {
+        "content": "",
+        "isEnabled": false
+      },
+      "draftInfo": {
+        "isEnabled": false
+      },
+      "instanceName": "concat( /RR_FOR_Cruise_Survey___Test/group_gen_info/reg_date ,' ', /RR_FOR_Cruise_Survey___Test/group_plot_info/plot_num ,' ', /RR_FOR_Cruise_Survey___Test/group_gen_info/crew_pick )",
+      "isVersionLocked": true,
+      "multiSubmissionInfo": {
+        "autoReload": -1,
+        "maxAllowed": 0,
+        "redirectUrl": "",
+        "showSubmitAnotherTip": false
+      },
+      "notificationsInfo": {},
+      "openStatusInfo": {
+        "closedStatusContent": "",
+        "schedule": {
+          "end": null,
+          "start": null
+        },
+        "status": "open"
+      },
+      "recordStartEndTime": {
+        "fieldInfos": [],
+        "isEnabled": false
+      },
+      "thankYouScreenContent": ""
+    },
+    "subHeader": {
+      "content": "",
+      "isVisible": true
+    },
+    "submit": {},
+    "themes": [
+      {
+        "form": {
+          "backgroundColor": "#ffffff",
+          "backgroundOpacity": 1,
+          "inputBackgroundColor": "#ffffff",
+          "inputTextColor": "#505050",
+          "primaryColor": "#31872E",
+          "primaryTextColor": "#ffffff",
+          "textColor": "#505050"
+        },
+        "header": {
+          "backgroundColor": "#31872E",
+          "textColor": "#ffffff"
+        },
+        "id": null,
+        "isEnabled": true,
+        "name": "theme-color1",
+        "webpage": {
+          "backgroundColor": "#B7DCC7"
+        }
+      }
+    ],
+    "version": "3.19"
+  },
+  "transformerVersion": "2.3.0"
+}

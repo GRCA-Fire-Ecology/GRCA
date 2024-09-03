@@ -28,17 +28,19 @@ install.packages("tidyverse")
 library(tidyverse)
 library(readxl)
 
-#identify working directory
-#setwd("/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test")
-getwd()
 
 ################################################################################
 # MAKE SURE FILE PATHS ARE CORRECT
 ################################################################################
 
+#identify working directory (specifically user name)
+getwd()
+
 #my_path_data <- "X:/Data Collection/WACA/2020/Collected/"
 #my_path_csv <- "X:/Data Collection/WACA/2020/_CSV_Import to FFI/"
 
+#load in data and name them based on file path
+#change file path based on user name!
 my_path_data <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/SAGU/2023/Collected/"
 my_path_csv <- "C:/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test/data_raw/SAGU/2023/_CSV_Import to FFI/"
 

@@ -1,0 +1,317 @@
+<?xml version="1.0"?>
+<h:html xmlns:esri="http://esri.com/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:odk="http://www.opendatakit.org/xforms">
+  <h:head>
+    <h:title>KLMN Fire Effects and Ecology Photo Monitoring</h:title>
+    <model>
+      <instance>
+        <KLMN_FE_Photo_Mon_v1_1 id="KLMN_FE_Photo_Mon_v1_1">
+          <group_gen_info>
+            <_date>now()</_date>
+            <reg_date/>
+            <obs_time/>
+            <crew/>
+            <crew_other/>
+            <crew_pick/>
+            <location/>
+            <Longitude_DD/>
+            <Latitude_DD/>
+            <Easting_UTM/>
+            <Northing_UTM/>
+            <park_name/>
+            <plot_name/>
+            <burn_unit/>
+            <protocol/>
+            <veg_type/>
+            <plot_default/>
+          </group_gen_info>
+          <group_photo_page>
+            <plot_read/>
+            <plot_override>No</plot_override>
+            <override_yes>No</override_yes>
+            <plot_type_pick/>
+            <plot_type/>
+            <veg_calc/>
+            <group_photo_forest>
+              <photo_8_0p_50p/>
+              <photo_8_q4_q1/>
+              <photo_8_p1_p2/>
+              <photo_8_q1_q4/>
+              <photo_8_50p_0p/>
+              <photo_8_q2_q3/>
+              <photo_8_p2_p1/>
+              <photo_8_q3_q2/>
+            </group_photo_forest>
+            <group_photo_brush>
+              <photo_2_0p_30p/>
+              <photo_2_30p_0p/>
+            </group_photo_brush>
+            <group_photo_ra>
+              <photo_4_1/>
+              <photo_4_1_note/>
+              <photo_4_2/>
+              <photo_4_2_note/>
+              <photo_4_3/>
+              <photo_4_3_note/>
+              <photo_4_4/>
+              <photo_4_4_note/>
+            </group_photo_ra>
+            <group_notes_photo>
+              <photo_other/>
+              <plot_notes/>
+            </group_notes_photo>
+          </group_photo_page>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </KLMN_FE_Photo_Mon_v1_1>
+      </instance>
+      <instance id="klmn_fire_list_worker" src="jr://file-csv/klmn_fire_list_worker.csv">
+        <root>
+          <item>
+            <name>_</name>
+            <label>_</label>
+          </item>
+        </root>
+      </instance>
+      <instance id="@geopoint" src="jr://file-csv/@geopoint.csv">
+        <root>
+          <item>
+            <name>_</name>
+            <label>_</label>
+          </item>
+        </root>
+      </instance>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/_date" type="dateTime" required="true()" jr:requiredMsg="This is a required question"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/reg_date" type="string" calculate="format-date( /KLMN_FE_Photo_Mon_v1_1/group_gen_info/_date ,'%m, %d, %Y')"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/obs_time" type="time" jr:requiredMsg="This is a required question" calculate="format-date( /KLMN_FE_Photo_Mon_v1_1/group_gen_info/_date ,'%H:%M')"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew" type="select" esri:fieldLength="255" required="true()" jr:requiredMsg="This is a required question"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew_other" type="string" relevant="selected( /KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew , 'Other')"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew_pick" type="string" calculate="if( /KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew_other =&quot;&quot;,  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew , concat( /KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew ,':', /KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew_other ))"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/location" type="geopoint" required="true()" jr:requiredMsg="This is a required question"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Longitude_DD" type="decimal" calculate="pulldata(&quot;@geopoint&quot;,  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/location , &quot;x&quot;)" readonly="true()"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Latitude_DD" type="decimal" calculate="pulldata(&quot;@geopoint&quot;,  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/location , &quot;y&quot;)" readonly="true()"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Easting_UTM" type="decimal"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Northing_UTM" type="decimal"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/park_name" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_name" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/burn_unit" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/protocol" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/veg_type" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_default" type="int"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_read" type="string" required="true()"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_override" type="select1"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/override_yes" type="select1"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_type_pick" type="select1" relevant="selected( /KLMN_FE_Photo_Mon_v1_1/group_photo_page/override_yes , 'Yes')"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_type" type="string" calculate="if( /KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_override ='',  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_default , if( /KLMN_FE_Photo_Mon_v1_1/group_photo_page/override_yes ='',  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_default , if( /KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_override ='No' and  /KLMN_FE_Photo_Mon_v1_1/group_photo_page/override_yes ='No',  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_default , if( /KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_override ='Yes' and  /KLMN_FE_Photo_Mon_v1_1/group_photo_page/override_yes ='No',  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_default  , /KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_type_pick ))))"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/veg_calc" type="string" calculate="if(selected( /KLMN_FE_Photo_Mon_v1_1/group_photo_page/override_yes , 'Yes'),  /KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_type ,  /KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_default )"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest" relevant=" /KLMN_FE_Photo_Mon_v1_1/group_photo_page/veg_calc =8"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_0p_50p" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q4_q1" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_p1_p2" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q1_q4" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_50p_0p" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q2_q3" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_p2_p1" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q3_q2" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_brush" relevant=" /KLMN_FE_Photo_Mon_v1_1/group_photo_page/veg_calc =2"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_brush/photo_2_0p_30p" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_brush/photo_2_30p_0p" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra" relevant=" /KLMN_FE_Photo_Mon_v1_1/group_photo_page/veg_calc =4"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_1" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_1_note" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_2" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_2_note" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_3" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_3_note" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_4" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_4_note" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_notes_photo/photo_other" type="binary"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_notes_photo/plot_notes" type="string"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/meta/instanceID" type="string" readonly="true()" calculate="concat('uuid:', uuid())"/>
+      <bind nodeset="/KLMN_FE_Photo_Mon_v1_1/meta/instanceName" type="string" calculate="concat( /KLMN_FE_Photo_Mon_v1_1/group_gen_info/reg_date ,' ', /KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_name ,' ', /KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew_pick )"/>
+    </model>
+  </h:head>
+  <h:body class="pages dynamic-grid">
+    <group appearance="w2 field-list" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info">
+      <label>General Info</label>
+      <input ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/_date">
+        <label>Date</label>
+      </input>
+      <input appearance="hidden" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/reg_date">
+        <label>Regular Date</label>
+      </input>
+      <input appearance="hidden" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/obs_time">
+        <label>Observation time</label>
+        <hint>What time did the observation take place?</hint>
+      </input>
+      <select appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew">
+        <label>Who did the work</label>
+        <hint>Names of the people observing/surveying</hint>
+        <itemset nodeset="instance('klmn_fire_list_worker')/root/item">
+          <value ref="name"/>
+          <label ref="label"/>
+        </itemset>
+      </select>
+      <input appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew_other">
+        <label>Other</label>
+        <hint>Other people involved in observing/surveying</hint>
+      </input>
+      <input appearance="predictivetext" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/crew_pick">
+        <label>Plot Crew</label>
+      </input>
+      <input appearance="w2 hide-input press-to-locate" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/location">
+        <label>Location</label>
+        <hint>Where was the observation/survey made?</hint>
+      </input>
+      <input appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Longitude_DD">
+        <label>Longitude (DD_X)</label>
+      </input>
+      <input appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Latitude_DD">
+        <label>Latitude (DD_Y)</label>
+      </input>
+      <input appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Easting_UTM">
+        <label>Easting (UTM_X)</label>
+      </input>
+      <input appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/Northing_UTM">
+        <label>Northing (UTM_Y)</label>
+      </input>
+      <input ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/park_name">
+        <label>Park Name</label>
+      </input>
+      <input ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_name">
+        <label>Plot Name</label>
+      </input>
+      <input ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/burn_unit">
+        <label>Burn Unit</label>
+      </input>
+      <input ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/protocol">
+        <label>Protocol</label>
+      </input>
+      <input ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/veg_type">
+        <label>Veg Type</label>
+      </input>
+      <input ref="/KLMN_FE_Photo_Mon_v1_1/group_gen_info/plot_default">
+        <label>Default Photo Type</label>
+      </input>
+    </group>
+    <group appearance="w2 field-list" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page">
+      <label>Photo Page</label>
+      <input appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_read">
+        <label>READ</label>
+      </input>
+      <select1 appearance="w1 likert" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_override">
+        <label>Over Ride Default Plot Type</label>
+        <item>
+          <label>Yes</label>
+          <value>Yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>No</value>
+        </item>
+      </select1>
+      <select1 appearance="w1 likert" esri:visible="selected( /KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_override , 'Yes')" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/override_yes">
+        <label>&lt;font color="red"&gt;Confirm Override (current plot photos will be erased!)&lt;/font&gt;</label>
+        <item>
+          <label>Yes</label>
+          <value>Yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>No</value>
+        </item>
+      </select1>
+      <select1 appearance="w1 likert" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_type_pick">
+        <label>Manual Photo Type Pick</label>
+        <item>
+          <label>8</label>
+          <value>8</value>
+        </item>
+        <item>
+          <label>4</label>
+          <value>4</value>
+        </item>
+        <item>
+          <label>2</label>
+          <value>2</value>
+        </item>
+      </select1>
+      <input appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/plot_type">
+        <label>Plot Type Selected</label>
+      </input>
+      <group appearance="w2:2" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest">
+        <label>8 Shot Photo Inventory</label>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_0p_50p">
+          <label>0P-50P</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q4_q1">
+          <label>Q4-Q1</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_p1_p2">
+          <label>P1-P2</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q1_q4">
+          <label>Q1-Q4</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_50p_0p">
+          <label>50P-0P</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q2_q3">
+          <label>Q2-Q3</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_p2_p1">
+          <label>P2-P1</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_forest/photo_8_q3_q2">
+          <label>Q3-Q2</label>
+        </upload>
+      </group>
+      <group appearance="w2:2" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_brush">
+        <label>2 Shot Photo Inventory</label>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_brush/photo_2_0p_30p">
+          <label>0P-30P</label>
+        </upload>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_brush/photo_2_30p_0p">
+          <label>30P-0P</label>
+        </upload>
+      </group>
+      <group appearance="w2:2" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra">
+        <label>4 Shot RA Photo Inventory</label>
+        <upload mediatype="image/*" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_1">
+          <label>RA Photo 1</label>
+        </upload>
+        <input ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_1_note">
+          <label>RA Photo 1 Desc. (direction)</label>
+        </input>
+        <upload mediatype="image/*" appearance="w1 minimal" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_2">
+          <label>RA Photo 2</label>
+        </upload>
+        <input ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_2_note">
+          <label>RA Photo 2 Desc. (direction)</label>
+        </input>
+        <upload mediatype="image/*" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_3">
+          <label>RA Photo 3</label>
+        </upload>
+        <input ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_3_note">
+          <label>RA Photo 3 Desc. (direction)</label>
+        </input>
+        <upload mediatype="image/*" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_4">
+          <label>RA Photo 4</label>
+        </upload>
+        <input ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_photo_ra/photo_4_4_note">
+          <label>RA Photo 4 Desc. (direction)</label>
+        </input>
+      </group>
+      <group appearance="w2:2" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_notes_photo">
+        <label>Plot Notes and Other Photos</label>
+        <upload mediatype="image/*" appearance="w1 multiline" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_notes_photo/photo_other">
+          <label>Other Photos</label>
+        </upload>
+        <input appearance="w1 multiline" ref="/KLMN_FE_Photo_Mon_v1_1/group_photo_page/group_notes_photo/plot_notes">
+          <label>Plot Notes</label>
+        </input>
+      </group>
+    </group>
+  </h:body>
+</h:html>

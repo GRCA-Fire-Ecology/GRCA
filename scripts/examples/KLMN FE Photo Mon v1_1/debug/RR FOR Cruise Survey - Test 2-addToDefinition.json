@@ -1,0 +1,1464 @@
+{
+    "layers": [
+        {
+            "allowGeometryUpdates": true,
+            "capabilities": "Create",
+            "copyrightText": "",
+            "defaultVisibility": true,
+            "description": "",
+            "displayField": "objectid",
+            "drawingInfo": {
+                "labelingInfo": null,
+                "renderer": {
+                    "description": "Survey Data Locations",
+                    "label": "RR FOR Cruise Survey - Test 2",
+                    "symbol": {
+                        "angle": 0,
+                        "color": [
+                            255,
+                            0,
+                            0,
+                            255
+                        ],
+                        "outline": {
+                            "color": [
+                                255,
+                                255,
+                                0,
+                                255
+                            ],
+                            "width": 1
+                        },
+                        "size": 8,
+                        "style": "esriSMSCircle",
+                        "type": "esriSMS",
+                        "xoffset": 0,
+                        "yoffset": 0
+                    },
+                    "type": "simple"
+                },
+                "transparency": 0
+            },
+            "extent": {
+                "spatialReference": {
+                    "wkid": 4326
+                },
+                "type": "extent",
+                "xmax": 180,
+                "xmin": -180,
+                "ymax": 90,
+                "ymin": -90
+            },
+            "fields": [
+                {
+                    "alias": "ObjectID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "name": "objectid",
+                    "nullable": false,
+                    "type": "esriFieldTypeOID"
+                },
+                {
+                    "alias": "GlobalID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "length": 38,
+                    "name": "globalid",
+                    "nullable": false,
+                    "sqlType": "sqlTypeGUID",
+                    "type": "esriFieldTypeGlobalID"
+                },
+                {
+                    "alias": "Date",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "_date",
+                    "nullable": true,
+                    "type": "esriFieldTypeDate",
+                    "visible": true
+                },
+                {
+                    "alias": "Regular Date",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "reg_date",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Observation time",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "obs_time",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Who did the work",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "crew",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Other",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "crew_other",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "crew_pick",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "crew_pick",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Longitude",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "Longitude",
+                    "nullable": true,
+                    "type": "esriFieldTypeDouble",
+                    "visible": true
+                },
+                {
+                    "alias": "Latitude",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "Latitude",
+                    "nullable": true,
+                    "type": "esriFieldTypeDouble",
+                    "visible": true
+                },
+                {
+                    "alias": "Sector",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "upper_gpc",
+                                "name": "Upper GPC"
+                            },
+                            {
+                                "code": "berry_glen",
+                                "name": "Berry Glen"
+                            },
+                            {
+                                "code": "s_davison_road",
+                                "name": "S. of Davison Rd"
+                            },
+                            {
+                                "code": "maple_creek",
+                                "name": "Maple Creek"
+                            },
+                            {
+                                "code": "bald_hills",
+                                "name": "Bald Hills"
+                            }
+                        ],
+                        "name": "cvd_sector",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "sector",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Plot Type",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "Count",
+                                "name": "Count"
+                            },
+                            {
+                                "code": "Measure",
+                                "name": "Measure"
+                            }
+                        ],
+                        "name": "cvd_plot_type",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_type",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Unit",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "6",
+                                "name": "6"
+                            }
+                        ],
+                        "name": "cvd_unit_num",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "unit_num",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Plot Num",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "A09",
+                                "name": "A09"
+                            },
+                            {
+                                "code": "AA01",
+                                "name": "AA01"
+                            },
+                            {
+                                "code": "AA02",
+                                "name": "AA02"
+                            },
+                            {
+                                "code": "AA03",
+                                "name": "AA03"
+                            },
+                            {
+                                "code": "AA04",
+                                "name": "AA04"
+                            },
+                            {
+                                "code": "AA05",
+                                "name": "AA05"
+                            },
+                            {
+                                "code": "AA06",
+                                "name": "AA06"
+                            },
+                            {
+                                "code": "AA07",
+                                "name": "AA07"
+                            },
+                            {
+                                "code": "AA08",
+                                "name": "AA08"
+                            },
+                            {
+                                "code": "AA09",
+                                "name": "AA09"
+                            },
+                            {
+                                "code": "AA10",
+                                "name": "AA10"
+                            },
+                            {
+                                "code": "B08",
+                                "name": "B08"
+                            },
+                            {
+                                "code": "BB03",
+                                "name": "BB03"
+                            },
+                            {
+                                "code": "BB04",
+                                "name": "BB04"
+                            },
+                            {
+                                "code": "BB05",
+                                "name": "BB05"
+                            },
+                            {
+                                "code": "BB06",
+                                "name": "BB06"
+                            },
+                            {
+                                "code": "BB07",
+                                "name": "BB07"
+                            },
+                            {
+                                "code": "BB08",
+                                "name": "BB08"
+                            },
+                            {
+                                "code": "BB09",
+                                "name": "BB09"
+                            },
+                            {
+                                "code": "BB10",
+                                "name": "BB10"
+                            },
+                            {
+                                "code": "BB11",
+                                "name": "BB11"
+                            },
+                            {
+                                "code": "CC02",
+                                "name": "CC02"
+                            },
+                            {
+                                "code": "CC05",
+                                "name": "CC05"
+                            },
+                            {
+                                "code": "CC06",
+                                "name": "CC06"
+                            },
+                            {
+                                "code": "CC07",
+                                "name": "CC07"
+                            },
+                            {
+                                "code": "CC08",
+                                "name": "CC08"
+                            },
+                            {
+                                "code": "CC09",
+                                "name": "CC09"
+                            },
+                            {
+                                "code": "CC10",
+                                "name": "CC10"
+                            },
+                            {
+                                "code": "CC11",
+                                "name": "CC11"
+                            },
+                            {
+                                "code": "D07",
+                                "name": "D07"
+                            },
+                            {
+                                "code": "D08",
+                                "name": "D08"
+                            },
+                            {
+                                "code": "D09",
+                                "name": "D09"
+                            },
+                            {
+                                "code": "DD06",
+                                "name": "DD06"
+                            },
+                            {
+                                "code": "DD07",
+                                "name": "DD07"
+                            },
+                            {
+                                "code": "DD08",
+                                "name": "DD08"
+                            },
+                            {
+                                "code": "DD09",
+                                "name": "DD09"
+                            },
+                            {
+                                "code": "DD10",
+                                "name": "DD10"
+                            },
+                            {
+                                "code": "E06",
+                                "name": "E06"
+                            },
+                            {
+                                "code": "E07",
+                                "name": "E07"
+                            },
+                            {
+                                "code": "E08",
+                                "name": "E08"
+                            },
+                            {
+                                "code": "E09",
+                                "name": "E09"
+                            },
+                            {
+                                "code": "E10",
+                                "name": "E10"
+                            },
+                            {
+                                "code": "EE07",
+                                "name": "EE07"
+                            },
+                            {
+                                "code": "EE08",
+                                "name": "EE08"
+                            },
+                            {
+                                "code": "F04",
+                                "name": "F04"
+                            },
+                            {
+                                "code": "F05",
+                                "name": "F05"
+                            },
+                            {
+                                "code": "F06",
+                                "name": "F06"
+                            },
+                            {
+                                "code": "F07",
+                                "name": "F07"
+                            },
+                            {
+                                "code": "F08",
+                                "name": "F08"
+                            },
+                            {
+                                "code": "F09",
+                                "name": "F09"
+                            },
+                            {
+                                "code": "F10",
+                                "name": "F10"
+                            },
+                            {
+                                "code": "F11",
+                                "name": "F11"
+                            },
+                            {
+                                "code": "FF07",
+                                "name": "FF07"
+                            },
+                            {
+                                "code": "G03",
+                                "name": "G03"
+                            },
+                            {
+                                "code": "G04",
+                                "name": "G04"
+                            },
+                            {
+                                "code": "G05",
+                                "name": "G05"
+                            },
+                            {
+                                "code": "G06",
+                                "name": "G06"
+                            },
+                            {
+                                "code": "G07",
+                                "name": "G07"
+                            },
+                            {
+                                "code": "G08",
+                                "name": "G08"
+                            },
+                            {
+                                "code": "G09",
+                                "name": "G09"
+                            },
+                            {
+                                "code": "G10",
+                                "name": "G10"
+                            },
+                            {
+                                "code": "G11",
+                                "name": "G11"
+                            },
+                            {
+                                "code": "H03",
+                                "name": "H03"
+                            },
+                            {
+                                "code": "H04",
+                                "name": "H04"
+                            },
+                            {
+                                "code": "H05",
+                                "name": "H05"
+                            },
+                            {
+                                "code": "H06",
+                                "name": "H06"
+                            },
+                            {
+                                "code": "H07",
+                                "name": "H07"
+                            },
+                            {
+                                "code": "H08",
+                                "name": "H08"
+                            },
+                            {
+                                "code": "H09",
+                                "name": "H09"
+                            },
+                            {
+                                "code": "H10",
+                                "name": "H10"
+                            },
+                            {
+                                "code": "H11",
+                                "name": "H11"
+                            },
+                            {
+                                "code": "I03",
+                                "name": "I03"
+                            },
+                            {
+                                "code": "I04",
+                                "name": "I04"
+                            },
+                            {
+                                "code": "I05",
+                                "name": "I05"
+                            },
+                            {
+                                "code": "I06",
+                                "name": "I06"
+                            },
+                            {
+                                "code": "I07",
+                                "name": "I07"
+                            },
+                            {
+                                "code": "I08",
+                                "name": "I08"
+                            },
+                            {
+                                "code": "I10",
+                                "name": "I10"
+                            },
+                            {
+                                "code": "J03",
+                                "name": "J03"
+                            },
+                            {
+                                "code": "J04",
+                                "name": "J04"
+                            },
+                            {
+                                "code": "J05",
+                                "name": "J05"
+                            },
+                            {
+                                "code": "J06",
+                                "name": "J06"
+                            },
+                            {
+                                "code": "J07",
+                                "name": "J07"
+                            },
+                            {
+                                "code": "J08",
+                                "name": "J08"
+                            },
+                            {
+                                "code": "J09",
+                                "name": "J09"
+                            },
+                            {
+                                "code": "J10",
+                                "name": "J10"
+                            },
+                            {
+                                "code": "K03",
+                                "name": "K03"
+                            },
+                            {
+                                "code": "K04",
+                                "name": "K04"
+                            },
+                            {
+                                "code": "K05",
+                                "name": "K05"
+                            },
+                            {
+                                "code": "K06",
+                                "name": "K06"
+                            },
+                            {
+                                "code": "K07",
+                                "name": "K07"
+                            },
+                            {
+                                "code": "K08",
+                                "name": "K08"
+                            },
+                            {
+                                "code": "K09",
+                                "name": "K09"
+                            },
+                            {
+                                "code": "L04",
+                                "name": "L04"
+                            },
+                            {
+                                "code": "L05",
+                                "name": "L05"
+                            },
+                            {
+                                "code": "L06",
+                                "name": "L06"
+                            },
+                            {
+                                "code": "L07",
+                                "name": "L07"
+                            },
+                            {
+                                "code": "L08",
+                                "name": "L08"
+                            },
+                            {
+                                "code": "L09",
+                                "name": "L09"
+                            },
+                            {
+                                "code": "L10",
+                                "name": "L10"
+                            },
+                            {
+                                "code": "M06",
+                                "name": "M06"
+                            },
+                            {
+                                "code": "M07",
+                                "name": "M07"
+                            },
+                            {
+                                "code": "M08",
+                                "name": "M08"
+                            },
+                            {
+                                "code": "M09",
+                                "name": "M09"
+                            },
+                            {
+                                "code": "N06",
+                                "name": "N06"
+                            },
+                            {
+                                "code": "N07",
+                                "name": "N07"
+                            },
+                            {
+                                "code": "N08",
+                                "name": "N08"
+                            },
+                            {
+                                "code": "N09",
+                                "name": "N09"
+                            },
+                            {
+                                "code": "N11",
+                                "name": "N11"
+                            },
+                            {
+                                "code": "O06",
+                                "name": "O06"
+                            },
+                            {
+                                "code": "O07",
+                                "name": "O07"
+                            },
+                            {
+                                "code": "O08",
+                                "name": "O08"
+                            },
+                            {
+                                "code": "O09",
+                                "name": "O09"
+                            },
+                            {
+                                "code": "O10",
+                                "name": "O10"
+                            },
+                            {
+                                "code": "P06",
+                                "name": "P06"
+                            },
+                            {
+                                "code": "P07",
+                                "name": "P07"
+                            },
+                            {
+                                "code": "P08",
+                                "name": "P08"
+                            },
+                            {
+                                "code": "P09",
+                                "name": "P09"
+                            },
+                            {
+                                "code": "P10",
+                                "name": "P10"
+                            },
+                            {
+                                "code": "Q06",
+                                "name": "Q06"
+                            },
+                            {
+                                "code": "Q07",
+                                "name": "Q07"
+                            },
+                            {
+                                "code": "Q08",
+                                "name": "Q08"
+                            },
+                            {
+                                "code": "Q09",
+                                "name": "Q09"
+                            },
+                            {
+                                "code": "Q10",
+                                "name": "Q10"
+                            },
+                            {
+                                "code": "R06",
+                                "name": "R06"
+                            },
+                            {
+                                "code": "R07",
+                                "name": "R07"
+                            },
+                            {
+                                "code": "R08",
+                                "name": "R08"
+                            },
+                            {
+                                "code": "R09",
+                                "name": "R09"
+                            },
+                            {
+                                "code": "R10",
+                                "name": "R10"
+                            },
+                            {
+                                "code": "S06",
+                                "name": "S06"
+                            },
+                            {
+                                "code": "S07",
+                                "name": "S07"
+                            },
+                            {
+                                "code": "S08",
+                                "name": "S08"
+                            },
+                            {
+                                "code": "S09",
+                                "name": "S09"
+                            },
+                            {
+                                "code": "T03",
+                                "name": "T03"
+                            },
+                            {
+                                "code": "T04",
+                                "name": "T04"
+                            },
+                            {
+                                "code": "T05",
+                                "name": "T05"
+                            },
+                            {
+                                "code": "T06",
+                                "name": "T06"
+                            },
+                            {
+                                "code": "T07",
+                                "name": "T07"
+                            },
+                            {
+                                "code": "T08",
+                                "name": "T08"
+                            },
+                            {
+                                "code": "T09",
+                                "name": "T09"
+                            },
+                            {
+                                "code": "T10",
+                                "name": "T10"
+                            },
+                            {
+                                "code": "U03",
+                                "name": "U03"
+                            },
+                            {
+                                "code": "U04",
+                                "name": "U04"
+                            },
+                            {
+                                "code": "U05",
+                                "name": "U05"
+                            },
+                            {
+                                "code": "U06",
+                                "name": "U06"
+                            },
+                            {
+                                "code": "U07",
+                                "name": "U07"
+                            },
+                            {
+                                "code": "U08",
+                                "name": "U08"
+                            },
+                            {
+                                "code": "U10",
+                                "name": "U10"
+                            },
+                            {
+                                "code": "V02",
+                                "name": "V02"
+                            },
+                            {
+                                "code": "V03",
+                                "name": "V03"
+                            },
+                            {
+                                "code": "V04",
+                                "name": "V04"
+                            },
+                            {
+                                "code": "V05",
+                                "name": "V05"
+                            },
+                            {
+                                "code": "V06",
+                                "name": "V06"
+                            },
+                            {
+                                "code": "V07",
+                                "name": "V07"
+                            },
+                            {
+                                "code": "V08",
+                                "name": "V08"
+                            },
+                            {
+                                "code": "V10",
+                                "name": "V10"
+                            },
+                            {
+                                "code": "W02",
+                                "name": "W02"
+                            },
+                            {
+                                "code": "W03",
+                                "name": "W03"
+                            },
+                            {
+                                "code": "W04",
+                                "name": "W04"
+                            },
+                            {
+                                "code": "W05",
+                                "name": "W05"
+                            },
+                            {
+                                "code": "W06",
+                                "name": "W06"
+                            },
+                            {
+                                "code": "W07",
+                                "name": "W07"
+                            },
+                            {
+                                "code": "W08",
+                                "name": "W08"
+                            },
+                            {
+                                "code": "W11",
+                                "name": "W11"
+                            },
+                            {
+                                "code": "X01",
+                                "name": "X01"
+                            },
+                            {
+                                "code": "X02",
+                                "name": "X02"
+                            },
+                            {
+                                "code": "X03",
+                                "name": "X03"
+                            },
+                            {
+                                "code": "X04",
+                                "name": "X04"
+                            },
+                            {
+                                "code": "X05",
+                                "name": "X05"
+                            },
+                            {
+                                "code": "X06",
+                                "name": "X06"
+                            },
+                            {
+                                "code": "X07",
+                                "name": "X07"
+                            },
+                            {
+                                "code": "X08",
+                                "name": "X08"
+                            },
+                            {
+                                "code": "X09",
+                                "name": "X09"
+                            },
+                            {
+                                "code": "X10",
+                                "name": "X10"
+                            },
+                            {
+                                "code": "X12",
+                                "name": "X12"
+                            },
+                            {
+                                "code": "Y01",
+                                "name": "Y01"
+                            },
+                            {
+                                "code": "Y02",
+                                "name": "Y02"
+                            },
+                            {
+                                "code": "Y03",
+                                "name": "Y03"
+                            },
+                            {
+                                "code": "Y04",
+                                "name": "Y04"
+                            },
+                            {
+                                "code": "Y05",
+                                "name": "Y05"
+                            },
+                            {
+                                "code": "Y06",
+                                "name": "Y06"
+                            },
+                            {
+                                "code": "Y07",
+                                "name": "Y07"
+                            },
+                            {
+                                "code": "Y08",
+                                "name": "Y08"
+                            },
+                            {
+                                "code": "Y09",
+                                "name": "Y09"
+                            },
+                            {
+                                "code": "Y10",
+                                "name": "Y10"
+                            },
+                            {
+                                "code": "Y11",
+                                "name": "Y11"
+                            },
+                            {
+                                "code": "Y12",
+                                "name": "Y12"
+                            },
+                            {
+                                "code": "Z02",
+                                "name": "Z02"
+                            },
+                            {
+                                "code": "Z03",
+                                "name": "Z03"
+                            },
+                            {
+                                "code": "Z04",
+                                "name": "Z04"
+                            },
+                            {
+                                "code": "Z05",
+                                "name": "Z05"
+                            },
+                            {
+                                "code": "Z06",
+                                "name": "Z06"
+                            },
+                            {
+                                "code": "Z07",
+                                "name": "Z07"
+                            },
+                            {
+                                "code": "Z08",
+                                "name": "Z08"
+                            },
+                            {
+                                "code": "Z09",
+                                "name": "Z09"
+                            },
+                            {
+                                "code": "Z10",
+                                "name": "Z10"
+                            },
+                            {
+                                "code": "Z11",
+                                "name": "Z11"
+                            },
+                            {
+                                "code": "Z12",
+                                "name": "Z12"
+                            }
+                        ],
+                        "name": "cvd_plot_num",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_num",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "BAF",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "baf",
+                    "nullable": true,
+                    "type": "esriFieldTypeInteger",
+                    "visible": true
+                },
+                {
+                    "alias": "CP Total Count",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "cp_tot_count",
+                    "nullable": true,
+                    "type": "esriFieldTypeInteger",
+                    "visible": true
+                },
+                {
+                    "alias": "MP Total Count",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_tot_count",
+                    "nullable": true,
+                    "type": "esriFieldTypeInteger",
+                    "visible": true
+                },
+                {
+                    "alias": "Plot Notes",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_notes",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                }
+            ],
+            "geometryType": "esriGeometryPoint",
+            "globalIdField": "globalid",
+            "hasAttachments": false,
+            "hasM": false,
+            "hasStaticData": false,
+            "hasZ": false,
+            "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+            "id": 0,
+            "indexes": [
+                {
+                    "description": "GlobalID index",
+                    "fields": "globalid",
+                    "isAscending": false,
+                    "isUnique": true,
+                    "name": "GlobalIDIndex"
+                }
+            ],
+            "isDataVersioned": false,
+            "maxRecordCount": 1000,
+            "maxScale": 0,
+            "minScale": 0,
+            "name": "RR_FOR_Cruise_Survey___Test",
+            "objectIdField": "objectid",
+            "propagateVisibleFields": true,
+            "relationships": [
+            ],
+            "supportedQueryFormats": "JSON",
+            "supportsAdvancedQueries": true,
+            "supportsRollbackOnFailureParameter": true,
+            "supportsStatistics": true,
+            "templates": [
+                {
+                    "description": "",
+                    "name": "New Feature",
+                    "prototype": {
+                        "attributes": {
+                        }
+                    }
+                }
+            ],
+            "type": "Feature Layer",
+            "typeIdField": "",
+            "types": [
+            ]
+        }
+    ],
+    "tables": [
+        {
+            "capabilities": "Create",
+            "copyrightText": "",
+            "defaultVisibility": true,
+            "description": "",
+            "displayField": "objectid",
+            "editFieldsInfo": null,
+            "fields": [
+                {
+                    "alias": "ObjectID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "name": "objectid",
+                    "nullable": false,
+                    "type": "esriFieldTypeOID"
+                },
+                {
+                    "alias": "GlobalID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "length": 38,
+                    "name": "globalid",
+                    "nullable": false,
+                    "sqlType": "sqlTypeGUID",
+                    "type": "esriFieldTypeGlobalID"
+                },
+                {
+                    "alias": "CP Spp",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "RWOG",
+                                "name": "RWOG"
+                            },
+                            {
+                                "code": "RW",
+                                "name": "RW"
+                            },
+                            {
+                                "code": "SS",
+                                "name": "SS"
+                            },
+                            {
+                                "code": "DF",
+                                "name": "DF"
+                            },
+                            {
+                                "code": "HL",
+                                "name": "HL"
+                            },
+                            {
+                                "code": "ALRU",
+                                "name": "ALRU"
+                            },
+                            {
+                                "code": "Other",
+                                "name": "Other"
+                            }
+                        ],
+                        "name": "cvd_cp_spp",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "cp_spp",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "CP Spp Other",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "cp_spp_other",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "CP Spp Pick",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "cp_spp_pick",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "CP Spp Count",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "cp_spp_count",
+                    "nullable": true,
+                    "type": "esriFieldTypeInteger",
+                    "visible": true
+                },
+                {
+                    "alias": "ParentGlobalID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": true,
+                    "length": 38,
+                    "name": "parentglobalid",
+                    "nullable": true,
+                    "sqlType": "sqlTypeGUID",
+                    "type": "esriFieldTypeGUID"
+                }
+            ],
+            "globalIdField": "globalid",
+            "hasAttachments": false,
+            "htmlPopupType": "esriServerHTMLPopupTypeNone",
+            "id": 1,
+            "indexes": [
+                {
+                    "description": "GlobalID index",
+                    "fields": "globalid",
+                    "isAscending": false,
+                    "isUnique": true,
+                    "name": "GlobalIDIndex"
+                },
+                {
+                    "description": "Child Key Field index",
+                    "fields": "parentglobalid",
+                    "isAscending": false,
+                    "isUnique": false,
+                    "name": "ParentGlobalIDIndex"
+                }
+            ],
+            "isDataVersioned": false,
+            "maxRecordCount": 1000,
+            "name": "c_plot",
+            "objectIdField": "objectid",
+            "ownershipBasedAccessControlForFeatures": null,
+            "propagateVisibleFields": true,
+            "relationships": [
+            ],
+            "supportedQueryFormats": "JSON, AMF",
+            "supportsAdvancedQueries": true,
+            "supportsRollbackOnFailureParameter": true,
+            "supportsStatistics": true,
+            "syncCanReturnChanges": false,
+            "templates": [
+            ],
+            "type": "Table",
+            "typeIdField": "",
+            "types": [
+            ],
+            "useStandardizedQueries": true
+        },
+        {
+            "capabilities": "Create",
+            "copyrightText": "",
+            "defaultVisibility": true,
+            "description": "",
+            "displayField": "objectid",
+            "editFieldsInfo": null,
+            "fields": [
+                {
+                    "alias": "ObjectID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "name": "objectid",
+                    "nullable": false,
+                    "type": "esriFieldTypeOID"
+                },
+                {
+                    "alias": "GlobalID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "length": 38,
+                    "name": "globalid",
+                    "nullable": false,
+                    "sqlType": "sqlTypeGUID",
+                    "type": "esriFieldTypeGlobalID"
+                },
+                {
+                    "alias": "MP Tree Num",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_tree_num",
+                    "nullable": true,
+                    "type": "esriFieldTypeInteger",
+                    "visible": true
+                },
+                {
+                    "alias": "MP Spp",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "RWOG",
+                                "name": "RWOG"
+                            },
+                            {
+                                "code": "RW",
+                                "name": "RW"
+                            },
+                            {
+                                "code": "SS",
+                                "name": "SS"
+                            },
+                            {
+                                "code": "DF",
+                                "name": "DF"
+                            },
+                            {
+                                "code": "HL",
+                                "name": "HL"
+                            },
+                            {
+                                "code": "ALRU",
+                                "name": "ALRU"
+                            },
+                            {
+                                "code": "Other",
+                                "name": "Other"
+                            }
+                        ],
+                        "name": "cvd_mp_spp",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_spp",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "MP Spp Other",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_spp_other",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "MP Spp Pick",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_spp_pick",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "MP Spp DBH",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_dbh",
+                    "nullable": true,
+                    "type": "esriFieldTypeDouble",
+                    "visible": true
+                },
+                {
+                    "alias": "MP Spp HT",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_ht",
+                    "nullable": true,
+                    "type": "esriFieldTypeInteger",
+                    "visible": true
+                },
+                {
+                    "alias": "MP Spp Notes",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "mp_notes",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "ParentGlobalID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": true,
+                    "length": 38,
+                    "name": "parentglobalid",
+                    "nullable": true,
+                    "sqlType": "sqlTypeGUID",
+                    "type": "esriFieldTypeGUID"
+                }
+            ],
+            "globalIdField": "globalid",
+            "hasAttachments": false,
+            "htmlPopupType": "esriServerHTMLPopupTypeNone",
+            "id": 2,
+            "indexes": [
+                {
+                    "description": "GlobalID index",
+                    "fields": "globalid",
+                    "isAscending": false,
+                    "isUnique": true,
+                    "name": "GlobalIDIndex"
+                },
+                {
+                    "description": "Child Key Field index",
+                    "fields": "parentglobalid",
+                    "isAscending": false,
+                    "isUnique": false,
+                    "name": "ParentGlobalIDIndex"
+                }
+            ],
+            "isDataVersioned": false,
+            "maxRecordCount": 1000,
+            "name": "m_plot",
+            "objectIdField": "objectid",
+            "ownershipBasedAccessControlForFeatures": null,
+            "propagateVisibleFields": true,
+            "relationships": [
+            ],
+            "supportedQueryFormats": "JSON, AMF",
+            "supportsAdvancedQueries": true,
+            "supportsRollbackOnFailureParameter": true,
+            "supportsStatistics": true,
+            "syncCanReturnChanges": false,
+            "templates": [
+            ],
+            "type": "Table",
+            "typeIdField": "",
+            "types": [
+            ],
+            "useStandardizedQueries": true
+        }
+    ]
+}

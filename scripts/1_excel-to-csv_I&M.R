@@ -24,20 +24,18 @@ install.packages("tidyverse")
 library(tidyverse)
 library(readxl)
 
-#identify working directory
-#setwd("/Users/alalor.NPS/Desktop/FX_Lalor/R/GRCA/test")
-getwd()
-
 
 ################################################################################
 # MAKE SURE FILE PATHS ARE CORRECT
 ################################################################################
 
-#load in data and name them based on file path
+#identify working directory (specifically user name)
+getwd()
 
+#load in data and name them based on file path
+#change file path based on user name!
 my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/Collected/"
 my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/_CSV_Import to FFI/"
-
 
 
 ################################################################################
