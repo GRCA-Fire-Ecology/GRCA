@@ -37,7 +37,7 @@ rm(list = ls())
 
 ```{r}
 setwd("C:/Users/alalor.NPS/Desktop/R/GRCA/test/")
-source("scripts/datacleaningfunctions_GRCA.R")
+source("scripts/3_QAQC_data-cleaning-functions_GRCA.R")
 mtype="PIPO"
 #samp=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/GRCA_SampleEventReport.csv")
 cover=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/2024/PIPO_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
