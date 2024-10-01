@@ -28,6 +28,50 @@ getwd()
 
 #load in data and name them based on file path
 #change file path based on user name!
+my_path <- "C:/Users/alalor.NPS/Desktop/R/GRCA/test/photos/PIED/"
+
+
+################################################################################
+# CREATE LIST OF DATA NEEDED
+################################################################################
+
+
+#create list of folders
+folder_names_list <- list.files(my_path, pattern = "^[0-9]")
+
+
+
+#create list of excel file paths and names, add to empty data frame
+
+file_names_df <- data.frame(FilePath = file_path_old, OldNames = file_names_old)
+
+folder_names <- folder_names_list[2]
+folder_path <- paste0(my_path, folder_names, "/")
+file_names <- list.files(folder_path)
+file_path <- paste0(folder_path, file_names)
+file_names_df_1 <- data.frame(FilePath = file_path, text = file_names) %>%
+  separate(text, sep = ".xlsx", into = ("Plot_Status"))
+file_names_df <- rbind(file_names_df, file_names_df_1)
+
+
+
+for(i in 1:length(folder_names_list)) {
+  folder_names <- folder_names_list[i]
+  folder_path <- paste0(my_path_data, folder_names, "/")
+  file_names <- list.files(folder_path)
+  file_path <- paste0(folder_path, file_names)
+  file_names_df_1 <- data.frame(FilePath = file_path, text = file_names) %>%
+    separate(text, sep = ".xlsx", into = ("Plot_Status"))
+  file_names_df <- rbind(file_names_df, file_names_df_1)
+}
+
+
+################################################################################
+# MAKE SURE FILE PATHS ARE CORRECT
+################################################################################
+
+#load in data and name them based on file path
+#change file path based on user name!
 my_path <- "C:/Users/alalor.NPS/Desktop/R/GRCA/test/photos/PIPN/11_new/"
 
 
