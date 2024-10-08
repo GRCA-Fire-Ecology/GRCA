@@ -6,6 +6,25 @@
 # testing excel-to-csv outside of for loop
 
 
+my_path_data <- "X:/Data Collection/GRCA - I&M/2021/Collected/PJ/"
+my_path_csv <- "X:/Data Collection/GRCA - I&M/2021/Collected/_CSV_Import to FFI/"
+
+################################################################################
+# CREATE LIST OF DATA NEEDED
+################################################################################
+
+#create list of file names
+file_names_list <- list.files(my_path_data)
+
+#specify file path each excel sheet
+file_path <- paste0(my_path_data, file_names_list)
+
+#add file paths and names to a dataframe
+file_names_df <- data.frame(FilePath = file_path, text = file_names_list) %>%
+  separate(text, sep = ".xlsx", into = ("Plot_Status")) %>%
+  separate("Plot_Status", sep = "_", into = c("MonitoringType", "Plot_Read"), remove = FALSE) %>%
+  separate("MonitoringType", sep = "(?<=[A-Za-z])(?=[0-9])", into = c("MonitoringType", "Plot"))
+
 
 ################################################################################
 # IDEAS FOR DATA CHECKING WITHIN R

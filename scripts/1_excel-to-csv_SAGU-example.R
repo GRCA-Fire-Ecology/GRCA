@@ -61,6 +61,7 @@ file_path <- paste0(my_path_data, file_names_list)
 
 #add file paths and names to a dataframe
 file_names_df <- data.frame(FilePath = file_path, text = file_names_list) %>%
+  filter(grepl(".xlsx", text)) %>%
   separate(text, sep = ".xlsx", into = ("Plot_Status"))
 
 
