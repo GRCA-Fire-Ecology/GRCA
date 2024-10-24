@@ -39,15 +39,15 @@ rm(list = ls())
 setwd("C:/Users/alalor.NPS/Desktop/R/GRCA/test/")
 source("scripts/3_QAQC_data-cleaning-functions_GRCA.R")
 mtype="PIPO"
-#samp=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/GRCA_SampleEventReport.csv")
-cover=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/2024/PIPO_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
-fuel1000=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/2024/PIPO_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"))
-duff=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/2024/PIPO_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"))
-fine=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/2024/PIPO_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
-#saps=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/PIPO_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
-#seeds=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/PIPO_Trees - Seedlings (Height Class) (metric)_XPT.csv")
-#pbsev=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/PIPO_Post Burn Severity (metric)_XPT.csv")
-tree=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/PIPO/2024/PIPO_Trees - Individuals (metric)_XPT.csv")
+samp=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/SampleEventReport.csv")
+cover=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
+fuel1000=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"))
+duff=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"))
+fine=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
+#saps=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
+#seeds=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Trees - Seedlings (Height Class) (metric)_XPT.csv")
+#pbsev=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Post Burn Severity (metric)_XPT.csv")
+tree=read.csv("C:/Users/alalor.NPS/Desktop/R/GRCA/test/data_qaqc/2024/PIPO_Trees - Individuals (metric)_XPT.csv")
 
 #missing qaqc: herb points, shrub belts, seedling quads
 #Cover - Points (metric)_XPT.csv
@@ -143,7 +143,7 @@ flags=tree_dead_to_alive_DBH_change_qc(tree)
 ### Flags 
 
 ```{r linewidth=60}
-comments_list=comments(cover, fuel1000, duff, fine, saps, seeds, tree)
+comments_list=comments(cover, fuel1000, duff, fine, tree)
 
 format_flags(flags, samp, mtype, comments)
 ```

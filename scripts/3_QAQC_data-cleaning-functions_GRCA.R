@@ -714,42 +714,42 @@ duff_qc <- function(duff) {
     cat("\n")
   }
 
-  # Function to check for outliers and generate messages
-  check_outliers <- function(data, variable_name) {
-    # Print a message about checking for outlier values
-    cat(paste("Are there any outlier values in", variable_name, "?\n"))
-
-    # Run the Rosner test to identify outliers
-    test <- suppressWarnings(rosnerTest(data))
-    outliers <- test$all.stats$Value[test$all.stats$Outlier]
-
-    if (length(outliers) == 0) {
-      cat("No\n")
-      cat("\n")
-    } else {
-      # Generate a message about outlier values
-      outlier_indices <- which(data %in% outliers)
-      max_value <- max(na.omit(data))
-      min_value <- min(na.omit(data))
-      mean_value <- mean(na.omit(data))
-
-      message <- paste(
-        "Yes, the outlier values according to a rosner test are", outliers,
-        ". They are in events", duff[outlier_indices, "MacroPlot.Name"],duff[outlier_indices, "Monitoring.Status"],"rows", outlier_indices,
-        "of the duff data table. For reference, the max, min, and mean of", variable_name,
-        "are", max_value, min_value, mean_value, "respectively",
-        collapse = "\n"
-      )
-
-      cat(message, "\n")
-      cat("\n")
-      flags<- c(flags, message)  # Add the outlier message to the 'flags' vector
-    }
-  }
-
-  # Call the check_outliers function for litter depth and duff depth
-  check_outliers(duff$LittDep, "litter depth")
-  check_outliers(duff$DuffDep, "duff depth")
+  # # Function to check for outliers and generate messages
+  # check_outliers <- function(data, variable_name) {
+  #   # Print a message about checking for outlier values
+  #   cat(paste("Are there any outlier values in", variable_name, "?\n"))
+  #
+  #   # Run the Rosner test to identify outliers
+  #   test <- suppressWarnings(rosnerTest(data))
+  #   outliers <- test$all.stats$Value[test$all.stats$Outlier]
+  #
+  #   if (length(outliers) == 0) {
+  #     cat("No\n")
+  #     cat("\n")
+  #   } else {
+  #     # Generate a message about outlier values
+  #     outlier_indices <- which(data %in% outliers)
+  #     max_value <- max(na.omit(data))
+  #     min_value <- min(na.omit(data))
+  #     mean_value <- mean(na.omit(data))
+  #
+  #     message <- paste(
+  #       "Yes, the outlier values according to a rosner test are", outliers,
+  #       ". They are in events", duff[outlier_indices, "MacroPlot.Name"],duff[outlier_indices, "Monitoring.Status"],"rows", outlier_indices,
+  #       "of the duff data table. For reference, the max, min, and mean of", variable_name,
+  #       "are", max_value, min_value, mean_value, "respectively",
+  #       collapse = "\n"
+  #     )
+  #
+  #     cat(message, "\n")
+  #     cat("\n")
+  #     flags<- c(flags, message)  # Add the outlier message to the 'flags' vector
+  #   }
+  # }
+  #
+  # # Call the check_outliers function for litter depth and duff depth
+  # check_outliers(duff$LittDep, "litter depth")
+  # check_outliers(duff$DuffDep, "duff depth")
 
   #check for null values
   # Function to check for outliers and generate messages
@@ -2606,7 +2606,7 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
 #' comments(cover, fuel1000,duff, fine, saps, seeds, tree)
 
 #### Function ----
-comments=function(cover, fuel1000, duff, fine, saps=NA, seeds, tree){
+comments=function(cover, fuel1000, duff, fine, tree){
   comments=c()
   cover_comments=unique(na.omit(cover$Comment))
   cover_comments=cover_comments[! cover_comments %in% c('no data collected', 'data not collected', '')]
@@ -2616,14 +2616,14 @@ comments=function(cover, fuel1000, duff, fine, saps=NA, seeds, tree){
   duff_comments=duff_comments[! duff_comments %in% c('no data collected', 'data not collected', '')]
   fine_comments=unique(na.omit(fine$Comment))
   fine_comments=fine_comments[! fine_comments %in% c('no data collected', 'data not collected', '')]
-  if(is.vector(saps)){
-    #skip
-  }else{
-  saps_comments=unique(na.omit(saps$Comment))
-  saps_comments=saps_comments[! saps_comments %in% c('no data collected', 'data not collected', '')]
-  }
-  seeds_comments=unique(na.omit(seeds$Comment))
-  seeds_comments=seeds_comments[! seeds_comments %in% c('no data collected', 'data not collected', '')]
+  # if(is.vector(saps)){
+  #   #skip
+  # }else{
+  # saps_comments=unique(na.omit(saps$Comment))
+  # saps_comments=saps_comments[! saps_comments %in% c('no data collected', 'data not collected', '')]
+  # }
+  # seeds_comments=unique(na.omit(seeds$Comment))
+  # seeds_comments=seeds_comments[! seeds_comments %in% c('no data collected', 'data not collected', '')]
   tree_comments=unique(na.omit(tree$Comment))
   tree_comments=tree_comments[! tree_comments %in% c('no data collected', 'data not collected', '', 'missing tag', 'NEEDS DBH', 'Tag missing')]
   comments=c("COVER PROTOCOL",
@@ -2650,11 +2650,11 @@ comments=function(cover, fuel1000, duff, fine, saps=NA, seeds, tree){
                    fine[which(fine$Comment %in% fine_comments), "Comment"], sep=", "),
 
 
-             "SEEDLINGS PROTOCOL",
-             paste("Index",  seeds[which(seeds$Comment %in% seeds_comments), "Index"],
-                   seeds[which(seeds$Comment %in% seeds_comments), "MacroPlot.Name"],
-                   seeds[which(seeds$Comment %in% seeds_comments), "Monitoring.Status"],
-                   seeds[which(seeds$Comment %in% seeds_comments), "Comment"], sep=", "),
+             # "SEEDLINGS PROTOCOL",
+             # paste("Index",  seeds[which(seeds$Comment %in% seeds_comments), "Index"],
+             #       seeds[which(seeds$Comment %in% seeds_comments), "MacroPlot.Name"],
+             #       seeds[which(seeds$Comment %in% seeds_comments), "Monitoring.Status"],
+             #       seeds[which(seeds$Comment %in% seeds_comments), "Comment"], sep=", "),
 
 
              "TREES PROTOCOL",
@@ -2666,17 +2666,17 @@ comments=function(cover, fuel1000, duff, fine, saps=NA, seeds, tree){
 
   )
 
-  if(is.vector(saps)){
-    #skip
-  }else{
-
-  comments=c(comments,
-  "SAPLINGS PROTOCOL",
-  paste(saps[which(saps$Comment %in% saps_comments), "Index"],
-        saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
-        saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
-        saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "))
-}
+#   if(is.vector(saps)){
+#     #skip
+#   }else{
+#
+#   comments=c(comments,
+#   "SAPLINGS PROTOCOL",
+#   paste(saps[which(saps$Comment %in% saps_comments), "Index"],
+#         saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
+#         saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
+#         saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "))
+# }
   return(comments)
 }
 
@@ -2726,7 +2726,7 @@ format_flags=function(flags, samp, mtype, comments){
   }
   plots=gsub(pattern=":", x=plots, replacement="_")
   colnames(df_flags)=plots
-  df_flags$Comments=c(comments_list, rep(NA,nrow(df_flags)-length(comments_list)))
+  #df_flags$Comments=c(comments_list, rep(NA,nrow(df_flags)-length(comments_list)))
 
   data = list()
 

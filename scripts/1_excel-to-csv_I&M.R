@@ -37,8 +37,8 @@ getwd()
 #my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/Collected/"
 #my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2024/_CSV_Import to FFI/"
 
-my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2023/Collected/"
-my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2023/Collected/_CSV_Import to FFI/"
+my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2021/Collected/"
+my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - I&M/2021/Collected/_CSV_Import to FFI/"
 
 ################################################################################
 # CREATE LIST OF DATA NEEDED
