@@ -1,14 +1,14 @@
 # Created by: Alexandra Lalor
 # Email: alexandra_lalor@nps.gov, allielalor@gmail.com
 # Date Created: 2024-07-18
-# Last Edited: 2024-07-22
+# Last Edited: 2024-11-04
 #
 # To take data from excel files and save individual protocols/tabs as CSVs,
 # and name them appropriately
 
 # Folder Setup:
-# Navigate to where you store FX excel data files (e.g. data/GRCA/FMH/2023/)
-# In this folder, create 2 subfolders. One called "Collected", and the other called "_CSV_Import to FFI"
+# Navigate to where you store FX excel data files (e.g. data/GRCA/FMH/2023/Collected/)
+# In this folder, create a folder called "_CSV_Import to FFI"
 # Put all your completed data collection excel spreadsheets into the "Collected" folder.
 #   Make sure excel files are named as follows: MonitoringType_Plot#_Status (e.g. PIPN_08_02Year05.xlsx)
 # The "_CSV_Import to FFI" folder should be empty. This is where CSVs will be stored after running this code.
@@ -50,7 +50,7 @@ file_names_list <- list.files(my_path_data)
 #specify file path each excel sheet
 file_path <- paste0(my_path_data, file_names_list)
 
-#add file paths and names to a dataframe
+#add file paths and names to a dataframe. Filter by only excel files
 file_names_df <- data.frame(FilePath = file_path, text = file_names_list) %>%
   filter(grepl(".xlsx", text)) %>%
   separate(text, sep = ".xlsx", into = ("Plot_Status")) %>%
