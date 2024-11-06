@@ -1,0 +1,461 @@
+---
+title: "Grand Canyon QAQC for FMH Data"
+author: "Alexandra Lalor"
+date: "2024-11-06"
+output:
+  html_document:
+    theme: readable
+    highlight: 
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+# Install packages (if needed)
+#install.packages("tidyverse")
+```
+
+## R Markdown
+
+press ctrl+alt+i to create a code block
+
+# BEFORE STARTING
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
+# Load packages
+library(tidyverse)
+library(writexl)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Identify working directory (specifically user name)
+getwd()
+
+# Load in data and name them based on file path
+# Change file path based on user name!
+#data_path <- "C:/Users/alalor.NPS/Desktop/R/GRCA/data/data_qaqc/2024/ORIGINALS/"
+data_path <- "C:/Users/alalor.NPS/Desktop/R/GRCA/data/data_qaqc/2024/"
+errors_path <- "C:/Users/alalor.NPS/Desktop/R/GRCA/data/data_errors/2024/"
+```
+
+# PROTOCOL - SURFACE FUELS
+
+## SUBPROTOCOL - 1000HR CWD
+
+This code conducts quality control checks on surface fuels data within the surface fuels coarse woody debris (1000-hr) data set. It checks for: header info (number of transects, length of transects), decay class values, fuel constants, duplicate values, transect numbers, reasonable slope numbers, reasonable diameter values.
+
+\*IF ADJUSTING FOR DIFFERENT PROGRAM – you must edit code to include values specific to your program. You can edit the code in the "Set Parameters" section of each query code block.
+
+#### Load and Check Data
+
+```{r}
+data_path
+# Load in data
+Fuels1000_all <- read.csv(paste0(data_path, "Surface Fuels - 1000Hr_XPT.csv"))
+```
+
+```{r}
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+
+# Clean up data frame
+Fuels1000_all <- Fuels1000_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>% 
+  # Add columns relevant to error checking
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")
+
+# Filter for only data
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited))
+
+# Filter for only headers
+Fuels1000_header <- Fuels1000_all %>%
+  filter(!is.na(Visited))
+
+# Blank data frame for no errors
+no_errors <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+### Fuel 1000 header FMH
+
+[Problem:]{.underline} Incorrect header information entered for FMH plots.
+
+[Procedure:]{.underline}
+
+-   Check that NumTran = 4
+
+```{r}
+# Set parameters 
+saved_query <- "Fuel 1000 header FMH NumTran" 
+error_message <- "Number of Transects" 
+column_data <- Fuels1000_header$NumTran 
+valid_values <- 4  
+
+# Identify errors 
+errors_NumTran <- Fuels1000_header %>%   
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%   
+  filter(!column_data == valid_values) %>%   
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  
+
+# If no errors, add "No Errors" to existing data frame 
+if (nrow(errors_NumTran) == 0) {   
+  errors_NumTran <- no_errors %>%     
+    mutate(SavedQuery = saved_query) 
+} else {   
+    errors_NumTran <- errors_NumTran }
+
+# Table of results for quick check
+table <- errors_NumTran %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+-   Check that N Rim TranLen = 50 (or very close). North Rim plots include PIAB, PIEN, and PIPN.
+
+```{r}
+# Set parameters 
+saved_query <- "Fuel 1000 header FMH TranLen NRim" 
+error_message <- "Transect Length" 
+column_data <- Fuels1000_header$TranLen 
+valid_values <- 50  
+
+
+# Identify errors 
+errors_TranLen_N <- Fuels1000_header %>%   
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data))  %>%    
+  filter(!column_data == valid_values, 
+         MonitoringType %in% c("PIAB", "PIEN", "PIPN")) %>%    
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))
+
+# If no errors, add "No Errors" to existing data frame 
+if (nrow(errors_TranLen_N) == 0) {   
+  errors_TranLen_N <- no_errors %>%     
+    mutate(SavedQuery = saved_query) 
+} else {   
+    errors_TranLen_N <- errors_TranLen_N }
+
+# Table of results for quick check
+table <- errors_TranLen_N %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+-   Check that S Rim TranLen = 100 (or very close). South Rim plots include PIED and PIPO.
+
+```{r}
+# Set parameters 
+saved_query <- "Fuel 1000 header FMH TranLen SRim" 
+error_message <- "Transect Length" 
+column_data <- Fuels1000_header$TranLen 
+valid_values <- 100  
+
+# Identify errors 
+errors_TranLen_S <- Fuels1000_header %>%   
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    
+  filter(!column_data == valid_values,           
+         MonitoringType %in% c("PIED", "PIPO")) %>%    
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  
+
+# If no errors, add "No Errors" to existing data frame 
+if (nrow(errors_TranLen_S) == 0) {   
+  errors_TranLen_S <- no_errors %>%     
+    mutate(SavedQuery = saved_query) 
+} else {   
+    errors_TranLen_S <- errors_TranLen_S }
+
+# Table of results for quick check
+table <- errors_TranLen_S %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+### Fuel 1000 DecayClass
+
+[Problem:]{.underline} Logs have an entry for decay class that we don’t use.
+
+[Procedure:]{.underline} Check that DecayCl = 3 or 4
+
+```{r}
+# Set parameters
+saved_query <- "Fuel 1000 DecayClass"
+error_message <- "Decay Class"
+column_data <- Fuels1000_data$DecayCl
+valid_values <- c(3,4)
+
+# Identify errors
+errors_DecayCl <- Fuels1000_data %>%
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%
+  filter(!column_data %in% valid_values) %>%
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))
+
+# If no errors, add "No Errors" to existing data frame
+if (nrow(errors_DecayCl) == 0) {
+  errors_DecayCl <- no_errors %>%
+    mutate(SavedQuery = saved_query)
+} else {
+  errors_DecayCl <- errors_DecayCl
+}
+
+# Table of results for quick check
+table <- errors_DecayCl %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+### Fuel 1000 FuelConst
+
+[Problem:]{.underline} Incorrect coarse woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type
+
+[Procedure:]{.underline} Check that CWDFuConSt = Monitoring Type
+
+```{r}
+# Set parameters
+saved_query <- "Fuel 1000 FuelConst"
+error_message <- "Fuel Constant"
+column_data <- Fuels1000_data$CWDFuConSt
+valid_values <- Fuels1000_data$MonitoringType
+
+# Identify errors
+errors_FuelConst <- Fuels1000_data %>%
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%
+  filter(!column_data == valid_values) %>%
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))
+
+# If no errors, add "No Errors" to existing data frame
+if (nrow(errors_FuelConst) == 0) {
+  errors_FuelConst <- no_errors %>%
+    mutate(SavedQuery = saved_query)
+} else {
+  errors_FuelConst <- errors_FuelConst
+}
+
+# Table of results for quick check
+table <- errors_FuelConst %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+### Fuel 1000 LogNo
+
+[Problem:]{.underline} "Duplicate" data exists due to multiple 1000 hr fuels with the same transect / diameter / decay class. Log Numbers are missing (which would differentiate 1000 hr fuels).
+
+[Procedure:]{.underline}
+
+-   Check for duplication (TRUE/FALSE) and store results in UV1
+
+-   Check for TRUE values in UV1
+
+```{r}
+# Store duplication results in Duplicate column
+Fuels1000_data_duplicate <- Fuels1000_data %>% 
+  mutate("Duplicate" = duplicated(Fuels1000_data))
+
+# Set parameters 
+saved_query <- "Fuel 1000 LogNo" 
+error_message <- "Duplicate Logs" 
+column_data <- Fuels1000_data_duplicate$Duplicate
+valid_values <- FALSE
+
+# Identify errors 
+errors_LogNo <- Fuels1000_data_duplicate %>%   
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    
+  filter(!column_data == valid_values) %>%    
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))
+
+# If no errors, add "No Errors" to existing data frame 
+if (nrow(errors_LogNo) == 0) {   
+  errors_LogNo <- no_errors %>%     
+    mutate(SavedQuery = saved_query) 
+} else {   
+    errors_LogNo <- errors_LogNo }
+
+# Table of results for quick check
+table <- errors_LogNo %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+### Fuel 1000 Values
+
+[Problem:]{.underline}  Values for transect, slope, and diameter are missing or unreasonable.
+
+[Procedure:]{.underline}
+
+-   Check that Transect = 1, 2, 3, or 4
+
+```{r}
+# Set parameters
+saved_query <- "Fuel 1000 Values TransNum"
+error_message <- "Transect Number"
+column_data <- Fuels1000_data$Transect
+valid_values <- c(1, 2, 3, 4)
+
+# Identify errors
+errors_TransNum <- Fuels1000_data %>%
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>% 
+  filter(!column_data %in% valid_values) %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))
+
+# If no errors, add "No Errors" to existing data frame
+if (nrow(errors_TransNum) == 0) {
+  errors_TransNum <- no_errors %>%
+    mutate(SavedQuery = saved_query)
+} else {
+  errors_TransNum <- errors_TransNum
+}
+
+# Table of results for quick check
+table <- errors_TransNum %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+-   Check that Slope values are reasonable.
+
+```{r}
+# Set parameters
+saved_query <- "Fuel 1000 Values Slope"
+error_message <- "Slope"
+column_data <- Fuels1000_data$Slope
+valid_values <- seq(0, 90, by = 1)
+
+# Identify errors
+errors_Slope <- Fuels1000_data %>%
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>% 
+  filter(!column_data %in% valid_values) %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))
+
+# If no errors, add "No Errors" to existing data frame
+if (nrow(errors_Slope) == 0) {
+  errors_Slope <- no_errors %>%
+    mutate(SavedQuery = saved_query)
+} else {
+  errors_Slope <- errors_Slope
+}
+
+# Table of results for quick check
+table <- errors_Slope %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+-   Check that diameter values are reasonable, are measured at 0.5 increments, and ≥ 3.0.
+
+```{r}
+# Set parameters
+saved_query <- "Fuel 1000 Values Dia"
+error_message <- "Diameter"
+column_data <- Fuels1000_data$Dia
+valid_values <- seq(3, 40, by = 0.5)
+
+# Identify errors
+errors_Dia <- Fuels1000_data %>%
+  mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>% 
+  filter(!column_data %in% valid_values) %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))
+
+# If no errors, add "No Errors" to existing data frame
+if (nrow(errors_Dia) == 0) {
+  errors_Dia <- no_errors %>%
+    mutate(SavedQuery = saved_query)
+} else {
+  errors_Dia <- errors_Dia
+}
+
+# Table of results for quick check
+table <- errors_Dia %>% 
+  select(c("SavedQuery", "MacroPlot.Name", "Date", "Error"))
+kable(table) %>% 
+  kable_material_dark()
+```
+
+### Outlier Tests?
+
+```{r}
+### Function: Outlier Tests
+
+  # # Function to perform outlier test using Rosner test on a specified column of data
+  # # and log any outliers detected along with their details
+  # cat("\n")
+  # test_for_outliers <- function(data, column_name) {
+  #   # Display a message indicating the test being performed
+  #   cat("Are there any outlier values in", column_name, "?\n")
+  #
+  #   # Extract non-missing and non-NA/NaN/Inf values from the specified column
+  #   column_values <- na.omit(data[[column_name]])
+  #
+  #   # Check if there are any valid values for testing
+  #   if (length(column_values) == 0) {
+  #     # Print a message if no valid values are available for testing
+  #     cat("No valid values to test\n")
+  #     return()  # Exit the function if there are no valid values
+  #   }
+  #
+  #   # Perform Rosner test on the valid column values
+  #   test <- rosnerTest(column_values)
+  #   test <- test$all.stats
+  #   outliers <- test[which(test$Outlier == TRUE), 4]
+  #
+  #   # Check if any outliers were detected
+  #   if (length(outliers) == 0) {
+  #     # Print a message if no outliers were detected
+  #     cat("No\n")
+  #   } else {
+  #     # Print information about the detected outliers and their details
+  #     cat(paste("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",
+  #               data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"], "of the data table. For reference, the max, min, and mean of",
+  #               column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively",
+  #               collapse = "\n"), "\n")
+  #
+  #     # Add error messages about the detected outliers to the flags vector
+  #     flags<- c(flags, paste("The", column_name, "has outlier values according to a Rosner test, which are", outliers,
+  #                            ". They are in events", data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"],
+  #                            "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),
+  #                            min(column_values), mean(column_values), "respectively", collapse = "\n"), "\n")
+  #   }
+  # }
+
+### Outlier Test
+  # # Perform outlier tests for the "Slope" and "Dia" columns in the fuel1000 dataset
+  # test_for_outliers(fuel1000, "Slope")
+  # cat("\n")
+  # test_for_outliers(fuel1000, "Dia")
+
+```
+
+#### Save Errors
+
+```{r}
+# Save to master error list
+errors_Fuels1000 <- rbind(errors_DecayCl, errors_FuelConst, errors_NumTran, 
+                          errors_TranLen_N, errors_TranLen_S, errors_LogNo, 
+                          errors_TransNum, errors_Slope, errors_Dia)
+```
+
+```{r}
+# Save as CSV or XLSX
+errors_path
+#write.csv(errors, paste0(errors_path, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
+write_xlsx(errors_Fuels1000, paste0(errors_path, "errors_Fuels1000.xlsx"))
+```
