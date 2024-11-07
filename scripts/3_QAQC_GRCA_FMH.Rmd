@@ -311,7 +311,8 @@ values_valid <- 4
 
 # Identify errors 
 errors_Fuels1000_NumTran <- Fuels1000_header %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%   
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%   
   filter(!values_data == values_valid) %>%   
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))  
 
@@ -336,7 +337,8 @@ values_valid <- 50
 
 # Identify errors 
 errors_Fuels1000_TranLen_N <- Fuels1000_header %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data))  %>%    
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data))  %>%    
   filter(!values_data == values_valid, 
          MonitoringType %in% c("PIAB", "PIEN", "PIPN")) %>%    
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
@@ -361,7 +363,8 @@ values_valid <- 100
 
 # Identify errors 
 errors_Fuels1000_TranLen_S <- Fuels1000_header %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%    
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%    
   filter(!values_data == values_valid,           
          MonitoringType %in% c("PIED", "PIPO")) %>%    
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))  
@@ -392,7 +395,8 @@ values_valid <- c(3,4)
 
 # Identify errors
 errors_Fuels1000_DecayCl <- Fuels1000_data %>%
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%
   filter(!values_data %in% values_valid) %>%
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
 
@@ -422,7 +426,8 @@ values_valid <- Fuels1000_data$MonitoringType
 
 # Identify errors
 errors_Fuels1000_FuelConst <- Fuels1000_data %>%
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%
   filter(!values_data == values_valid) %>%
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
 
@@ -460,7 +465,8 @@ values_valid <- FALSE
 
 # Identify errors 
 errors_Fuels1000_LogNo <- Fuels1000_data_duplicate %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%    
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%    
   filter(!values_data == values_valid) %>%    
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
 
@@ -490,7 +496,8 @@ values_valid <- c(1, 2, 3, 4)
 
 # Identify errors
 errors_Fuels1000_TransNum <- Fuels1000_data %>%
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>% 
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>% 
   filter(!values_data %in% values_valid) %>% 
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
 
@@ -514,7 +521,8 @@ values_valid <- seq(0, 90, by = 1)
 
 # Identify errors
 errors_Fuels1000_Slope <- Fuels1000_data %>%
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>% 
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>% 
   filter(!values_data %in% values_valid) %>% 
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
 
@@ -538,7 +546,8 @@ values_valid <- seq(3, 40, by = 0.5)
 
 # Identify errors
 errors_Fuels1000_Dia <- Fuels1000_data %>%
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>% 
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>% 
   filter(!values_data %in% values_valid) %>% 
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
 
@@ -649,7 +658,8 @@ values_valid <- 4
 
 # Identify errors  
 errors_FuelsDuffLitt_NumTran <- FuelsDuffLitt_header %>%      
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%      
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%      
   filter(!values_data == values_valid) %>%      
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))    
 
@@ -679,7 +689,8 @@ values_valid <- FuelsDuffLitt_data$MonitoringType
 
 # Identify errors 
 errors_FuelsDuffLitt_FuelConst <- FuelsDuffLitt_data %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%   
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%   
   filter(!values_data == values_valid) %>%   
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))  
 
@@ -714,7 +725,8 @@ values_valid <- 40
 
 # Identify errors 
 errors_FuelsDuffLitt_Hits <- FuelsDuffLitt_data %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%   
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%   
   filter(!values_data == values_valid) %>%   
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))
 
@@ -744,7 +756,8 @@ values_valid <- max(5)
 
 # Identify errors 
 errors_FuelsDuffLitt_LittDep <- FuelsDuffLitt_data %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%    
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%    
   filter(!values_data < values_valid) %>%    
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))  
 
@@ -768,7 +781,8 @@ values_valid <- max(7)
 
 # Identify errors 
 errors_FuelsDuffLitt_DuffDep <- FuelsDuffLitt_data %>%   
-  mutate("SavedQuery" = query, "Error" = paste(query_message, "=", values_data)) %>%    
+  mutate("SavedQuery" = query, 
+         "Error" = paste(query_message, "=", values_data)) %>%    
   filter(!values_data < values_valid) %>%    
   select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment", "Fixed","Explanation","Person"))  
 
@@ -784,7 +798,41 @@ if (nrow(errors_FuelsDuffLitt_DuffDep) == 0) {
 #### Outlier Tests?
 
 ```{r}
-### Function: Outlier Tests    # # Function to perform outlier test using Rosner test on a specified column of data   # # and log any outliers detected along with their details   # cat("\n")   # test_for_outliers <- function(data, column_name) {   #   # Display a message indicating the test being performed   #   cat("Are there any outlier values in", column_name, "?\n")   #   #   # Extract non-missing and non-NA/NaN/Inf values from the specified column   #   column_values <- na.omit(data[[column_name]])   #   #   # Check if there are any valid values for testing   #   if (length(column_values) == 0) {   #     # Print a message if no valid values are available for testing   #     cat("No valid values to test\n")   #     return()  # Exit the function if there are no valid values   #   }   #   #   # Perform Rosner test on the valid column values   #   test <- rosnerTest(column_values)   #   test <- test$all.stats   #   outliers <- test[which(test$Outlier == TRUE), 4]   #   #   # Check if any outliers were detected   #   if (length(outliers) == 0) {   #     # Print a message if no outliers were detected   #     cat("No\n")   #   } else {   #     # Print information about the detected outliers and their details   #     cat(paste("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",   #               data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"], "of the data table. For reference, the max, min, and mean of",   #               column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively",   #               collapse = "\n"), "\n")   #   #     # Add error messages about the detected outliers to the flags vector   #     flags<- c(flags, paste("The", column_name, "has outlier values according to a Rosner test, which are", outliers,   #                            ". They are in events", data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"],   #                            "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),   #                            min(column_values), mean(column_values), "respectively", collapse = "\n"), "\n")   #   }   # }  ### Outlier Test   # # Perform outlier tests for the "Slope" and "Dia" columns in the fuel1000 dataset   # test_for_outliers(fuel1000, "Slope")   # cat("\n")   # test_for_outliers(fuel1000, "Dia")}
+  # check_outliers <- function(data, variable_name) {
+  #   # Print a message about checking for outlier values
+  #   cat(paste("Are there any outlier values in", variable_name, "?\n"))
+  #
+  #   # Run the Rosner test to identify outliers
+  #   test <- suppressWarnings(rosnerTest(data))
+  #   outliers <- test$all.stats$Value[test$all.stats$Outlier]
+  #
+  #   if (length(outliers) == 0) {
+  #     cat("No\n")
+  #     cat("\n")
+  #   } else {
+  #     # Generate a message about outlier values
+  #     outlier_indices <- which(data %in% outliers)
+  #     max_value <- max(na.omit(data))
+  #     min_value <- min(na.omit(data))
+  #     mean_value <- mean(na.omit(data))
+  #
+  #     message <- paste(
+  #       "Yes, the outlier values according to a rosner test are", outliers,
+  #       ". They are in events", duff[outlier_indices, "MacroPlot.Name"],duff[outlier_indices, "Monitoring.Status"],"rows", outlier_indices,
+  #       "of the duff data table. For reference, the max, min, and mean of", variable_name,
+  #       "are", max_value, min_value, mean_value, "respectively",
+  #       collapse = "\n"
+  #     )
+  #
+  #     cat(message, "\n")
+  #     cat("\n")
+  #     flags<- c(flags, message)  # Add the outlier message to the 'flags' vector
+  #   }
+  # }
+  #
+  # # Call the check_outliers function for litter depth and duff depth
+  # check_outliers(duff$LittDep, "litter depth")
+  # check_outliers(duff$DuffDep, "duff depth")
 ```
 
 ### Fuel DL Errors
