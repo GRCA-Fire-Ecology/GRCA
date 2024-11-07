@@ -65,9 +65,9 @@ for(i in 1:nrow(file_names_df)) {
   name <- file_names_df[i,2]
 
   #read tabs of excel files, bring them into R
-  FuelsFWD <- read_excel(path, sheet = "Fuels FWD")
-  FuelsCWD <- read_excel(path, sheet = "Fuels CWD")
+  Fuels1000 <- read_excel(path, sheet = "Fuels CWD")
   FuelsDuffLitt <- read_excel(path, sheet = "Fuels Duff-Litt")
+  FuelsFine <- read_excel(path, sheet = "Fuels FWD")
   HerbsPoints <- read_excel(path, sheet = "Herbs (Points)")
   HerbsObs <- read_excel(path, sheet = "Herbs-Ob (Sp Comp)")
   Shrubs <- read_excel(path, sheet = "Shrubs (Belt)")
@@ -76,9 +76,9 @@ for(i in 1:nrow(file_names_df)) {
   PostBurn <- read_excel(path, sheet = "Post Burn")
 
   #create csv paths
-  my_path_csv_FuelsFWD <- paste0(my_path_csv, name, "_FuelsFWD.csv")
-  my_path_csv_FuelsCWD <- paste0(my_path_csv, name, "_FuelsCWD.csv")
+  my_path_csv_Fuels1000 <- paste0(my_path_csv, name, "_Fuels1000.csv")
   my_path_csv_FuelsDuffLitt <- paste0(my_path_csv, name, "_FuelsDuffLitt.csv")
+  my_path_csv_FuelsFine <- paste0(my_path_csv, name, "_FuelsFine.csv")
   my_path_csv_HerbsPoints <- paste0(my_path_csv, name, "_HerbsPoints.csv")
   my_path_csv_HerbsObs<- paste0(my_path_csv, name, "_HerbsObs.csv")
   my_path_csv_Shrubs<- paste0(my_path_csv, name, "_Shrubs.csv")
@@ -111,13 +111,13 @@ for(i in 1:nrow(file_names_df)) {
   HerbsPointsCount <- sum(!is.na(HerbsPoints$Height))
 
   # QAQC all protocols: Delete empty rows, Change numbers in index column into ascending order
-  FuelsFWD <- subset(FuelsFWD, OneHr != "") %>%
-    mutate(Index = row_number()) %>%
-    map_df(str_replace_all, pattern = ",", replacement = ";")
-  FuelsCWD <- subset(FuelsCWD, Dia != "") %>%
+  Fuels1000 <- subset(Fuels1000, Dia != "") %>%
     mutate(Index = row_number())
   FuelsDuffLitt <- subset(FuelsDuffLitt, LittDep != "") %>%
     mutate(Index = row_number())
+  FuelsFine <- subset(FuelsFine, OneHr != "") %>%
+    mutate(Index = row_number()) %>%
+    map_df(str_replace_all, pattern = ",", replacement = ";")
   HerbsPoints <-
     mutate(HerbsPoints, Count = HerbsPointsCount) %>%
     subset(Count != "0") %>%
@@ -141,12 +141,12 @@ for(i in 1:nrow(file_names_df)) {
     mutate(Index = row_number())
 
   #create CSVs, exclude blank data frames
-  if(dim(FuelsFWD)[1] == 0) {print(paste0(name," ","Fuels FWD is empty"))}
-    else{write.csv(FuelsFWD, my_path_csv_FuelsFWD, quote=FALSE, row.names = FALSE, na = "")}
-  if(dim(FuelsCWD)[1] == 0) {print(paste0(name," ","Fuels CWD is empty"))}
-    else{write.csv(FuelsCWD, my_path_csv_FuelsCWD, quote=FALSE, row.names = FALSE, na = "")}
+  if(dim(Fuels1000)[1] == 0) {print(paste0(name," ","Fuels CWD is empty"))}
+    else{write.csv(Fuels1000, my_path_csv_Fuels1000, quote=FALSE, row.names = FALSE, na = "")}
   if(dim(FuelsDuffLitt)[1] == 0) {print(paste0(name," ","Fuels Duff-Litt is empty"))}
      else{write.csv(FuelsDuffLitt, my_path_csv_FuelsDuffLitt, quote=FALSE, row.names = FALSE, na = "")}
+  if(dim(FuelsFine)[1] == 0) {print(paste0(name," ","Fuels FWD is empty"))}
+  else{write.csv(FuelsFine, my_path_csv_FuelsFine, quote=FALSE, row.names = FALSE, na = "")}
   if(dim(HerbsPoints)[1] == 0) {print(paste0(name," ","Herbs Points is empty"))}
      else{write.csv(HerbsPoints, my_path_csv_HerbsPoints, quote=FALSE, row.names = FALSE, na = "")}
   if(dim(HerbsObs)[1] == 0) {print(paste0(name," ","Herbs Obs is empty"))}
