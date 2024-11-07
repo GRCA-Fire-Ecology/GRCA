@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # BEFORE STARTING
 
-Make sure to update file paths to be specific for your data.
+### Load Packages
 
 ```{r}
 # Load packages
@@ -33,7 +33,13 @@ library(writexl)
 library(dplyr)
 library(knitr)
 library(kableExtra)
+```
 
+### Adjust File Paths
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
 # Identify working directory (specifically user name)
 getwd()
 
@@ -44,23 +50,27 @@ data_path <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/data_qaqc/2
 errors_path <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/data_errors/2024/"
 ```
 
-# PROTOCOL - SURFACE FUELS
-
-## SUBPROTOCOL - 1000HR CWD
-
-This code conducts quality control checks on surface fuels data within the surface fuels coarse woody debris (1000-hr) data set.
-
-It checks for: header info (number of transects, length of transects), decay class values, fuel constants, duplicate values, transect numbers, reasonable slope numbers, reasonable diameter values.
-
-\*IF ADJUSTING FOR DIFFERENT PROGRAM – you must edit code to include values specific to your program. You can edit the code in the "Set Parameters" section of each query code block.
-
-#### Load and Check Data
+### Load Data
 
 ```{r}
-data_path
 # Load in data
-Fuels1000_all <- read.csv(paste0(data_path, "Surface Fuels - 1000Hr_XPT.csv"))
+Fuels1000_all <- read.csv(paste0(data_path, "GRCA_FMH_2024_Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all <- read.csv(paste0(data_path, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all <- read.csv(paste0(data_path, "Surface Fuels - Fine_XPT.csv"))
+HerbsPoints_all <- read.csv(paste0(data_path, "Cover - Points (metric)_XPT.csv"))
+HerbsObs_all <- read.csv(paste0(data_path, "Cover - Species Composition (metric)_XPT.csv"))
+Shrubs_all <- read.csv(paste0(data_path, "Density - Belts (metric)_XPT.csv"))
+Seedlings_all <- read.csv(paste0(data_path, "Density - Quadrats (metric)_XPT.csv"))
+Trees_all <- read.csv(paste0(data_path, "Trees - Individuals (metric)_XPT.csv"))
+#PostBurn_all <- read.csv(paste0(data_path, "Post Burn Severity_XPT.csv"))
+
+# Blank data frame for no errors
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
 ```
+
+### Check Data
+
+#### Fuels1000
 
 ```{r}
 # Ensure blanks in Visited column are NA
@@ -82,10 +92,233 @@ Fuels1000_data <- Fuels1000_all %>%
 # Filter for only headers
 Fuels1000_header <- Fuels1000_all %>%
   filter(!is.na(Visited))
-
-# Blank data frame for no errors
-no_errors <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
 ```
+
+#### FuelsDuffLitt
+
+```{r}
+# Ensure blanks in Visited column are NA 
+FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA  
+
+# Clean up data frame 
+FuelsDuffLitt_all <- FuelsDuffLitt_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+#### FuelsFine
+
+```{r}
+# Ensure blanks in Visited column are NA 
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
+
+# Clean up data frame 
+FuelsFine_all <- FuelsFine_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+FuelsFine_data <- FuelsFine_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+FuelsFine_header <- FuelsFine_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+#### HerbsPoints
+
+```{r}
+# Ensure blanks in Visited column are NA 
+HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
+
+# Clean up data frame 
+HerbsPoints_all <- HerbsPoints_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+HerbsPoints_data <- HerbsPoints_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+HerbsPoints_header <- HerbsPoints_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+#### HerbsObs
+
+```{r}
+# Ensure blanks in Visited column are NA 
+HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA  
+
+# Clean up data frame 
+HerbsObs_all <- HerbsObs_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+HerbsObs_data <- HerbsObs_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+HerbsObs_header <- HerbsObs_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+#### Shrubs
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Shrubs_all <- Shrubs_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+Shrubs_data <- Shrubs_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Shrubs_header <- Shrubs_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+#### Seedlings
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Seedlings_all <- Seedlings_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+Seedlings_data <- Seedlings_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Seedlings_header <- Seedlings_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+#### Trees
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Trees_all <- Trees_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+Trees_data <- Trees_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Trees_header <- Trees_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+#### PostBurn
+
+```{r}
+# Ensure blanks in Visited column are NA 
+PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA  
+
+# Clean up data frame 
+PostBurn_all <- PostBurn_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
+  # Add columns relevant to error checking   
+  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
+
+# Filter for only data 
+PostBurn_data <- PostBurn_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+PostBurn_header <- PostBurn_all %>%   
+  filter(!is.na(Visited))  
+
+# Blank data frame for no errors 
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
+```
+
+# PROTOCOL - SURFACE FUELS
+
+## SUBPROTOCOL - 1000HR CWD
+
+This code conducts quality control checks on surface fuels data within the surface fuels coarse woody debris (1000-hr) data set.
+
+It checks for: header info (number of transects, length of transects), decay class values, fuel constants, duplicate values, transect numbers, reasonable slope numbers, reasonable diameter values.
+
+\*IF ADJUSTING FOR DIFFERENT PROGRAM – you must edit code to include values specific to your program. You can edit the code in the "Set Parameters" section of each query code block.
 
 ### Fuel 1000 header FMH
 
@@ -110,7 +343,7 @@ errors_Fuels1000_NumTran <- Fuels1000_header %>%
 
 # If no errors, add "No Errors" to existing data frame 
 if (nrow(errors_Fuels1000_NumTran) == 0) {   
-  errors_Fuels1000_NumTran <- no_errors %>%     
+  errors_Fuels1000_NumTran <- errors_blank %>%     
     mutate(SavedQuery = saved_query) 
 } else {   
     errors_Fuels1000_NumTran <- errors_Fuels1000_NumTran 
@@ -142,7 +375,7 @@ errors_Fuels1000_TranLen_N <- Fuels1000_header %>%
 
 # If no errors, add "No Errors" to existing data frame 
 if (nrow(errors_Fuels1000_TranLen_N) == 0) {   
-  errors_Fuels1000_TranLen_N <- no_errors %>%     
+  errors_Fuels1000_TranLen_N <- errors_blank %>%     
     mutate(SavedQuery = saved_query) 
 } else {   
     errors_Fuels1000_TranLen_N <- errors_Fuels1000_TranLen_N }
@@ -172,7 +405,7 @@ errors_Fuels1000_TranLen_S <- Fuels1000_header %>%
 
 # If no errors, add "No Errors" to existing data frame 
 if (nrow(errors_Fuels1000_TranLen_S) == 0) {   
-  errors_Fuels1000_TranLen_S <- no_errors %>%     
+  errors_Fuels1000_TranLen_S <- errors_blank %>%     
     mutate(SavedQuery = saved_query) 
 } else {   
     errors_Fuels1000_TranLen_S <- errors_Fuels1000_TranLen_S }
@@ -205,7 +438,7 @@ errors_Fuels1000_DecayCl <- Fuels1000_data %>%
 
 # If no errors, add "No Errors" to existing data frame
 if (nrow(errors_Fuels1000_DecayCl) == 0) {
-  errors_Fuels1000_DecayCl <- no_errors %>%
+  errors_Fuels1000_DecayCl <- errors_blank %>%
     mutate(SavedQuery = saved_query)
 } else {
   errors_Fuels1000_DecayCl <- errors_Fuels1000_DecayCl
@@ -239,7 +472,7 @@ errors_Fuels1000_FuelConst <- Fuels1000_data %>%
 
 # If no errors, add "No Errors" to existing data frame
 if (nrow(errors_Fuels1000_FuelConst) == 0) {
-  errors_Fuels1000_FuelConst <- no_errors %>%
+  errors_Fuels1000_FuelConst <- errors_blank %>%
     mutate(SavedQuery = saved_query)
 } else {
   errors_Fuels1000_FuelConst <- errors_Fuels1000_FuelConst
@@ -283,7 +516,7 @@ errors_Fuels1000_LogNo <- Fuels1000_data_duplicate %>%
 
 # If no errors, add "No Errors" to existing data frame 
 if (nrow(errors_Fuels1000_LogNo) == 0) {   
-  errors_Fuels1000_LogNo <- no_errors %>%     
+  errors_Fuels1000_LogNo <- errors_blank %>%     
     mutate(SavedQuery = saved_query) 
 } else {   
     errors_Fuels1000_LogNo <- errors_Fuels1000_LogNo 
@@ -319,7 +552,7 @@ errors_Fuels1000_TransNum <- Fuels1000_data %>%
 
 # If no errors, add "No Errors" to existing data frame
 if (nrow(errors_Fuels1000_TransNum) == 0) {
-  errors_Fuels1000_TransNum <- no_errors %>%
+  errors_Fuels1000_TransNum <- errors_blank %>%
     mutate(SavedQuery = saved_query)
 } else {
   errors_Fuels1000_TransNum <- errors_Fuels1000_TransNum
@@ -349,7 +582,7 @@ errors_Fuels1000_Slope <- Fuels1000_data %>%
 
 # If no errors, add "No Errors" to existing data frame
 if (nrow(errors_Fuels1000_Slope) == 0) {
-  errors_Fuels1000_Slope <- no_errors %>%
+  errors_Fuels1000_Slope <- errors_blank %>%
     mutate(SavedQuery = saved_query)
 } else {
   errors_Fuels1000_Slope <- errors_Fuels1000_Slope
@@ -379,7 +612,7 @@ errors_Fuels1000_Dia <- Fuels1000_data %>%
 
 # If no errors, add "No Errors" to existing data frame
 if (nrow(errors_Fuels1000_Dia) == 0) {
-  errors_Fuels1000_Dia <- no_errors %>%
+  errors_Fuels1000_Dia <- errors_blank %>%
     mutate(SavedQuery = saved_query)
 } else {
   errors_Fuels1000_Dia <- errors_Fuels1000_Dia
@@ -468,39 +701,6 @@ It checks for:
 
 \*IF ADJUSTING FOR DIFFERENT PROGRAM – you must edit code to include values specific to your program. You can edit the code in the "Set Parameters" section of each query code block.
 
-#### Load and Check Data
-
-```{r}
-data_path 
-# Load in data 
-FuelsDuffLitt_all <- read.csv(paste0(data_path, "Surface Fuels - Duff_Litter_XPT.csv"))
-```
-
-```{r}
-# Ensure blanks in Visited column are NA 
-FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA  
-
-# Clean up data frame 
-FuelsDuffLitt_all <- FuelsDuffLitt_all %>%   
-  # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) %>%    
-  # Add columns relevant to error checking   
-  mutate("SavedQuery" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Person" = "")  
-
-# Filter for only data 
-FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
-  filter(is.na(Visited))  
-
-# Filter for only headers 
-FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
-  filter(!is.na(Visited))  
-
-# Blank data frame for no errors 
-no_errors <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error","Fixed" = "","Explanation" = "","Person" = "")
-```
-
 ### Fuel DL header FMH
 
 [Problem:]{.underline} Incorrect header information entered for FMH plots.
@@ -524,7 +724,7 @@ errors_FuelsDuffLitt_NumTran <- FuelsDuffLitt_header %>%
 
 # If no errors, add "No Errors" to existing data frame  
 if (nrow(errors_FuelsDuffLitt_NumTran) == 0) {      
-  errors_FuelsDuffLitt_NumTran <- no_errors %>%          
+  errors_FuelsDuffLitt_NumTran <- errors_blank %>%          
     mutate(SavedQuery = saved_query)  
   } else {        
     errors_FuelsDuffLitt_NumTran <- errors_FuelsDuffLitt_NumTran 
@@ -558,7 +758,7 @@ errors_FuelsDuffLitt_FuelConst <- FuelsDuffLitt_data %>%
 
 # If no errors, add "No Errors" to existing data frame 
 if (nrow(errors_FuelsDuffLitt_FuelConst) == 0) {   
-  errors_FuelsDuffLitt_FuelConst <- no_errors %>%     
+  errors_FuelsDuffLitt_FuelConst <- errors_blank %>%     
     mutate(SavedQuery = saved_query)
   } else {   
     errors_FuelsDuffLitt_FuelConst <- errors_FuelsDuffLitt_FuelConst 
@@ -581,8 +781,7 @@ kable(table) %>%
 
 -   Check for TRUE values in UV1
 
-```{r} # Store duplication results in Duplicate column FuelsDuffLitt_data_duplicate <- FuelsDuffLitt_data %>%   select(!"Index") FuelsDuffLitt_data_duplicate <- FuelsDuffLitt_data_duplicate %>%    mutate("Duplicate" = duplicated(FuelsDuffLitt_data_duplicate))    # Set parameters  saved_query <- "Fuel DL LogNo"  error_message <- "Duplicate Logs"  column_data <- FuelsDuffLitt_data_duplicate$Duplicate valid_values <- FALSE  # Identify errors  errors_FuelsDuffLitt_LogNo <- FuelsDuffLitt_data_duplicate %>%      mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%       filter(!column_data == valid_values) %>%       select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame  if (nrow(errors_FuelsDuffLitt_LogNo) == 0) {      errors_FuelsDuffLitt_LogNo <- no_errors %>%          mutate(SavedQuery = saved_query)  } else {        errors_FuelsDuffLitt_LogNo <- errors_FuelsDuffLitt_LogNo }  # Table of results for quick check table <- errors_FuelsDuffLitt_LogNo %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}
-```
+`{r} # Store duplication results in Duplicate column FuelsDuffLitt_data_duplicate <- FuelsDuffLitt_data %>%   select(!"Index") FuelsDuffLitt_data_duplicate <- FuelsDuffLitt_data_duplicate %>%    mutate("Duplicate" = duplicated(FuelsDuffLitt_data_duplicate))    # Set parameters  saved_query <- "Fuel DL LogNo"  error_message <- "Duplicate Logs"  column_data <- FuelsDuffLitt_data_duplicate$Duplicate valid_values <- FALSE  # Identify errors  errors_FuelsDuffLitt_LogNo <- FuelsDuffLitt_data_duplicate %>%      mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%       filter(!column_data == valid_values) %>%       select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame  if (nrow(errors_FuelsDuffLitt_LogNo) == 0) {      errors_FuelsDuffLitt_LogNo <- errors_blank %>%          mutate(SavedQuery = saved_query)  } else {        errors_FuelsDuffLitt_LogNo <- errors_FuelsDuffLitt_LogNo }  # Table of results for quick check table <- errors_FuelsDuffLitt_LogNo %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}`
 
 ### Fuel DL Values
 
@@ -592,28 +791,22 @@ kable(table) %>%
 
 -   Check that Transect = 1, 2, 3, or 4
 
-```{r} # Set parameters saved_query <- "Fuel DL Values TransNum" error_message <- "Transect Number" column_data <- FuelsDuffLitt_data$Transect valid_values <- c(1, 2, 3, 4)  # Identify errors errors_FuelsDuffLitt_TransNum <- FuelsDuffLitt_data %>%   mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    filter(!column_data %in% valid_values) %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame if (nrow(errors_FuelsDuffLitt_TransNum) == 0) {   errors_FuelsDuffLitt_TransNum <- no_errors %>%     mutate(SavedQuery = saved_query) } else {   errors_FuelsDuffLitt_TransNum <- errors_FuelsDuffLitt_TransNum }  # Table of results for quick check table <- errors_FuelsDuffLitt_TransNum %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}
-```
+`{r} # Set parameters saved_query <- "Fuel DL Values TransNum" error_message <- "Transect Number" column_data <- FuelsDuffLitt_data$Transect valid_values <- c(1, 2, 3, 4)  # Identify errors errors_FuelsDuffLitt_TransNum <- FuelsDuffLitt_data %>%   mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    filter(!column_data %in% valid_values) %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame if (nrow(errors_FuelsDuffLitt_TransNum) == 0) {   errors_FuelsDuffLitt_TransNum <- errors_blank %>%     mutate(SavedQuery = saved_query) } else {   errors_FuelsDuffLitt_TransNum <- errors_FuelsDuffLitt_TransNum }  # Table of results for quick check table <- errors_FuelsDuffLitt_TransNum %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}`
 
 -   Check that Slope values are reasonable.
 
-```{r} # Set parameters saved_query <- "Fuel DL Values Slope" error_message <- "Slope" column_data <- FuelsDuffLitt_data$Slope valid_values <- seq(0, 90, by = 1)  # Identify errors errors_FuelsDuffLitt_Slope <- FuelsDuffLitt_data %>%   mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    filter(!column_data %in% valid_values) %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame if (nrow(errors_FuelsDuffLitt_Slope) == 0) {   errors_FuelsDuffLitt_Slope <- no_errors %>%     mutate(SavedQuery = saved_query) } else {   errors_FuelsDuffLitt_Slope <- errors_FuelsDuffLitt_Slope }  # Table of results for quick check table <- errors_FuelsDuffLitt_Slope %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}
-```
+`{r} # Set parameters saved_query <- "Fuel DL Values Slope" error_message <- "Slope" column_data <- FuelsDuffLitt_data$Slope valid_values <- seq(0, 90, by = 1)  # Identify errors errors_FuelsDuffLitt_Slope <- FuelsDuffLitt_data %>%   mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    filter(!column_data %in% valid_values) %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame if (nrow(errors_FuelsDuffLitt_Slope) == 0) {   errors_FuelsDuffLitt_Slope <- errors_blank %>%     mutate(SavedQuery = saved_query) } else {   errors_FuelsDuffLitt_Slope <- errors_FuelsDuffLitt_Slope }  # Table of results for quick check table <- errors_FuelsDuffLitt_Slope %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}`
 
 -   Check that diameter values are reasonable, are measured at 0.5 increments, and ≥ 3.0.
 
-```{r} # Set parameters saved_query <- "Fuel DL Values Dia" error_message <- "Diameter" column_data <- FuelsDuffLitt_data$Dia valid_values <- seq(3, 40, by = 0.5)  # Identify errors errors_FuelsDuffLitt_Dia <- FuelsDuffLitt_data %>%   mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    filter(!column_data %in% valid_values) %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame if (nrow(errors_FuelsDuffLitt_Dia) == 0) {   errors_FuelsDuffLitt_Dia <- no_errors %>%     mutate(SavedQuery = saved_query) } else {   errors_FuelsDuffLitt_Dia <- errors_FuelsDuffLitt_Dia }  # Table of results for quick check table <- errors_FuelsDuffLitt_Dia %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}
-```
+`{r} # Set parameters saved_query <- "Fuel DL Values Dia" error_message <- "Diameter" column_data <- FuelsDuffLitt_data$Dia valid_values <- seq(3, 40, by = 0.5)  # Identify errors errors_FuelsDuffLitt_Dia <- FuelsDuffLitt_data %>%   mutate("SavedQuery" = saved_query, "Error" = paste(error_message, "=", column_data)) %>%    filter(!column_data %in% valid_values) %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed","Explanation","Person"))  # If no errors, add "No Errors" to existing data frame if (nrow(errors_FuelsDuffLitt_Dia) == 0) {   errors_FuelsDuffLitt_Dia <- errors_blank %>%     mutate(SavedQuery = saved_query) } else {   errors_FuelsDuffLitt_Dia <- errors_FuelsDuffLitt_Dia }  # Table of results for quick check table <- errors_FuelsDuffLitt_Dia %>%    select(c("SavedQuery", "MacroPlot.Name", "Date", "Error")) kable(table) %>%    kable_material_dark()}`
 
 ### Outlier Tests?
 
-```{r} ### Function: Outlier Tests    # # Function to perform outlier test using Rosner test on a specified column of data   # # and log any outliers detected along with their details   # cat("\n")   # test_for_outliers <- function(data, column_name) {   #   # Display a message indicating the test being performed   #   cat("Are there any outlier values in", column_name, "?\n")   #   #   # Extract non-missing and non-NA/NaN/Inf values from the specified column   #   column_values <- na.omit(data[[column_name]])   #   #   # Check if there are any valid values for testing   #   if (length(column_values) == 0) {   #     # Print a message if no valid values are available for testing   #     cat("No valid values to test\n")   #     return()  # Exit the function if there are no valid values   #   }   #   #   # Perform Rosner test on the valid column values   #   test <- rosnerTest(column_values)   #   test <- test$all.stats   #   outliers <- test[which(test$Outlier == TRUE), 4]   #   #   # Check if any outliers were detected   #   if (length(outliers) == 0) {   #     # Print a message if no outliers were detected   #     cat("No\n")   #   } else {   #     # Print information about the detected outliers and their details   #     cat(paste("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",   #               data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"], "of the data table. For reference, the max, min, and mean of",   #               column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively",   #               collapse = "\n"), "\n")   #   #     # Add error messages about the detected outliers to the flags vector   #     flags<- c(flags, paste("The", column_name, "has outlier values according to a Rosner test, which are", outliers,   #                            ". They are in events", data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"],   #                            "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),   #                            min(column_values), mean(column_values), "respectively", collapse = "\n"), "\n")   #   }   # }  ### Outlier Test   # # Perform outlier tests for the "Slope" and "Dia" columns in the fuel1000 dataset   # test_for_outliers(fuel1000, "Slope")   # cat("\n")   # test_for_outliers(fuel1000, "Dia")}
-```
+`{r} ### Function: Outlier Tests    # # Function to perform outlier test using Rosner test on a specified column of data   # # and log any outliers detected along with their details   # cat("\n")   # test_for_outliers <- function(data, column_name) {   #   # Display a message indicating the test being performed   #   cat("Are there any outlier values in", column_name, "?\n")   #   #   # Extract non-missing and non-NA/NaN/Inf values from the specified column   #   column_values <- na.omit(data[[column_name]])   #   #   # Check if there are any valid values for testing   #   if (length(column_values) == 0) {   #     # Print a message if no valid values are available for testing   #     cat("No valid values to test\n")   #     return()  # Exit the function if there are no valid values   #   }   #   #   # Perform Rosner test on the valid column values   #   test <- rosnerTest(column_values)   #   test <- test$all.stats   #   outliers <- test[which(test$Outlier == TRUE), 4]   #   #   # Check if any outliers were detected   #   if (length(outliers) == 0) {   #     # Print a message if no outliers were detected   #     cat("No\n")   #   } else {   #     # Print information about the detected outliers and their details   #     cat(paste("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",   #               data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"], "of the data table. For reference, the max, min, and mean of",   #               column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively",   #               collapse = "\n"), "\n")   #   #     # Add error messages about the detected outliers to the flags vector   #     flags<- c(flags, paste("The", column_name, "has outlier values according to a Rosner test, which are", outliers,   #                            ". They are in events", data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"],   #                            "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),   #                            min(column_values), mean(column_values), "respectively", collapse = "\n"), "\n")   #   }   # }  ### Outlier Test   # # Perform outlier tests for the "Slope" and "Dia" columns in the fuel1000 dataset   # test_for_outliers(fuel1000, "Slope")   # cat("\n")   # test_for_outliers(fuel1000, "Dia")}`
 
 #### Save Errors
 
-```{r} # Save to master error list errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_DecayCl, errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran,                            errors_FuelsDuffLitt_TranLen_N, errors_FuelsDuffLitt_TranLen_S, errors_FuelsDuffLitt_LogNo,                            errors_FuelsDuffLitt_TransNum, errors_FuelsDuffLitt_Slope, errors_FuelsDuffLitt_Dia)}
-```
+`{r} # Save to master error list errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_DecayCl, errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran,                            errors_FuelsDuffLitt_TranLen_N, errors_FuelsDuffLitt_TranLen_S, errors_FuelsDuffLitt_LogNo,                            errors_FuelsDuffLitt_TransNum, errors_FuelsDuffLitt_Slope, errors_FuelsDuffLitt_Dia)}`
 
-```{r} # Save as CSV or XLSX errors_path #write.csv(errors, paste0(errors_path, "errors_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "") write_xlsx(errors_FuelsDuffLitt, paste0(errors_path, "errors_FuelsDuffLitt.xlsx"))}
-```
+`{r} # Save as CSV or XLSX errors_path #write.csv(errors, paste0(errors_path, "errors_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "") write_xlsx(errors_FuelsDuffLitt, paste0(errors_path, "errors_FuelsDuffLitt.xlsx"))}`
