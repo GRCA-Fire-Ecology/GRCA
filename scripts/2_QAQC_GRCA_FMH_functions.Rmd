@@ -1,0 +1,1151 @@
+---
+title: "Grand Canyon QAQC for FMH Data"
+author: "Alexandra Lalor"
+date: "2024-11-06"
+output:
+  html_document:
+    theme: readable
+    highlight: 
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+# Install packages (if needed)
+#install.packages("tidyverse")
+```
+
+# BEFORE STARTING
+
+### Load Packages
+
+```{r}
+# Load packages
+library(tidyverse)
+#library(writexl)
+library(dplyr)
+library(knitr)
+```
+
+### Adjust File Paths
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
+# Identify working directory (specifically user name)
+getwd()
+
+# Load in data and name them based on file path
+# Change file path based on user name!
+#path_data <- "C:/Users/alalor.NPS/Desktop/R/GRCA/data/data_qaqc/2024/ORIGINALS/"
+path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/2024/"
+path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/2024/"
+```
+
+### Load Data
+
+```{r}
+# Load in data
+Fuels1000_all <- read.csv(paste0(path_data, "GRCA_FMH_2024_Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all <- read.csv(paste0(path_data, "GRCA_FMH_2024_Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all <- read.csv(paste0(path_data, "GRCA_FMH_2024_Surface Fuels - Fine_XPT.csv"))
+HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"))
+HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
+Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
+Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+#PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+
+# Blank data frame for no errors
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Comment" = "")
+```
+
+### Check Data
+
+Fuels1000
+
+```{r}
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+
+# Clean up data frame
+Fuels1000_all <- Fuels1000_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited))
+
+# Filter for only headers
+Fuels1000_header <- Fuels1000_all %>%
+  filter(!is.na(Visited))
+```
+
+FuelsDuffLitt
+
+```{r}
+# Ensure blanks in Visited column are NA 
+FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA  
+
+# Clean up data frame 
+FuelsDuffLitt_all <- FuelsDuffLitt_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data 
+FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
+  filter(!is.na(Visited))
+```
+
+FuelsFine
+
+```{r}
+# Ensure blanks in Visited column are NA 
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
+
+# Clean up data frame 
+FuelsFine_all <- FuelsFine_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data 
+FuelsFine_data <- FuelsFine_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+FuelsFine_header <- FuelsFine_all %>%   
+  filter(!is.na(Visited))
+```
+
+HerbsPoints
+
+```{r}
+# Ensure blanks in Visited column are NA 
+HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
+
+# Clean up data frame 
+HerbsPoints_all <- HerbsPoints_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+HerbsPoints_data <- HerbsPoints_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+HerbsPoints_header <- HerbsPoints_all %>%   
+  filter(!is.na(Visited))
+```
+
+HerbsObs
+
+```{r}
+# Ensure blanks in Visited column are NA 
+HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA  
+
+# Clean up data frame 
+HerbsObs_all <- HerbsObs_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+HerbsObs_data <- HerbsObs_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+HerbsObs_header <- HerbsObs_all %>%   
+  filter(!is.na(Visited))
+```
+
+Shrubs
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Shrubs_all <- Shrubs_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data 
+Shrubs_data <- Shrubs_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Shrubs_header <- Shrubs_all %>%   
+  filter(!is.na(Visited))
+```
+
+Seedlings
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Seedlings_all <- Seedlings_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+Seedlings_data <- Seedlings_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Seedlings_header <- Seedlings_all %>%   
+  filter(!is.na(Visited))
+```
+
+Trees
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Trees_all <- Trees_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+Trees_data <- Trees_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Trees_header <- Trees_all %>%   
+  filter(!is.na(Visited))
+```
+
+PostBurn
+
+```{r}
+# # Ensure blanks in Visited column are NA 
+# PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA  
+# 
+# # Clean up data frame 
+# PostBurn_all <- PostBurn_all %>%   
+#   # Separate Date column into Date and Time columns   
+#   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+#   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+#   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+# 
+# # Filter for only data 
+# PostBurn_data <- PostBurn_all %>%   
+#   filter(is.na(Visited))
+# 
+# # Filter for only headers 
+# PostBurn_header <- PostBurn_all %>%   
+#   filter(!is.na(Visited))
+```
+
+# FUNCTIONS
+
+Create functions for QAQC
+
+```{r}
+qaqc <- function(data, query, query_message, values_check) {
+  # Identify errors 
+  errors <- data %>%   
+    mutate("SavedQuery" = query, 
+           "Error" = paste(query_message, "=", values_data)) %>%   
+    # Data is equal exactly to a value
+    filter(values_check) %>%   
+    summarise("SavedQuery" = (query),
+              "MacroPlot.Name" = (MacroPlot.Name), 
+              "Date" = (Date),
+              "Error" = (Error),
+              "Comment" = (Comment)) 
+  # If no errors, add "No Errors" to existing data frame 
+  if (nrow(errors) == 0) {   
+    errors <- errors_blank %>%     
+      mutate(SavedQuery = query) 
+  } else {   
+    errors <- errors
+  }
+}
+```
+
+# PROTOCOL - SURFACE FUELS {.tabs}
+
+## 1000HR CWD
+
+This code conducts quality control checks on surface fuels data within the surface fuels coarse woody debris (1000-hr) data set.
+
+It checks for: header info (number of transects, length of transects), decay class values, fuel constants, duplicate values, transect numbers, reasonable slope numbers, reasonable diameter values.
+
+### Fuel 1000 Header FMH
+
+[Problem:]{.underline} Incorrect header information entered for FMH plots.
+
+[Procedure:]{.underline}
+
+-   Check that NumTran = 4
+
+```{r}
+# Set parameters 
+data <- Fuels1000_header
+query <- "Fuel 1000 Header FMH NumTran"
+query_message <- "Number of Transects" 
+values_data <- data$NumTran
+values_valid <- 4
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_NumTran <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that North Rim TranLen = 50 (or very close). North Rim plots include PIAB, PIEN, and PIPN.
+
+```{r}
+# Set parameters 
+data <- Fuels1000_header %>% 
+  filter(MonitoringType %in% c("PIAB", "PIEN", "PIPN"))
+query <- "Fuel 1000 Header FMH NRim TranLen" 
+query_message <- "Transect Length" 
+values_data <- data$TranLen 
+values_valid <- 50  
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_TranLen_N <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that S Rim TranLen = 100 (or very close). South Rim plots include PIED and PIPO.
+
+```{r}
+# Set parameters 
+data <- Fuels1000_header %>% 
+  filter(MonitoringType %in% c("PIED", "PIPO"))
+query <- "Fuel 1000 Header FMH SRim TranLen" 
+query_message <- "Transect Length" 
+values_data <- data$TranLen 
+values_valid <- 100 
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_TranLen_S <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel 1000 DecayClass
+
+[Problem:]{.underline} Logs have an entry for decay class that we don’t use.
+
+[Procedure:]{.underline}
+
+-   Check that DecayCl = 3 or 4
+
+```{r}
+# Set parameters
+data <- Fuels1000_data
+query <- "Fuel 1000 DecayClass"
+query_message <- "Decay Class"
+values_data <- data$DecayCl
+values_valid <- c(3,4)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Fuels1000_DecayCl <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel 1000 FuelConst
+
+[Problem:]{.underline} Incorrect coarse woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
+
+[Procedure:]{.underline}
+
+-   Check that CWDFuConSt = Monitoring Type
+
+```{r}
+# Set parameters
+data <- Fuels1000_data
+query <- "Fuel 1000 FuelConst"
+query_message <- "Fuel Constant"
+values_data <- data$CWDFuConSt
+values_valid <- data$MonitoringType
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_FuelConst <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel 1000 LogNo
+
+[Problem:]{.underline} "Duplicate" data exists due to multiple 1000 hr fuels with the same transect / diameter / decay class. Log Numbers are missing (which would differentiate 1000 hr fuels).
+
+[Procedure:]{.underline}
+
+-   Check for duplication (TRUE/FALSE) and store results in new column
+
+-   Check for TRUE values
+
+```{r}
+# Remove Index. Check for duplication (TRUE/FALSE) and store results in new column
+data_temp <- Fuels1000_data %>%
+  select(!"Index")
+
+# Set parameters 
+data <- data_temp %>%
+  mutate("Duplicate" = duplicated(data_temp))
+query <- "Fuel 1000 LogNo" 
+query_message <- "Duplicate Logs" 
+values_data <- data$Duplicate
+values_valid <- FALSE
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_LogNo <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel 1000 Values
+
+[Problem:]{.underline}  Values for transect, slope, and diameter are missing or unreasonable.
+
+[Procedure:]{.underline}
+
+-   Check that Transect = 1, 2, 3, or 4
+
+```{r}
+# Set parameters
+data <- Fuels1000_data
+query <- "Fuel 1000 Values TransNum"
+query_message <- "Transect Number"
+values_data <- data$Transect
+values_valid <- c(1, 2, 3, 4)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Fuels1000_TransNum <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Slope values are reasonable.
+
+```{r}
+# Set parameters
+data <- Fuels1000_data
+query <- "Fuel 1000 Values Slope"
+query_message <- "Slope"
+values_data <- data$Slope
+values_valid <- seq(0, 90, by = 1)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that diameter values are reasonable, are measured at 0.5 increments, and ≥ 3.0.
+
+```{r}
+# #remove NA values for outlier test
+# Fuels1000_data_dia <- Fuels1000_data %>% 
+#   filter(!is.na(Dia))
+# # Perform Rosner test on the valid column values
+# test <- rosnerTest(Fuels1000_data_dia$Dia)
+# test <- test$all.stats
+# outliers <- test[which(test$Outlier == TRUE), 4]
+
+# Set parameters
+data <- Fuels1000_data
+query <- "Fuel 1000 Values Dia"
+query_message <- "Diameter"
+values_data <- data$Dia
+values_valid <- seq(3, 40, by = 0.5)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Fuels1000_Dia <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel 1000 Errors
+
+```{r}
+# Save to master error list
+errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, 
+                          errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, 
+                          errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo, 
+                          errors_Fuels1000_TransNum, errors_Fuels1000_Slope, 
+                          errors_Fuels1000_Dia)
+
+remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, 
+       errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo,
+       errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
+
+# Table of results for quick check
+kable(errors_Fuels1000, "pipe")
+
+# Save as CSV or XLSX
+path_errors
+#write.csv(errors, paste0(path_errors, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.xlsx"))
+```
+
+## DUFF LITTER
+
+This code conducts quality control checks on surface fuels data within the surface fuels duff litter data set.
+
+It checks for: number of transects, fuel constants, number of points sampled, reasonable litter values, reasonable duff values.
+
+### Fuel DL Header FMH
+
+[Problem:]{.underline} Incorrect header information entered for FMH plots.
+
+[Procedure:]{.underline}
+
+-   Check that NumTran = 4
+
+```{r}
+# Set parameters  
+data <- FuelsDuffLitt_header
+query <- "Fuel DL Header FMH NumTran" 
+query_message <- "Number of Transects"  
+values_data <- data$NumTran  
+values_valid <- 4    
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel DL FuelConst
+
+[Problem:]{.underline} Incorrect duff & litter fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
+
+[Procedure:]{.underline}
+
+-   Check that DLFuConSt = Monitoring Type
+
+```{r}
+# Set parameters 
+data <- FuelsDuffLitt_data
+query <- "Fuel DL FuelConst" 
+query_message <- "Fuel Constant" 
+values_data <- data$DLFuConSt 
+values_valid <- data$MonitoringType  
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel DL Hits FMH
+
+[Problem:]{.underline} Extra or missing data points in FMH plots. There should be 4 transects with 10 sample points per transect. 
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot. Calculate number of hits per plot. Check that sum_hits = 40
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp <- FuelsDuffLitt_data %>%
+  filter(!is.na(SampLoc)) %>% 
+  group_by(MacroPlot.Name) %>% 
+  summarize("sum_hits" = n())
+
+# Set parameters 
+data <- merge(FuelsDuffLitt_data, data_temp, all.x = T)
+query <- "Fuel DL Hits" 
+query_message <- "Number of Hits" 
+values_data <- data$sum_hits
+values_valid <- 40
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
+
+errors_FuelsDuffLitt_Hits <- errors_FuelsDuffLitt_Hits %>% 
+  reframe("SavedQuery" = unique(query),
+          "MacroPlot.Name" = unique(MacroPlot.Name), 
+          "Date" = unique(Date),
+          "Error" = unique(Error),
+          "Comment" = unique(Comment)) 
+```
+
+### Fuel DL Values
+
+[Problem:]{.underline}  Values for litter and duff depth are missing or unreasonable.
+
+[Procedure:]{.underline}
+
+-   Sort by LittDep. Check that litter depth values are reasonable.
+
+```{r}
+# #remove NA values for outlier test
+# FuelsDuffLitt_data_litt <- FuelsDuffLitt_data %>%
+#   filter(!is.na(LittDep))
+# # Perform Rosner test on the valid column values
+# test <- rosnerTest(FuelsDuffLitt_data_litt$LittDep)
+# outliers <- test$all.stats$Value[test$all.stats$Outlier]
+# 
+# # Generate a message about outlier values
+# outlier_indices <- which(data %in% outliers)
+# max_value <- max(na.omit(data))
+# min_value <- min(na.omit(data))
+# mean_value <- mean(na.omit(data))
+
+# Set parameters 
+data <- FuelsDuffLitt_data
+query <- "Fuel DL Values LittDep" 
+query_message <- "Litter Depth" 
+values_data <- data$LittDep
+values_valid <- max(5)
+values_check <- (!values_data < values_valid) %>% replace_na(TRUE)
+
+# Identify errors
+errors_FuelsDuffLitt_LittDep <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DuffDep. Check that duff depth values are reasonable.
+
+```{r}
+# #remove NA values for outlier test
+# FuelsDuffLitt_data_duff <- FuelsDuffLitt_data %>%
+#   filter(!is.na(DuffDep))
+# # Perform Rosner test on the valid column values
+# test <- rosnerTest(FuelsDuffLitt_data_duff$DuffDep)
+# outliers <- test$all.stats$Value[test$all.stats$Outlier]
+# 
+# # Generate a message about outlier values
+# outlier_indices <- which(data %in% outliers)
+# max_value <- max(na.omit(data))
+# min_value <- min(na.omit(data))
+# mean_value <- mean(na.omit(data))
+
+# Set parameters 
+data <- FuelsDuffLitt_data
+query <- "Fuel DL Values DuffDep" 
+query_message <- "Duff Depth" 
+values_data <- data$DuffDep
+values_valid <- max(10)
+values_check <- (!values_data < values_valid) %>% replace_na(TRUE)
+
+# Identify errors
+errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel DL Errors
+
+```{r}
+# Save to master error list 
+errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran,
+                              errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep,
+                              errors_FuelsDuffLitt_DuffDep)
+
+remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran,
+       errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep,
+       errors_FuelsDuffLitt_DuffDep)
+
+# Table of results for quick check
+kable(errors_FuelsDuffLitt, "pipe")
+
+# Save as CSV or XLSX
+path_errors
+#write.csv(errors, paste0(path_errors, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.xlsx"))
+```
+
+## FINE FUELS
+
+This code conducts quality control checks on surface fuels data within the surface fuels fine (FWD) data set.
+
+It checks for: header info (number of transects, length of transects for One/Ten/Hundred Hour), fuel constants, transect numbers, reasonable azimuth numbers, reasonable slope numbers, reasonable One/Ten/Hundred Hour count values.
+
+### Fuel Fine Header FMH
+
+[Problem:]{.underline} Incorrect header information entered for FMH plots.
+
+[Procedure:]{.underline}
+
+-   Check that NumTran = 4
+
+```{r}
+# Set parameters  
+data <- FuelsFine_header
+query <- "Fuel Fine Header FMH NumTran" 
+query_message <- "Number of Transects"  
+values_data <- data$NumTran  
+values_valid <- 4    
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_NumTran <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that OneHrTranLen = 6
+
+```{r}
+# Set parameters  
+data <- FuelsFine_header
+query <- "Fuel Fine Header FMH OneHrTranLen" 
+query_message <- "One Hour Transect Length"  
+values_data <- data$OneHrTranLen
+values_valid <- 6
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_OneHrTranLen <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that TenHrTranLen = 6
+
+```{r}
+# Set parameters  
+data <- FuelsFine_header
+query <- "Fuel Fine Header FMH TenHrTranLen" 
+query_message <- "Ten Hour Transect Length"  
+values_data <- data$TenHrTranLen 
+values_valid <- 6
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_TenHrTranLen <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that HunHrTranLen = 12
+
+```{r}
+# Set parameters  
+data <- FuelsFine_header
+query <- "Fuel Fine Header FMH HunHrTranLen" 
+query_message <- "Hundrend Hour Transect Length"  
+values_data <- data$HunHrTranLen 
+values_valid <- 12
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel Fine FuelConst
+
+[Problem:]{.underline} Incorrect fine fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
+
+[Procedure:]{.underline}
+
+-   Check that FWDFuConSt = Monitoring Type
+
+```{r}
+# Set parameters 
+data <- FuelsFine_data
+query <- "Fuel Fine FuelConst" 
+query_message <- "Fuel Constant" 
+values_data <- data$FWDFuConSt 
+values_valid <- data$MonitoringType  
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel Fine Values
+
+[Problem:]{.underline}  Values for transect, azimuth, slope, and counts for One, Ten, Hundred hour fuels are missing or unreasonable.
+
+[Procedure:]{.underline}
+
+-   Check that Transect = 1, 2, 3, or 4
+
+```{r}
+# Set parameters
+data <- FuelsFine_data
+query <- "Fuel Fine Values TransNum"
+query_message <- "Transect Number"
+values_data <- data$Transect
+values_valid <- c(1, 2, 3, 4)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_FuelsFine_TransNum <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Azimuth values are reasonable.
+
+```{r}
+# Set parameters
+data <- FuelsFine_data
+query <- "Fuel Fine Values Azimuth"
+query_message <- "Azimuth"
+values_data <- data$Azimuth
+values_valid <- seq(0, 360, by = 1)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_FuelsFine_Azimuth <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Slope values are reasonable.
+
+```{r}
+# Set parameters
+data <- FuelsFine_data
+query <- "Fuel Fine Values Slope"
+query_message <- "Slope"
+values_data <- data$Slope
+values_valid <- seq(0, 90, by = 1)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that One Hour values are reasonable.
+
+```{r}
+# #remove NA values for outlier test
+# FuelsFine_data_OneHr <- FuelsFine_data %>%
+#   filter(!is.na(LittDep))
+# # Perform Rosner test on the valid column values
+# test <- rosnerTest(FuelsFine_data_litt$LittDep)
+# outliers <- test$all.stats$Value[test$all.stats$Outlier]
+# 
+# # Generate a message about outlier values
+# outlier_indices <- which(data %in% outliers)
+# max_value <- max(na.omit(data))
+# min_value <- min(na.omit(data))
+# mean_value <- mean(na.omit(data))
+
+# Set parameters 
+data <- FuelsFine_data
+query <- "Fuel Fine Values OneHr" 
+query_message <- "One Hour Count" 
+values_data <- data$OneHr
+values_valid <- seq(0, 50, by = 1)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_FuelsFine_OneHr <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Ten Hour values are reasonable.
+
+```{r}
+# #remove NA values for outlier test
+# FuelsFine_data_OneHr <- FuelsFine_data %>%
+#   filter(!is.na(LittDep))
+# # Perform Rosner test on the valid column values
+# test <- rosnerTest(FuelsFine_data_litt$LittDep)
+# outliers <- test$all.stats$Value[test$all.stats$Outlier]
+# 
+# # Generate a message about outlier values
+# outlier_indices <- which(data %in% outliers)
+# max_value <- max(na.omit(data))
+# min_value <- min(na.omit(data))
+# mean_value <- mean(na.omit(data))
+
+# Set parameters 
+data <- FuelsFine_data
+query <- "Fuel Fine Values TenHr" 
+query_message <- "Ten Hour Count" 
+values_data <- data$TenHr
+values_valid <- seq(0, 25, by = 1)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_FuelsFine_TenHr <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Hundred Hour values are reasonable.
+
+```{r}
+# #remove NA values for outlier test
+# FuelsFine_data_OneHr <- FuelsFine_data %>%
+#   filter(!is.na(LittDep))
+# # Perform Rosner test on the valid column values
+# test <- rosnerTest(FuelsFine_data_litt$LittDep)
+# outliers <- test$all.stats$Value[test$all.stats$Outlier]
+# 
+# # Generate a message about outlier values
+# outlier_indices <- which(data %in% outliers)
+# max_value <- max(na.omit(data))
+# min_value <- min(na.omit(data))
+# mean_value <- mean(na.omit(data))
+
+# Set parameters 
+data <- FuelsFine_data
+query <- "Fuel Fine Values HunHr" 
+query_message <- "Hundred Hour Count" 
+values_data <- data$HunHr
+values_valid <- seq(0, 10, by = 1)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel Fine Errors
+
+```{r}
+# Save to master error list 
+errors_FuelsFine <- rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran,
+                          errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen,
+                          errors_FuelsFine_HunHrTranLen, errors_FuelsFine_TransNum,
+                          errors_FuelsFine_Azimuth, errors_FuelsFine_Slope,
+                          errors_FuelsFine_OneHr, errors_FuelsFine_TenHr,
+                          errors_FuelsFine_HunHr)
+
+remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen,
+       errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen,
+       errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope,
+       errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+
+# Table of results for quick check
+kable(errors_FuelsFine, "pipe")
+
+# Save as CSV or XLSX 
+path_errors
+#write.csv(errors, paste0(path_errors, "errors_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.xlsx"))
+```
+
+## 1000HR VS FINE SLOPE
+
+This code conducts quality control checks on slope data in the surface fuels coarse woody debris (1000-hr) and fine woody debris datasets. It also checks for overall consistency in slope and azimuth values across years.
+
+```{r}
+# Set parameters 
+data_Fuels1000_slope <- Fuels1000_data %>% 
+  group_by(MacroPlot.Name, Date, Transect, Slope) %>% 
+  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
+            "Transect" = unique(Transect)) %>% 
+  mutate(Slope_1000 = Slope) %>% 
+  arrange(MacroPlot.Name, Transect) %>% 
+  select(!Slope)
+
+data_FuelsFine_slope <- FuelsFine_data %>% 
+  group_by(MacroPlot.Name, Date, Transect, Comment, Slope) %>% 
+  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
+            "Transect" = unique(Transect)) %>% 
+  mutate(Slope_fine = Slope) %>% 
+  arrange(MacroPlot.Name, Transect) %>% 
+  select(!Slope)
+
+errors_Fuels_slope <- merge(data_Fuels1000_slope, data_FuelsFine_slope, all.y = T) %>% 
+  filter(Slope_fine != Slope_1000) %>% 
+  mutate(SavedQuery = "Fuel Slope FMH",
+         Error = paste("FWD slope", Slope_fine, "!=", "CWD slope", Slope_1000)) %>% 
+  reframe("SavedQuery" = unique(query),
+          "MacroPlot.Name" = unique(MacroPlot.Name), 
+          "Date" = unique(Date), 
+          "Error" = unique(Error),
+          "Comment" = unique(Comment))
+
+# If no errors, add "No Errors" to existing data frame 
+if (nrow(errors_Fuels_slope) == 0) {   
+    errors_Fuels_slope <- errors_blank %>%     
+    mutate(SavedQuery = query) 
+} else {   
+    errors_Fuels_slope <- errors_Fuels_slope
+}
+```
+
+```{r}
+# transect_slope_azimuth_qc <- function(fuel1000, fine) {
+#   # Print a message indicating that plots are being compared between 1000Hr fuels and fine fuels
+#   cat("Plots are the same in 1000Hr fuels and fine fuels...\n")
+# 
+#   # Check if all unique MacroPlot names in 'fuel1000' are the same as in 'fine'
+#   if (all(unique(fuel1000$MacroPlot.Name) %in% unique(fine$MacroPlot.Name))) {
+#     cat("TRUE\n")
+#     cat("\n")
+#   } else {
+#     # Print an error message and update flags if there are differing plot names
+#     flags<- c(flags, "There is a plot that differs between 1000hr fuels and fine fuels - check this before running function \n")
+#     return(cat("FALSE, there is a plot that differs between 1000hr fuels and fine fuels - check this before running function \n"))
+#   }
+# 
+#   # Get unique MacroPlot names from 'fuel1000'
+#   plots <- unique(fuel1000$MacroPlot.Name)
+# 
+#   # Initialize empty vectors to store error flags for slope and azimuth
+#   no_errors_s <- c()
+#   no_errors_a <- c()
+# 
+#   # Loop over each unique MacroPlot name
+#   for (plot in 1:length(plots)) {
+#     macroplot_1000 <- fuel1000[which(fuel1000$MacroPlot.Name == plots[plot]), ]
+#     macroplot_fine <- fine[which(fine$MacroPlot.Name == plots[plot]), ]
+# 
+#     # Determine the set of transects to compare based on their availability in 'fuel1000' and 'fine'
+#     if (length(unique(macroplot_1000$Transect)) > length(unique(macroplot_fine$Transect))) {
+#       transects <- na.omit(unique(macroplot_1000$Transect))
+#     } else if (length(unique(macroplot_1000$Transect)) < length(unique(macroplot_fine$Transect))) {
+#       transects <- na.omit(unique(macroplot_fine$Transect))
+#     } else {
+#       transects <- na.omit(unique(macroplot_fine$Transect))
+#     }
+# 
+#     # Loop over each unique transect within the current MacroPlot
+#     for (transect in 1:length(transects)) {
+#       transect_1000 <- macroplot_1000[which(macroplot_1000$Transect == transects[transect]), ]
+#       transect_fine <- macroplot_fine[which(macroplot_fine$Transect == transects[transect]), ]
+# 
+#       # Compare slope values within 1000Hr fuels
+#       if (length(unique(transect_1000$Slope)) == 1 | length(unique(transect_1000$Slope)) == 0) {
+#         no_errors_s <- c(no_errors_s, 0)
+#       } else {
+#         no_errors_s <- c(no_errors_s, 1)
+#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for slopes:",unique(transect_1000$Slope),  "\n"), collapse = " "))
+#         cat("\n")
+#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for slopes:",unique(transect_1000$Slope)), collapse = " "))
+#       }
+# 
+#       # Compare slope values within fine fuels
+#       if (length(unique(transect_fine$Slope)) == 1 | length(unique(transect_fine$Slope)) == 0) {
+#         no_errors_s <- c(no_errors_s, 0)
+#       } else {
+#         no_errors_s <- c(no_errors_s, 1)
+#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for slopes:", unique(transect_fine$Slope), "\n"), collapse = " "))
+#         cat("\n")
+#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for slopes:", unique(transect_fine$Slope)), collapse = " "))
+#       }
+# 
+#       # Compare MacroPlot azimuth values within 1000Hr fuels
+#       if (length(unique(transect_1000$MacroPlot.Azimuth)) == 1 | length(unique(transect_1000$MacroPlot.Azimuth)) == 0) {
+#         no_errors_a <- c(no_errors_a, 0)
+#       } else {
+#         no_errors_a <- c(no_errors_a, 1)
+#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_1000$MacroPlot.Azimuth), "\n"), collapse = " "))
+#         cat("\n")
+#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_1000$MacroPlot.Azimuth)), collapse = " "))
+#       }
+# 
+#       # Compare MacroPlot azimuth values within fine fuels
+#       if (length(unique(transect_fine$MacroPlot.Azimuth)) == 1 | length(unique(transect_fine$MacroPlot.Azimuth)) == 0) {
+#         no_errors_a <- c(no_errors_a, 0)
+#       } else {
+#         no_errors_a <- c(no_errors_a, 1)
+#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_fine$MacroPlot.Azimuth),"\n"), collapse = " "))
+#         cat("\n")
+#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_fine$MacroPlot.Azimuth)), collapse = " "))
+#       }
+# 
+#       # Compare slope values between fine and 1000Hr fuels
+#       if (length(unique(transect_fine$Slope)) == 1 & length(unique(transect_1000$Slope)) == 1) {
+#         if (unique(transect_1000$Slope) == unique(transect_fine$Slope)) {
+#           no_errors_s <- c(no_errors_s, 0)
+#         } else {
+#           no_errors_s <- c(no_errors_s, 1)
+#           cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine (",unique(transect_fine$Slope),") and 1000hr (",unique(transect_1000$Slope),") slopes\n"), collapse = " "))
+#           cat("\n")
+#           flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr slopes"), collapse = " "))
+#         }
+#       } else if (length(unique(transect_fine$Slope)) == 0 | length(unique(transect_1000$Slope)) == 0) {
+#         # Cannot compare slope values between fine and 1000Hr fuels
+#         # This is acceptable
+#       } else {
+#         # Error - More than 1 value for slopes in either fine or 1000Hr fuels, cannot compare values
+#         # This should have already been flagged
+#       }
+# 
+#       # Compare MacroPlot azimuth values between fine and 1000Hr fuels
+#       if (length(unique(transect_fine$MacroPlot.Azimuth)) == 1 & length(unique(transect_1000$MacroPlot.Azimuth)) == 1) {
+#         if (unique(transect_1000$MacroPlot.Azimuth) == unique(transect_fine$MacroPlot.Azimuth)) {
+#           no_errors_a <- c(no_errors_a, 0)
+#         } else {
+#           no_errors_a <- c(no_errors_a, 1)
+#           cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine (",unique(transect_fine$MacroPlot.Azimuth),")and 1000hr (",unique(transect_1000$MacroPlot.Azimuth),") MacroPlot.Azimuths\n"), collapse = " "))
+#           cat("\n")
+#           flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr MacroPlot.Azimuths"), collapse = " "))
+#         }
+#       } else if (length(unique(transect_fine$MacroPlot.Azimuth)) == 0 | length(unique(transect_1000$MacroPlot.Azimuth)) == 0) {
+#         # Cannot compare MacroPlot azimuth values between fine and 1000Hr fuels
+#         # This is acceptable
+#       } else {
+#         # Error - More than 1 value for MacroPlot.Azimuths in either fine or 1000Hr fuels, cannot compare values
+#         # This should have already been flagged
+#       }
+#     }
+#   }
+# 
+#   # Check if all transects have consistent slope values
+#   if (length(unique(no_errors_s)) == 1) {
+#     if (unique(no_errors_s) == 0) {
+#       cat("Slope for a transect does not change across years or between fine and 1000hr fuel data\n")
+#       cat("\n")
+#     }
+#   }
+# 
+#   # Check if all transects have consistent azimuth values
+#   if (length(unique(no_errors_a)) == 1) {
+#     if (unique(no_errors_a) == 0) {
+#       cat("Azimuth for a transect does not change across years or between fine and 1000hr fuel data\n")
+#       cat("\n")
+#     }
+#   }
+# 
+#   return(flags)
+# } # end of function
+
+```
+
+# PROTOCOL - POST BURN
+
+# PROTOCOL - TREES
+
+## Tree CBH and Tree CBH Range
+
+## Tree Crown Class
+
+## Tree Damage
+
+## Tree DBH
+
+## Tree DD
+
+## Tree Area Multiplier
+
+## Tree Sample Area
+
+## Tree Height
+
+## Tree Severity
+
+## Tree Status and Life Form
+
+## Tree Duplicates
+
+## Tree Dead to Alive and Changing DBH
+
+# ALL ERRORS
+
+```{r}
+# Save to master error list 
+errors_all <- rbind(errors_Fuels1000, errors_FuelsDuffLitt, 
+                    errors_FuelsFine, errors_Fuels_slope)
+
+# Table of results for quick check
+kable(errors_all, "pipe")
+
+# Save as CSV or XLSX 
+path_errors
+#write.csv(errors, paste0(path_errors, "errors_all.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_all, paste0(path_errors, "errors_all.xlsx"))
+```
