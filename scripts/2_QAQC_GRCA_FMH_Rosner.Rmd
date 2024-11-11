@@ -1,0 +1,286 @@
+---
+title: "Grand Canyon QAQC Rosner Test"
+author: "Alexandra Lalor"
+date: "2024-11-06"
+output:
+  html_document:
+    theme: readable
+    highlight: 
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+# Install packages (if needed)
+#install.packages("tidyverse")
+```
+
+This script is meant to use the Rosner Test for outliers, using the full suite of data available. The values presented in this script can inform year-to-year estimates of what "reasonable" data values are in the grand scheme of things
+
+# BEFORE STARTING
+
+### Load Packages
+
+```{r}
+# Load packages
+library(tidyverse)
+library(dplyr)
+library(knitr)
+# EnvStats is needed for the rosnerTest() function
+library(EnvStats)
+```
+
+### Adjust File Paths
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
+# Identify working directory (specifically user name)
+getwd()
+
+# Load in data and name them based on file path
+# Change file path based on user name!
+path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/AllYears/"
+#path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/2024/"
+#path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/2024/"
+```
+
+### Load Data
+
+```{r}
+# Load in data
+Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
+#HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"))
+#HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
+#Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
+#Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
+#Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+#PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+```
+
+
+### Check Data
+
+Fuels1000
+
+```{r}
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+
+# Clean up data frame
+Fuels1000_all <- Fuels1000_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited))
+
+# Filter for only headers
+Fuels1000_header <- Fuels1000_all %>%
+  filter(!is.na(Visited))
+```
+
+FuelsDuffLitt
+
+```{r}
+# Ensure blanks in Visited column are NA 
+FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA  
+
+# Clean up data frame 
+FuelsDuffLitt_all <- FuelsDuffLitt_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data 
+FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
+  filter(!is.na(Visited))
+```
+
+FuelsFine
+
+```{r}
+# Ensure blanks in Visited column are NA 
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
+
+# Clean up data frame 
+FuelsFine_all <- FuelsFine_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data 
+FuelsFine_data <- FuelsFine_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+FuelsFine_header <- FuelsFine_all %>%   
+  filter(!is.na(Visited))
+```
+
+HerbsPoints
+
+```{r}
+# Ensure blanks in Visited column are NA 
+HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
+
+# Clean up data frame 
+HerbsPoints_all <- HerbsPoints_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+HerbsPoints_data <- HerbsPoints_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+HerbsPoints_header <- HerbsPoints_all %>%   
+  filter(!is.na(Visited))
+```
+
+HerbsObs
+
+```{r}
+# Ensure blanks in Visited column are NA 
+HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA  
+
+# Clean up data frame 
+HerbsObs_all <- HerbsObs_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+HerbsObs_data <- HerbsObs_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+HerbsObs_header <- HerbsObs_all %>%   
+  filter(!is.na(Visited))
+```
+
+Shrubs
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Shrubs_all <- Shrubs_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data 
+Shrubs_data <- Shrubs_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Shrubs_header <- Shrubs_all %>%   
+  filter(!is.na(Visited))
+```
+
+Seedlings
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Seedlings_all <- Seedlings_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+Seedlings_data <- Seedlings_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Seedlings_header <- Seedlings_all %>%   
+  filter(!is.na(Visited))
+```
+
+Trees
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA  
+
+# Clean up data frame 
+Trees_all <- Trees_all %>%   
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
+
+# Filter for only data 
+Trees_data <- Trees_all %>%   
+  filter(is.na(Visited))  
+
+# Filter for only headers 
+Trees_header <- Trees_all %>%   
+  filter(!is.na(Visited))
+```
+
+PostBurn
+
+```{r}
+# # Ensure blanks in Visited column are NA 
+# PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA  
+# 
+# # Clean up data frame 
+# PostBurn_all <- PostBurn_all %>%   
+#   # Separate Date column into Date and Time columns   
+#   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+#   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
+#   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+# 
+# # Filter for only data 
+# PostBurn_data <- PostBurn_all %>%   
+#   filter(is.na(Visited))
+# 
+# # Filter for only headers 
+# PostBurn_header <- PostBurn_all %>%   
+#   filter(!is.na(Visited))
+```
+
+
+# ROSNER TESTS
+## PROTOCOL - SURFACE FUELS
+### Litter
+```{r}
+# Perform Rosner's Test for outliers. This test is most appropriate when the sample size is large (n > 20). It is best to use this test on the full suite of data for the biggest sample size
+#remove NA values for outlier test
+data_temp <- Fuels1000_data %>%
+  filter(!is.na(Dia))
+# Perform Rosner test on the valid column values
+data_rosner <- rosnerTest(data_temp$Dia)
+data_rosner <- data_rosner$all.stats
+outliers <- data_rosner[which(data_rosner$Outlier == TRUE), 4]
+max_litt <- min(outliers) - 1
+```
+
