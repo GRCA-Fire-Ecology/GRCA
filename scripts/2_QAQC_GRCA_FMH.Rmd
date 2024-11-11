@@ -734,7 +734,7 @@ errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 
 ### Fuel Fine FuelConst
 
-[Problem:]{.underline} Incorrect fine fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
+[Problem:]{.underline} Incorrect fine woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
 
 [Procedure:]{.underline}
 
@@ -751,6 +751,40 @@ values_check <- !values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel Fine Hits FMH
+
+[Problem:]{.underline} Extra or missing data points in FMH plots. There should be 4 transects with 1 sample point per transect. 
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot. Calculate number of hits per plot. Check that sum_hits = 4
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp <- FuelsFine_data %>%
+  filter(!is.na(Transect)) %>% 
+  group_by(MacroPlot.Name) %>% 
+  summarize("sum_hits" = n())
+
+# Set parameters 
+data <- merge(FuelsFine_data, data_temp, all.x = T)
+query <- "Fuel Fine Hits" 
+query_message <- "Number of Hits" 
+values_data <- data$sum_hits
+values_valid <- 4
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_Hits <- qaqc(data, query, query_message, values_check)
+
+errors_FuelsFine_Hits <- errors_FuelsFine_Hits %>% 
+  reframe("SavedQuery" = unique(query),
+          "MacroPlot.Name" = unique(MacroPlot.Name), 
+          "Date" = unique(Date),
+          "Error" = unique(Error),
+          "Comment" = "NA") 
 ```
 
 ### Fuel Fine Values
@@ -782,7 +816,7 @@ data <- FuelsFine_data
 query <- "Fuel Fine Values Azimuth"
 query_message <- "Azimuth"
 values_data <- data$Azimuth
-values_valid <- seq(0, 360, by = 1)
+values_valid <- seq(0, 359, by = 1)
 values_check <- !values_data %in% values_valid
 
 # Identify errors
@@ -870,13 +904,13 @@ errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
 # Save to master error list 
 errors_FuelsFine <- rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran,
                           errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen,
-                          errors_FuelsFine_HunHrTranLen, errors_FuelsFine_TransNum,
-                          errors_FuelsFine_Azimuth, errors_FuelsFine_Slope,
-                          errors_FuelsFine_OneHr, errors_FuelsFine_TenHr,
-                          errors_FuelsFine_HunHr)
+                          errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits,
+                          errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, 
+                          errors_FuelsFine_Slope, errors_FuelsFine_OneHr, 
+                          errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
 
 remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen,
-       errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen,
+       errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits,
        errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope,
        errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
 
