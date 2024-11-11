@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 #install.packages("tidyverse")
 ```
 
-This script is meant to use the Rosner Test for outliers, using the full suite of data available. The values presented in this script can inform year-to-year estimates of what "reasonable" data values are in the grand scheme of things
+This script is meant to use the Rosner Test for outliers, using the full suite of data available. This test is most appropriate when the sample size is large (n \> 20). Valid values were found by using the Rosner test on the full suite of data. The values presented in this script can inform year-to-year estimates of what "reasonable" data values are in the grand scheme of things. Refer to the script 2_QAQC_GRCA_FMH.Rmd
 
 # BEFORE STARTING
 
@@ -66,7 +66,6 @@ FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
 #Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
 #PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
 ```
-
 
 ### Check Data
 
@@ -268,19 +267,87 @@ PostBurn
 #   filter(!is.na(Visited))
 ```
 
-
 # ROSNER TESTS
+
 ## PROTOCOL - SURFACE FUELS
-### Litter
+
+### 1000HR CWD
+
+#### Diameter
+
 ```{r}
-# Perform Rosner's Test for outliers. This test is most appropriate when the sample size is large (n > 20). It is best to use this test on the full suite of data for the biggest sample size
 #remove NA values for outlier test
 data_temp <- Fuels1000_data %>%
   filter(!is.na(Dia))
 # Perform Rosner test on the valid column values
 data_rosner <- rosnerTest(data_temp$Dia)
-data_rosner <- data_rosner$all.stats
-outliers <- data_rosner[which(data_rosner$Outlier == TRUE), 4]
-max_litt <- min(outliers) - 1
+outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+max_dia <- min(outliers) - 1
+```
+
+### DUFF LITTER
+
+#### Litter Depth
+
+```{r}
+#remove NA values for outlier test
+data_temp <- FuelsDuffLitt_data %>%
+  filter(!is.na(LittDep))
+# Perform Rosner test on the valid column values
+data_rosner <- rosnerTest(data_temp$LittDep)
+outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+max_litt <- min(outliers) - 0.1
+```
+
+#### Duff Depth
+
+```{r}
+#remove NA values for outlier test
+data_temp <- FuelsDuffLitt_data %>%
+  filter(!is.na(DuffDep))
+# Perform Rosner test on the valid column values
+data_rosner <- rosnerTest(data_temp$DuffDep)
+outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+max_duff <- min(outliers) - 1
+```
+
+### FINE FUELS
+
+#### One Hour Fuels
+
+```{r}
+#remove NA values for outlier test
+data_temp <- FuelsFine_data %>%
+  filter(!is.na(OneHr))
+# Perform Rosner test on the valid column values
+test <- rosnerTest(data_temp$OneHr)
+outliers <- test$all.stats$Value[test$all.stats$Outlier]
+max_one <- min(outliers) - 1
+```
+
+
+#### Ten Hour Fuels
+
+```{r}
+#remove NA values for outlier test
+data_temp <- FuelsFine_data %>%
+  filter(!is.na(TenHr))
+# Perform Rosner test on the valid column values
+test <- rosnerTest(data_temp$TenHr)
+outliers <- test$all.stats$Value[test$all.stats$Outlier]
+max_ten <- min(outliers) - 1
+```
+
+
+#### Hundred Hour Fuels
+
+```{r}
+#remove NA values for outlier test
+data_temp <- FuelsFine_data %>%
+  filter(!is.na(HunHr))
+# Perform Rosner test on the valid column values
+test <- rosnerTest(data_temp$HunHr)
+outliers <- test$all.stats$Value[test$all.stats$Outlier]
+max_hun <- min(outliers) - 1
 ```
 
