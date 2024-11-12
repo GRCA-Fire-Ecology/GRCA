@@ -19,7 +19,8 @@ output:
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # Install packages (if needed)
-#install.packages("tidyverse")
+# install.packages("tidyverse")
+# install.packages("Rtools")
 ```
 
 # BEFORE STARTING
@@ -46,10 +47,10 @@ getwd()
 
 # Load in data and name them based on file path
 # Change file path based on user name!
-path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/2024/"
-path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
-#path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/2024/"
-#path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/2024/"
+#path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/2024/"
+#path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
+path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/2024/"
+path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/2024/"
 ```
 
 ### Load Data
@@ -65,6 +66,8 @@ Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
 Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
 Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
 #PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+
+PostBurn_all <- read.csv("C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/AllYears/I&M_Post Burn Severity_XPT.csv")
 
 # Blank data frame for no errors
 errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Comment" = "")
@@ -251,23 +254,23 @@ Trees_header <- Trees_all %>%
 PostBurn
 
 ```{r}
-# # Ensure blanks in Visited column are NA 
-# PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA  
-# 
-# # Clean up data frame 
-# PostBurn_all <- PostBurn_all %>%   
-#   # Separate Date column into Date and Time columns   
-#   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-#   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-#   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
-# 
-# # Filter for only data 
-# PostBurn_data <- PostBurn_all %>%   
-#   filter(is.na(Visited))
-# 
-# # Filter for only headers 
-# PostBurn_header <- PostBurn_all %>%   
-#   filter(!is.na(Visited))
+# Ensure blanks in Visited column are NA
+PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
+
+# Clean up data frame
+PostBurn_all <- PostBurn_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)
+  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+
+# Filter for only data
+PostBurn_data <- PostBurn_all %>%
+  filter(is.na(Visited))
+
+# Filter for only headers
+PostBurn_header <- PostBurn_all %>%
+  filter(!is.na(Visited))
 ```
 
 # FUNCTIONS
@@ -500,7 +503,7 @@ kable(errors_Fuels1000, "pipe")
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors, paste0(path_errors, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write.csv(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
 #write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.xlsx"))
 ```
 
@@ -656,8 +659,8 @@ kable(errors_FuelsDuffLitt, "pipe")
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors, paste0(path_errors, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.xlsx"))
+#write.csv(errors_FuelsDuffLitt, paste0(path_errors, "errors_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_FuelsDuffLitt.xlsx"))
 ```
 
 ## FINE FUELS
@@ -919,7 +922,7 @@ kable(errors_FuelsFine, "pipe")
 
 # Save as CSV or XLSX 
 path_errors
-#write.csv(errors, paste0(path_errors, "errors_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write.csv(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.xlsx"))
 ```
 
@@ -964,180 +967,800 @@ if (nrow(errors_Fuels_slope) == 0) {
 }
 ```
 
-```{r}
-# transect_slope_azimuth_qc <- function(fuel1000, fine) {
-#   # Print a message indicating that plots are being compared between 1000Hr fuels and fine fuels
-#   cat("Plots are the same in 1000Hr fuels and fine fuels...\n")
-# 
-#   # Check if all unique MacroPlot names in 'fuel1000' are the same as in 'fine'
-#   if (all(unique(fuel1000$MacroPlot.Name) %in% unique(fine$MacroPlot.Name))) {
-#     cat("TRUE\n")
-#     cat("\n")
-#   } else {
-#     # Print an error message and update flags if there are differing plot names
-#     flags<- c(flags, "There is a plot that differs between 1000hr fuels and fine fuels - check this before running function \n")
-#     return(cat("FALSE, there is a plot that differs between 1000hr fuels and fine fuels - check this before running function \n"))
-#   }
-# 
-#   # Get unique MacroPlot names from 'fuel1000'
-#   plots <- unique(fuel1000$MacroPlot.Name)
-# 
-#   # Initialize empty vectors to store error flags for slope and azimuth
-#   no_errors_s <- c()
-#   no_errors_a <- c()
-# 
-#   # Loop over each unique MacroPlot name
-#   for (plot in 1:length(plots)) {
-#     macroplot_1000 <- fuel1000[which(fuel1000$MacroPlot.Name == plots[plot]), ]
-#     macroplot_fine <- fine[which(fine$MacroPlot.Name == plots[plot]), ]
-# 
-#     # Determine the set of transects to compare based on their availability in 'fuel1000' and 'fine'
-#     if (length(unique(macroplot_1000$Transect)) > length(unique(macroplot_fine$Transect))) {
-#       transects <- na.omit(unique(macroplot_1000$Transect))
-#     } else if (length(unique(macroplot_1000$Transect)) < length(unique(macroplot_fine$Transect))) {
-#       transects <- na.omit(unique(macroplot_fine$Transect))
-#     } else {
-#       transects <- na.omit(unique(macroplot_fine$Transect))
-#     }
-# 
-#     # Loop over each unique transect within the current MacroPlot
-#     for (transect in 1:length(transects)) {
-#       transect_1000 <- macroplot_1000[which(macroplot_1000$Transect == transects[transect]), ]
-#       transect_fine <- macroplot_fine[which(macroplot_fine$Transect == transects[transect]), ]
-# 
-#       # Compare slope values within 1000Hr fuels
-#       if (length(unique(transect_1000$Slope)) == 1 | length(unique(transect_1000$Slope)) == 0) {
-#         no_errors_s <- c(no_errors_s, 0)
-#       } else {
-#         no_errors_s <- c(no_errors_s, 1)
-#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for slopes:",unique(transect_1000$Slope),  "\n"), collapse = " "))
-#         cat("\n")
-#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for slopes:",unique(transect_1000$Slope)), collapse = " "))
-#       }
-# 
-#       # Compare slope values within fine fuels
-#       if (length(unique(transect_fine$Slope)) == 1 | length(unique(transect_fine$Slope)) == 0) {
-#         no_errors_s <- c(no_errors_s, 0)
-#       } else {
-#         no_errors_s <- c(no_errors_s, 1)
-#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for slopes:", unique(transect_fine$Slope), "\n"), collapse = " "))
-#         cat("\n")
-#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for slopes:", unique(transect_fine$Slope)), collapse = " "))
-#       }
-# 
-#       # Compare MacroPlot azimuth values within 1000Hr fuels
-#       if (length(unique(transect_1000$MacroPlot.Azimuth)) == 1 | length(unique(transect_1000$MacroPlot.Azimuth)) == 0) {
-#         no_errors_a <- c(no_errors_a, 0)
-#       } else {
-#         no_errors_a <- c(no_errors_a, 1)
-#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_1000$MacroPlot.Azimuth), "\n"), collapse = " "))
-#         cat("\n")
-#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_1000$MacroPlot.Azimuth)), collapse = " "))
-#       }
-# 
-#       # Compare MacroPlot azimuth values within fine fuels
-#       if (length(unique(transect_fine$MacroPlot.Azimuth)) == 1 | length(unique(transect_fine$MacroPlot.Azimuth)) == 0) {
-#         no_errors_a <- c(no_errors_a, 0)
-#       } else {
-#         no_errors_a <- c(no_errors_a, 1)
-#         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_fine$MacroPlot.Azimuth),"\n"), collapse = " "))
-#         cat("\n")
-#         flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_fine$MacroPlot.Azimuth)), collapse = " "))
-#       }
-# 
-#       # Compare slope values between fine and 1000Hr fuels
-#       if (length(unique(transect_fine$Slope)) == 1 & length(unique(transect_1000$Slope)) == 1) {
-#         if (unique(transect_1000$Slope) == unique(transect_fine$Slope)) {
-#           no_errors_s <- c(no_errors_s, 0)
-#         } else {
-#           no_errors_s <- c(no_errors_s, 1)
-#           cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine (",unique(transect_fine$Slope),") and 1000hr (",unique(transect_1000$Slope),") slopes\n"), collapse = " "))
-#           cat("\n")
-#           flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr slopes"), collapse = " "))
-#         }
-#       } else if (length(unique(transect_fine$Slope)) == 0 | length(unique(transect_1000$Slope)) == 0) {
-#         # Cannot compare slope values between fine and 1000Hr fuels
-#         # This is acceptable
-#       } else {
-#         # Error - More than 1 value for slopes in either fine or 1000Hr fuels, cannot compare values
-#         # This should have already been flagged
-#       }
-# 
-#       # Compare MacroPlot azimuth values between fine and 1000Hr fuels
-#       if (length(unique(transect_fine$MacroPlot.Azimuth)) == 1 & length(unique(transect_1000$MacroPlot.Azimuth)) == 1) {
-#         if (unique(transect_1000$MacroPlot.Azimuth) == unique(transect_fine$MacroPlot.Azimuth)) {
-#           no_errors_a <- c(no_errors_a, 0)
-#         } else {
-#           no_errors_a <- c(no_errors_a, 1)
-#           cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine (",unique(transect_fine$MacroPlot.Azimuth),")and 1000hr (",unique(transect_1000$MacroPlot.Azimuth),") MacroPlot.Azimuths\n"), collapse = " "))
-#           cat("\n")
-#           flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr MacroPlot.Azimuths"), collapse = " "))
-#         }
-#       } else if (length(unique(transect_fine$MacroPlot.Azimuth)) == 0 | length(unique(transect_1000$MacroPlot.Azimuth)) == 0) {
-#         # Cannot compare MacroPlot azimuth values between fine and 1000Hr fuels
-#         # This is acceptable
-#       } else {
-#         # Error - More than 1 value for MacroPlot.Azimuths in either fine or 1000Hr fuels, cannot compare values
-#         # This should have already been flagged
-#       }
-#     }
-#   }
-# 
-#   # Check if all transects have consistent slope values
-#   if (length(unique(no_errors_s)) == 1) {
-#     if (unique(no_errors_s) == 0) {
-#       cat("Slope for a transect does not change across years or between fine and 1000hr fuel data\n")
-#       cat("\n")
-#     }
-#   }
-# 
-#   # Check if all transects have consistent azimuth values
-#   if (length(unique(no_errors_a)) == 1) {
-#     if (unique(no_errors_a) == 0) {
-#       cat("Azimuth for a transect does not change across years or between fine and 1000hr fuel data\n")
-#       cat("\n")
-#     }
-#   }
-# 
-#   return(flags)
-# } # end of function
+# PROTOCOL - POST BURN
 
+This code conducts quality control checks on post burn data within the surface fuels fine (FWD) data set.
+
+It checks for: header info (number of transects, length of transects, number of points per transect), substrate and vegetation values.
+
+### PBSev Header FMH
+
+[Problem:]{.underline} Incorrect header information entered for FMH plots.
+
+[Procedure:]{.underline}
+
+-   Check that NumTran = 4
+
+```{r}
+# # Set parameters  
+# data <- PostBurn_header
+# query <- "PBSev Header FMH NumTran" 
+# query_message <- "Number of Transects"  
+# values_data <- data$NumTran  
+# values_valid <- 4    
+# values_check <- !values_data == values_valid
+# 
+# # Identify errors
+# errors_PostBurn_NumTran <- qaqc(data, query, query_message, values_check)
 ```
 
-# PROTOCOL - POST BURN
+-   Check that TranLen = 50
+
+```{r}
+# # Set parameters 
+# data <- PostBurn_header
+# query <- "PBSev Header FMH TranLen" 
+# query_message <- "Transect Length" 
+# values_data <- data$TranLen 
+# values_valid <- 50  
+# values_check <- !values_data == values_valid
+# 
+# # Identify errors
+# errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumPtsTran = 10
+
+```{r}
+# # Set parameters 
+# data <- PostBurn_header
+# query <- "PBSev Header FMH NumPtsTran" 
+# query_message <- "Number of Points" 
+# values_data <- data$NumPtsTran
+# values_valid <- 10
+# values_check <- !values_data == values_valid
+# 
+# # Identify errors
+# errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
+```
+
+### PBSev Hits FMH
+
+[Problem:]{.underline} Extra or missing data points in FMH plots. There should be 4 transects with 10 sample points per transect.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot. Calculate number of hits per plot. Check that sum_hits = 40
+
+```{r}
+# # Filter NA values. Add number of hits and store in new column
+# data_temp <- PostBurn_data %>%
+#   filter(!is.na(Point)) %>% 
+#   group_by(MacroPlot.Name) %>% 
+#   summarize("sum_hits" = n())
+# 
+# # Set parameters 
+# data <- merge(PostBurn_data, data_temp, all.x = T)
+# query <- "PBSev Hits" 
+# query_message <- "Number of Hits" 
+# values_data <- data$sum_hits
+# values_valid <- 40
+# values_check <- !values_data == values_valid
+# 
+# # Identify errors
+# errors_PostBurn_Hits <- qaqc(data, query, query_message, values_check)
+#
+# errors_PostBurn_Hits <- errors_PostBurn_Hits %>% 
+#   reframe("SavedQuery" = unique(query),
+#           "MacroPlot.Name" = unique(MacroPlot.Name), 
+#           "Date" = unique(Date),
+#           "Error" = unique(Error),
+#           "Comment" = unique(Comment)) 
+```
+
+### PBSev Substrate
+
+[Problem:]{.underline} Incorrect values entered for substrate severity.
+
+[Procedure:]{.underline}
+
+-   Check that Sub = 0, 1, 2, 3, 4, or 5
+
+```{r}
+# # Set parameters
+# data <- PostBurn_data
+# query <- "PBSev Substrate"
+# query_message <- "Substrate Severity"
+# values_data <- data$Sub
+# values_valid <- c(0, 1, 2, 3, 4, 5)
+# values_check <- !values_data %in% values_valid
+# 
+# # Identify errors
+# errors_PostBurn_Sub <- qaqc(data, query, query_message, values_check)
+```
+
+### PBSev Veg
+
+[Problem:]{.underline} Incorrect values entered for vegetation severity.
+
+[Procedure:]{.underline}
+
+-   Check that Veg = 0, 1, 2, 3, 4, or 5
+
+```{r}
+# # Set parameters
+# data <- PostBurn_data
+# query <- "PBSev Veg"
+# query_message <- "Vegetation Severity"
+# values_data <- data$Veg
+# values_valid <- c(0, 1, 2, 3, 4, 5)
+# values_check <- !values_data %in% values_valid
+# 
+# # Identify errors
+# errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
+```
+
+### PBSev Errors
+
+```{r}
+# # Save to master error list 
+# errors_PostBurn <- rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, 
+#                          errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, 
+#                          errors_PostBurn_Sub, errors_PostBurn_Veg)
+# 
+# remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, 
+#        errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, 
+#        errors_PostBurn_Sub, errors_PostBurn_Veg)
+# 
+# # Table of results for quick check
+# kable(errors_PostBurn, "pipe")
+# 
+# # Save as CSV or XLSX 
+# path_errors
+# #write.csv(errors_PostBurn, paste0(path_errors, "errors_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "") 
+# #write_xlsx(errors_PostBurn, paste0(path_errors, "errors_PostBurn.xlsx"))
+```
 
 # PROTOCOL - TREES
 
-## Tree CBH and Tree CBH Range
+### Trees Header FMH
 
-## Tree Crown Class
+[Problem:]{.underline} Incorrect header information entered for FMH plots.
 
-## Tree Damage
+[Procedure:]{.underline}
 
-## Tree DBH
+-   Check that MacroPlotSize = 0.1
 
-## Tree DD
+```{r}
+# Set parameters  
+data <- Trees_header
+query <- "Trees Header FMH MacroPlotSize" 
+query_message <- "Macro Plot Size"  
+values_data <- data$MacroPlotSize  
+values_valid <- 0.1    
+values_check <- !values_data == values_valid
 
-## Tree Area Multiplier
+# Identify errors
+errors_Trees_MacroPlotSize <- qaqc(data, query, query_message, values_check)
+```
 
-## Tree Sample Area
+-   Check that SnagPlotSize = 0.1
 
-## Tree Height
+```{r}
+# Set parameters  
+data <- Trees_header
+query <- "Trees Header FMH SnagPlotSize" 
+query_message <- "Snag Plot Size"  
+values_data <- data$SnagPlotSize
+values_valid <- 0.1    
+values_check <- !values_data == values_valid
 
-## Tree Severity
+# Identify errors
+errors_Trees_SnagPlotSize <- qaqc(data, query, query_message, values_check)
+```
 
-## Tree Status and Life Form
+-   Check that BrkPntDia = 15
 
-## Tree Duplicates
+```{r}
+# Set parameters  
+data <- Trees_header
+query <- "Trees Header FMH BrkPntDia" 
+query_message <- "Break Point Diameter"  
+values_data <- data$BrkPntDia
+values_valid <- 15
+values_check <- !values_data == values_valid
 
-## Tree Dead to Alive and Changing DBH
+# Identify errors
+errors_Trees_BrkPntDia <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Header Errors
+
+```{r}
+# Save to master error list 
+errors_Trees_Header <- rbind(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, 
+                             errors_Trees_BrkPntDia)
+
+remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia)
+```
+
+### Trees Crown Class
+
+[Problem]{.underline}: Incompatible values entered for tree crown class.
+
+[Procedure:]{.underline}
+
+-   Sort by DBH. If DBH = blank and Status = D, then check that CrwnCl = BBD, CUS, or DD or blank
+
+```{r}
+# Set parameters  
+data <- Trees_data %>% 
+  filter(is.na(DBH), Status == "D")
+query <- "Trees Crown Class D" 
+query_message <- "Crown Class"  
+values_data <- data$CrwnCl
+values_valid <- c("BBD", "CUS", "DD")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_CrwnCl_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DBH. If DBH = blank and Status = L, then check that CrwnCl = blank
+
+```{r}
+data <- Trees_data %>% 
+  filter(is.na(DBH), Status == "L")
+query <- "Trees Crown Class L" 
+query_message <- "Crown Class"  
+values_data <- data$CrwnCl
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_CrwnCl_2 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DBH. If DBH = overstory and Status = D, then check that CrwnCl = BAD, CS, LBS, or RS or blank
+
+```{r}
+data <- Trees_data %>% 
+  filter(DBH > 15.0, Status == "D")
+query <- "Trees Crown Class Overstory D" 
+query_message <- "Crown Class"  
+values_data <- data$CrwnCl
+values_valid <- c("BAD", "CS", "LBS", "RS")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_CrwnCl_3 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DBH. If DBH = overstory and Status = L, then check that CrwnCl = C, D, I, O, or SC or blank
+
+```{r}
+data <- Trees_data %>% 
+  filter(DBH > 15.0, Status == "L")
+query <- "Trees Crown Class Overstory L" 
+query_message <- "Crown Class"  
+values_data <- data$CrwnCl
+values_valid <- c("C", "D", "I", "O", "SC")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_CrwnCl_4 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DBH. If DBH = pole, then check that CrwnCl = X or blank
+
+```{r}
+data <- Trees_data %>% 
+  filter(DBH <= 15.0)
+query <- "Trees Crown Class Pole" 
+query_message <- "Crown Class"  
+values_data <- data$CrwnCl
+values_valid <- c("X", "")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_CrwnCl_5 <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Crown Class Errors
+
+```{r}
+# Save to master error list 
+errors_Trees_CrwnCl <- rbind(errors_Trees_CrwnCl_1, errors_Trees_CrwnCl_2, 
+                             errors_Trees_CrwnCl_3, errors_Trees_CrwnCl_4, 
+                             errors_Trees_CrwnCl_5)
+
+remove(errors_Trees_CrwnCl_1, errors_Trees_CrwnCl_2, errors_Trees_CrwnCl_3, 
+       errors_Trees_CrwnCl_4, errors_Trees_CrwnCl_5)
+```
+
+### Trees Damage Live
+
+[Problem]{.underline}: Tree damage codes are entered incorrectly.
+
+[Procedure:]{.underline}
+
+-   Sort by DamCd 1. Check that DamCd 1 corresponds to one of the choices on the FMH-1 overstory data sheets.
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "L")
+query <- "Trees Damage Live 1" 
+query_message <- "Damage Code 1"  
+values_data <- data$DamCd1
+values_valid <- c("", "ABGR", "BIRD", "BROK", "BROM", "CONK", "CROK", "DTOP", "FIRE", "FORK", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "ROOT", "SPAR", "SPRT", "TWIN", "WOND")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_L_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DamCd 2. Check that DamCd 2 corresponds to one of the choices on the FMH-1 overstory data sheets.
+
+```{r}
+data <- Trees_data
+query <- "Trees Damage Live 2" 
+query_message <- "Damage Code 2"  
+values_data <- data$DamCd2
+values_valid <- c("", "ABGR", "BIRD", "BROK", "BROM", "CONK", "CROK", "DTOP", "FIRE", "FORK", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "ROOT", "SPAR", "SPRT", "TWIN", "WOND")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_L_2 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DamCd 3. Check that DamCd 3 corresponds to one of the choices on the FMH-1 overstory data sheets.
+
+```{r}
+data <- Trees_data
+query <- "Trees Damage Live 3" 
+query_message <- "Damage Code 3"  
+values_data <- data$DamCd3
+values_valid <- c("", "ABGR", "BIRD", "BROK", "BROM", "CONK", "CROK", "DTOP", "FIRE", "FORK", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "ROOT", "SPAR", "SPRT", "TWIN", "WOND")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_L_3 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DamCd 4. Check that DamCd 4 corresponds to one of the choices on the FMH-1 overstory data sheets.
+
+```{r}
+data <- Trees_data
+query <- "Trees Damage Live 4" 
+query_message <- "Damage Code 4"  
+values_data <- data$DamCd4
+values_valid <- c("", "ABGR", "BIRD", "BROK", "BROM", "CONK", "CROK", "DTOP", "FIRE", "FORK", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "ROOT", "SPAR", "SPRT", "TWIN", "WOND")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_L_4 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by DamCd 5. Check that DamCd 5 corresponds to one of the choices on the FMH-1 overstory data sheets.
+
+```{r}
+data <- Trees_data
+query <- "Trees Damage Live 5" 
+query_message <- "Damage Code 5"  
+values_data <- data$DamCd5
+values_valid <- c("", "ABGR", "BIRD", "BROK", "BROM", "CONK", "CROK", "DTOP", "FIRE", "FORK", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "ROOT", "SPAR", "SPRT", "TWIN", "WOND")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_L_5 <- qaqc(data, query, query_message, values_check)
+```
+
+### Trees Damage Dead
+
+[Problem]{.underline}: Damage codes entered for trees that are dead.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. If Status = D, check that DamCd1, DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+query <- "Trees Damage Dead 1" 
+query_message <- "Damage Code 1"  
+values_data <- data$DamCd1
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_D_1 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+query <- "Trees Damage Dead 2" 
+query_message <- "Damage Code 2"  
+values_data <- data$DamCd2
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_D_2 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+query <- "Trees Damage Dead 3" 
+query_message <- "Damage Code 3"  
+values_data <- data$DamCd3
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_D_3 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+query <- "Trees Damage Dead 4" 
+query_message <- "Damage Code 4"  
+values_data <- data$DamCd4
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_D_4 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+query <- "Trees Damage Dead 5" 
+query_message <- "Damage Code 5"  
+values_data <- data$DamCd5
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_D_5 <- qaqc(data, query, query_message, values_check)
+```
+
+### Trees Damage Blank
+
+[Problem]{.underline}: Tree damage codes are entered incorrectly. Blank damages exist before entered damages
+
+[Procedure:]{.underline}
+
+-   Filter for DamCd1 = blank. Check that DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd1 == "")
+query <- "Trees Damage 1 Blank" 
+query_message <- "Damage Code 1 = Blank, Damage Code 2"  
+values_data <- data$DamCd2
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_1_Blank_2 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd1 == "")
+query <- "Trees Damage 1 Blank" 
+query_message <- "Damage Code 1 = Blank, Damage Code 3"  
+values_data <- data$DamCd3
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_1_Blank_3 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd1 == "")
+query <- "Trees Damage 1 Blank" 
+query_message <- "Damage Code 1 = Blank, Damage Code 4"  
+values_data <- data$DamCd4
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_1_Blank_4 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd1 == "")
+query <- "Trees Damage 1 Blank" 
+query_message <- "Damage Code 1 = Blank, Damage Code 5"  
+values_data <- data$DamCd5
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_1_Blank_5 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Filter for DamCd2 = blank. Check that DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd2 == "")
+query <- "Trees Damage 2 Blank" 
+query_message <- "Damage Code 2 = Blank, Damage Code 3"  
+values_data <- data$DamCd3
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_2_Blank_3 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd2 == "")
+query <- "Trees Damage 2 Blank" 
+query_message <- "Damage Code 2 = Blank, Damage Code 4"  
+values_data <- data$DamCd4
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_2_Blank_4 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd2 == "")
+query <- "Trees Damage 2 Blank" 
+query_message <- "Damage Code 2 = Blank, Damage Code 5"  
+values_data <- data$DamCd5
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_2_Blank_5 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Filter for DamCd3 = blank. Check that DamCd4 [and]{.underline} DamCd5 are blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd3 == "")
+query <- "Trees Damage 3 Blank" 
+query_message <- "Damage Code 3 = Blank, Damage Code 4"  
+values_data <- data$DamCd4
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_3_Blank_4 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd3 == "")
+query <- "Trees Damage 3 Blank" 
+query_message <- "Damage Code 3 = Blank, Damage Code 5"  
+values_data <- data$DamCd5
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_3_Blank_5 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Filter for DamCd4 = blank. Check that DamCd5 is blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(DamCd4 == "")
+query <- "Trees Damage 4 Blank" 
+query_message <- "Damage Code 4 = Blank, Damage Code 5"  
+values_data <- data$DamCd5
+values_valid <- ""
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_DamCd_4_Blank_5 <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Damage Errors
+
+```{r}
+# Damage Errors Live Trees
+errors_Trees_DamCd_L <- rbind(errors_Trees_DamCd_L_1, errors_Trees_DamCd_L_2, 
+                              errors_Trees_DamCd_L_3, errors_Trees_DamCd_L_4, 
+                              errors_Trees_DamCd_L_5)
+
+remove(errors_Trees_DamCd_L_1, errors_Trees_DamCd_L_2, errors_Trees_DamCd_L_3, 
+       errors_Trees_DamCd_L_4, errors_Trees_DamCd_L_5)
+
+# Damage Errors Dead Trees
+errors_Trees_DamCd_D <- rbind(errors_Trees_DamCd_D_1, errors_Trees_DamCd_D_2, 
+                            errors_Trees_DamCd_D_3, errors_Trees_DamCd_D_4, 
+                            errors_Trees_DamCd_D_5)
+
+remove(errors_Trees_DamCd_D_1, errors_Trees_DamCd_D_2, errors_Trees_DamCd_D_3, 
+       errors_Trees_DamCd_D_4, errors_Trees_DamCd_D_5)
+
+# Damage Errors Blank Entries
+errors_Trees_DamCd_Blank <- rbind(errors_Trees_DamCd_1_Blank_2, errors_Trees_DamCd_1_Blank_3,
+                                  errors_Trees_DamCd_1_Blank_4, errors_Trees_DamCd_1_Blank_5,
+                                  errors_Trees_DamCd_2_Blank_3, errors_Trees_DamCd_2_Blank_4,
+                                  errors_Trees_DamCd_2_Blank_5, errors_Trees_DamCd_3_Blank_4,
+                                  errors_Trees_DamCd_3_Blank_5, errors_Trees_DamCd_4_Blank_5)
+
+remove(errors_Trees_DamCd_1_Blank_2, errors_Trees_DamCd_1_Blank_3,
+       errors_Trees_DamCd_1_Blank_4, errors_Trees_DamCd_1_Blank_5, 
+       errors_Trees_DamCd_2_Blank_3, errors_Trees_DamCd_2_Blank_4, 
+       errors_Trees_DamCd_2_Blank_5, errors_Trees_DamCd_3_Blank_4, 
+       errors_Trees_DamCd_3_Blank_5, errors_Trees_DamCd_4_Blank_5)
+
+# Damage Errors Combined
+errors_Trees_DamCd <- rbind(errors_Trees_DamCd_L, errors_Trees_DamCd_D, 
+                            errors_Trees_DamCd_Blank)
+
+remove(errors_Trees_DamCd_L, errors_Trees_DamCd_D, errors_Trees_DamCd_Blank)
+                                  
+```
+
+### Trees DBH FMH
+
+[Problem]{.underline}: DBH values smaller than sampling parameters or excessively large.
+
+[Procedure:]{.underline}
+
+-   Sort by DBH. Check that DBH ≥ 2.5 and not excessively large.
+
+### Trees DD
+
+[Problem]{.underline}: DBH, height, and or crown base height entered for trees that are no longer standing.
+
+[Procedure:]{.underline}
+
+-   Sort by CrwnCl. Scroll through the list and look for CrwnCl = BBD, CUS, or DD. Check that DBH, Ht, [and]{.underline} LiCrBHt are blank
+
+-   [Note:]{.underline} Ignore all other crown classes in this query. BBD, CUS, and/or DD may not be on the list for a particular year.
+
+### Trees Dead CBH
+
+[Problem]{.underline}: Dead trees have live crown base height entered.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. If Status = D, then check that LiCrBHt = blank
+
+### Trees Duplicates
+
+[Problem]{.underline}: Duplicate tree tag numbers entered for a plot visit.
+
+[Note:]{.underline} Not capturing all duplicates. Need to revise query. (check PIED plots - PIED02 especially). Need to categorize by pole and overstory trees
+
+[Procedure:]{.underline}
+
+-   Sort by RowCount. Check that RowCount = 1 for all entries.
+
+### Trees Frac
+
+[Problem:]{.underline} Incorrect subplot fraction entered for trees.
+
+[Procedure:]{.underline}
+
+-   If DBH = overstory, then check that SubFrac = 1
+
+-   If DBH = pole, then check that SubFrac = 0.5
+
+[Note:]{.underline} There will be rows with blank DBH that have a value for SubFrac. These represent plot summary lines and DD trees. In some cases pole SubFrac will differ from 0.5 if a smaller area was sampled in a particular year. Check yearly procedures to confirm correct values.
+
+### Trees Area Multiplier
+
+### Trees Sample Area
+
+### Trees Height
+
+[Problem:]{.underline} Incorrect values entered for height. Pole trees should correspond to an established height class. Overstory trees should have reasonable height values.
+
+[Procedure:]{.underline}
+
+-   Sort by Ht. Check that Ht is not excessively large.
+
+-   Sort by DBH. If DBH = pole, then check that Ht = 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10 or blank.
+
+### Trees Non-Post Severity FMH
+
+[Problem]{.underline}: Scorch height, scorch %, and/or char height are entered in sample events other than immediate post for FMH plots. These values should only be collected at immediate post reads.
+
+[Procedure:]{.underline}
+
+-   Check that all monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) except for immediate post (01Post, 02Post, etc) are chosen.
+
+-   Check that CharHt = blank, ScorchHt = blank, [and]{.underline} CrScPct = blank (i.e. no records should appear in the query)
+
+### Trees Post Char FMH
+
+[Problem]{.underline}: Char height missing or excessively large for standing trees during the immediate post-fire sample events in FMH plots. Char height entered for trees that are no longer standing.
+
+[Procedure:]{.underline}
+
+-   Check that all immediate post (01Post, 02Post, etc) monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) are chosen.
+
+-   Sort by CharHt. Check that CharHt is not blank or excessively high for standing trees. For rows that have a CharHt = blank, either TagNo should be blank OR CrwnCl should be DD, BBD, or CUS.
+
+-   Sort by CrwnCl. Check that all rows with CrwnCl = DD, BBD, or CUS have CharHt = blank.
+
+### Trees Post Scorch% FMH
+
+[Problem]{.underline}: Scorch % missing or excessively large for live trees during the immediate post-fire sample events in FMH plots. Scorch % entered incorrectly for trees that are no longer standing.
+
+[Procedure:]{.underline}
+
+-   Check that all immediate post (01Post, 02Post, etc) monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) are chosen.
+
+-   Sort by CrScPct. Check that CrScPct ≤ 100. Check that CrScPct is not blank for live trees. For rows that have a CrScPct = blank, either TagNo should be blank OR Status should be D.
+
+-   Sort by CrwnCl. Check that all rows with CrwnCl = BAD, BBD, or CUS have CrScPct = blank. (CS? LBS?) Check that all rows with CrwnCl = DD have CrScPct = blank or 100. (RS?)
+
+### Trees Post ScorchHt FMH
+
+[Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in FMH plots. Scorch height entered for trees that are no longer standing or are broken.
+
+[Procedure:]{.underline}
+
+-   Check that all immediate post (01Post, 02Post, etc) monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) are chosen.
+
+-   Sort by ScorchHt. Check that ScorchHt is not excessively large. Check that ScorchHt is not blank for live trees. For rows that have a ScorchHt = blank, either TagNo should be blank OR Status should be D.
+
+-   Sort by CrwnCl. Check that all rows with CrwnCl = BAD, BBD, CUS, or DD have ScorchHt = blank. (CS? LBS?)
+
+### Trees Status
+
+[Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. Check that Status = L or D
+
+### Trees Life Form
+
+[Problem:]{.underline} Species entered that are not trees.
+
+[Procedure:]{.underline}
+
+-   Check that Preferred Lifeform = Tree
+
+### Trees UV
+
+[Problem]{.underline}: X present in the UV columns signifying respective data (DBH, Ht, or LiCrBHT) weren’t assessed.
+
+[Procedure]{.underline}:
+
+-   Check that UV(1, 2, [or]{.underline} 3) is blank for all plots
+
+### Trees CBH and Tree CBH Range
+
+## Trees Dead to Alive and Changing DBH
+
+## Trees Errors
+
+```{r}
+errors_Trees <- rbind(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd)
+```
 
 # ALL ERRORS
 
 ```{r}
 # Save to master error list 
 errors_all <- rbind(errors_Fuels1000, errors_FuelsDuffLitt, 
-                    errors_FuelsFine, errors_Fuels_slope)
+                    errors_FuelsFine, errors_Fuels_slope,
+                    errors_PostBurn, errors_Trees)
 
 # Table of results for quick check
 kable(errors_all, "pipe")
