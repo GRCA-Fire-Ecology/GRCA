@@ -63,7 +63,7 @@ FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
 #HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
 #Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
 #Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
-#Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
 #PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
 ```
 
@@ -350,4 +350,21 @@ test <- rosnerTest(data_temp$HunHr)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
 max_hun <- min(outliers) - 1
 ```
+
+
+## PROTOCOL - TREES
+
+#### Tree DBH Max
+
+```{r}
+#remove NA values for outlier test
+data_temp <- Trees_data %>%
+  filter(!is.na(DBH))
+# Perform Rosner test on the valid column values
+test <- rosnerTest(data_temp$DBH)
+outliers <- test$all.stats$Value[test$all.stats$Outlier]
+max_DBH <- min(outliers) - 1
+```
+
+
 
