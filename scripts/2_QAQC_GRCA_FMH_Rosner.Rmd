@@ -56,15 +56,15 @@ path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/AllYea
 
 ```{r}
 # Load in data
-Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
-#HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"))
-#HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
-#Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
-#Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
-#PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+Fuels1000_AllYears_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_AllYears_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_AllYears_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
+#HerbsPoints_AllYears_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"))
+#HerbsObs_AllYears_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
+#Shrubs_AllYears_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
+#Seedlings_AllYears_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
+Trees_AllYears_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+#PostBurn_AllYears_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
 ```
 
 ### Check Data
@@ -73,21 +73,21 @@ Fuels1000
 
 ```{r}
 # Ensure blanks in Visited column are NA
-Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+Fuels1000_AllYears_all$Visited[Fuels1000_AllYears_all$Visited==""] <- NA
 
 # Clean up data frame
-Fuels1000_all <- Fuels1000_all %>%
+Fuels1000_AllYears_all <- Fuels1000_AllYears_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
 
 # Filter for only data
-Fuels1000_data <- Fuels1000_all %>%
+Fuels1000_AllYears_data <- Fuels1000_AllYears_all %>%
   filter(is.na(Visited))
 
 # Filter for only headers
-Fuels1000_header <- Fuels1000_all %>%
+Fuels1000_AllYears_header <- Fuels1000_AllYears_all %>%
   filter(!is.na(Visited))
 ```
 
@@ -95,21 +95,21 @@ FuelsDuffLitt
 
 ```{r}
 # Ensure blanks in Visited column are NA 
-FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA  
+FuelsDuffLitt_AllYears_all$Visited[FuelsDuffLitt_AllYears_all$Visited==""] <- NA  
 
 # Clean up data frame 
-FuelsDuffLitt_all <- FuelsDuffLitt_all %>%   
+FuelsDuffLitt_AllYears_all <- FuelsDuffLitt_AllYears_all %>%   
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
 
 # Filter for only data 
-FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
+FuelsDuffLitt_AllYears_data <- FuelsDuffLitt_AllYears_all %>%   
   filter(is.na(Visited))  
 
 # Filter for only headers 
-FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
+FuelsDuffLitt_AllYears_header <- FuelsDuffLitt_AllYears_all %>%   
   filter(!is.na(Visited))
 ```
 
@@ -117,21 +117,21 @@ FuelsFine
 
 ```{r}
 # Ensure blanks in Visited column are NA 
-FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
+FuelsFine_AllYears_all$Visited[FuelsFine_AllYears_all$Visited==""] <- NA  
 
 # Clean up data frame 
-FuelsFine_all <- FuelsFine_all %>%   
+FuelsFine_AllYears_all <- FuelsFine_AllYears_all %>%   
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
 
 # Filter for only data 
-FuelsFine_data <- FuelsFine_all %>%   
+FuelsFine_AllYears_data <- FuelsFine_AllYears_all %>%   
   filter(is.na(Visited))  
 
 # Filter for only headers 
-FuelsFine_header <- FuelsFine_all %>%   
+FuelsFine_AllYears_header <- FuelsFine_AllYears_all %>%   
   filter(!is.na(Visited))
 ```
 
@@ -139,21 +139,21 @@ HerbsPoints
 
 ```{r}
 # Ensure blanks in Visited column are NA 
-HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
+HerbsPoints_AllYears_all$Visited[HerbsPoints_AllYears_all$Visited==""] <- NA  
 
 # Clean up data frame 
-HerbsPoints_all <- HerbsPoints_all %>%   
+HerbsPoints_AllYears_all <- HerbsPoints_AllYears_all %>%   
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
 
 # Filter for only data 
-HerbsPoints_data <- HerbsPoints_all %>%   
+HerbsPoints_AllYears_data <- HerbsPoints_AllYears_all %>%   
   filter(is.na(Visited))  
 
 # Filter for only headers 
-HerbsPoints_header <- HerbsPoints_all %>%   
+HerbsPoints_AllYears_header <- HerbsPoints_AllYears_all %>%   
   filter(!is.na(Visited))
 ```
 
@@ -161,21 +161,21 @@ HerbsObs
 
 ```{r}
 # Ensure blanks in Visited column are NA 
-HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA  
+HerbsObs_AllYears_all$Visited[HerbsObs_AllYears_all$Visited==""] <- NA  
 
 # Clean up data frame 
-HerbsObs_all <- HerbsObs_all %>%   
+HerbsObs_AllYears_all <- HerbsObs_AllYears_all %>%   
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
 
 # Filter for only data 
-HerbsObs_data <- HerbsObs_all %>%   
+HerbsObs_AllYears_data <- HerbsObs_AllYears_all %>%   
   filter(is.na(Visited))  
 
 # Filter for only headers 
-HerbsObs_header <- HerbsObs_all %>%   
+HerbsObs_AllYears_header <- HerbsObs_AllYears_all %>%   
   filter(!is.na(Visited))
 ```
 
@@ -183,21 +183,21 @@ Shrubs
 
 ```{r}
 # Ensure blanks in Visited column are NA 
-Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA  
+Shrubs_AllYears_all$Visited[Shrubs_AllYears_all$Visited==""] <- NA  
 
 # Clean up data frame 
-Shrubs_all <- Shrubs_all %>%   
+Shrubs_AllYears_all <- Shrubs_AllYears_all %>%   
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
 
 # Filter for only data 
-Shrubs_data <- Shrubs_all %>%   
+Shrubs_AllYears_data <- Shrubs_AllYears_all %>%   
   filter(is.na(Visited))  
 
 # Filter for only headers 
-Shrubs_header <- Shrubs_all %>%   
+Shrubs_AllYears_header <- Shrubs_AllYears_all %>%   
   filter(!is.na(Visited))
 ```
 
@@ -205,21 +205,21 @@ Seedlings
 
 ```{r}
 # Ensure blanks in Visited column are NA 
-Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA  
+Seedlings_AllYears_all$Visited[Seedlings_AllYears_all$Visited==""] <- NA  
 
 # Clean up data frame 
-Seedlings_all <- Seedlings_all %>%   
+Seedlings_AllYears_all <- Seedlings_AllYears_all %>%   
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
 
 # Filter for only data 
-Seedlings_data <- Seedlings_all %>%   
+Seedlings_AllYears_data <- Seedlings_AllYears_all %>%   
   filter(is.na(Visited))  
 
 # Filter for only headers 
-Seedlings_header <- Seedlings_all %>%   
+Seedlings_AllYears_header <- Seedlings_AllYears_all %>%   
   filter(!is.na(Visited))
 ```
 
@@ -227,21 +227,21 @@ Trees
 
 ```{r}
 # Ensure blanks in Visited column are NA 
-Trees_all$Visited[Trees_all$Visited==""] <- NA  
+Trees_AllYears_all$Visited[Trees_AllYears_all$Visited==""] <- NA  
 
 # Clean up data frame 
-Trees_all <- Trees_all %>%   
+Trees_AllYears_all <- Trees_AllYears_all %>%   
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE) 
 
 # Filter for only data 
-Trees_data <- Trees_all %>%   
+Trees_AllYears_data <- Trees_AllYears_all %>%   
   filter(is.na(Visited))  
 
 # Filter for only headers 
-Trees_header <- Trees_all %>%   
+Trees_AllYears_header <- Trees_AllYears_all %>%   
   filter(!is.na(Visited))
 ```
 
@@ -249,21 +249,21 @@ PostBurn
 
 ```{r}
 # # Ensure blanks in Visited column are NA 
-# PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA  
+# PostBurn_AllYears_all$Visited[PostBurn_AllYears_all$Visited==""] <- NA  
 # 
 # # Clean up data frame 
-# PostBurn_all <- PostBurn_all %>%   
+# PostBurn_AllYears_all <- PostBurn_AllYears_all %>%   
 #   # Separate Date column into Date and Time columns   
 #   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
 #   # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
 #   separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
 # 
 # # Filter for only data 
-# PostBurn_data <- PostBurn_all %>%   
+# PostBurn_AllYears_data <- PostBurn_AllYears_all %>%   
 #   filter(is.na(Visited))
 # 
 # # Filter for only headers 
-# PostBurn_header <- PostBurn_all %>%   
+# PostBurn_AllYears_header <- PostBurn_AllYears_all %>%   
 #   filter(!is.na(Visited))
 ```
 
@@ -277,7 +277,7 @@ PostBurn
 
 ```{r}
 #remove NA values for outlier test
-data_temp <- Fuels1000_data %>%
+data_temp <- Fuels1000_AllYears_data %>%
   filter(!is.na(Dia))
 # Perform Rosner test on the valid column values
 data_rosner <- rosnerTest(data_temp$Dia)
@@ -291,7 +291,7 @@ max_dia <- min(outliers) - 1
 
 ```{r}
 #remove NA values for outlier test
-data_temp <- FuelsDuffLitt_data %>%
+data_temp <- FuelsDuffLitt_AllYears_data %>%
   filter(!is.na(LittDep))
 # Perform Rosner test on the valid column values
 data_rosner <- rosnerTest(data_temp$LittDep)
@@ -303,7 +303,7 @@ max_litt <- min(outliers) - 0.1
 
 ```{r}
 #remove NA values for outlier test
-data_temp <- FuelsDuffLitt_data %>%
+data_temp <- FuelsDuffLitt_AllYears_data %>%
   filter(!is.na(DuffDep))
 # Perform Rosner test on the valid column values
 data_rosner <- rosnerTest(data_temp$DuffDep)
@@ -317,7 +317,7 @@ max_duff <- min(outliers) - 1
 
 ```{r}
 #remove NA values for outlier test
-data_temp <- FuelsFine_data %>%
+data_temp <- FuelsFine_AllYears_data %>%
   filter(!is.na(OneHr))
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$OneHr)
@@ -330,7 +330,7 @@ max_one <- min(outliers) - 1
 
 ```{r}
 #remove NA values for outlier test
-data_temp <- FuelsFine_data %>%
+data_temp <- FuelsFine_AllYears_data %>%
   filter(!is.na(TenHr))
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$TenHr)
@@ -343,7 +343,7 @@ max_ten <- min(outliers) - 1
 
 ```{r}
 #remove NA values for outlier test
-data_temp <- FuelsFine_data %>%
+data_temp <- FuelsFine_AllYears_data %>%
   filter(!is.na(HunHr))
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$HunHr)
@@ -358,13 +358,39 @@ max_hun <- min(outliers) - 1
 
 ```{r}
 #remove NA values for outlier test
-data_temp <- Trees_data %>%
+data_temp <- Trees_AllYears_data %>%
   filter(!is.na(DBH))
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$DBH)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_DBH <- min(outliers) - 1
+max_dbh <- min(outliers) - 1
 ```
 
 
+#### Tree Height Max
+
+```{r}
+#remove NA values for outlier test
+data_temp <- Trees_AllYears_data %>%
+  filter(!is.na(Ht), DBH > 15.0)
+# Perform Rosner test on the valid column values
+test <- rosnerTest(data_temp$Ht)
+outliers <- test$all.stats$Value[test$all.stats$Outlier]
+max_ht <- min(outliers) - 1
+# Got no outlies
+max_ht <- max(data_temp$Ht)
+```
+
+#### Tree Post Char
+
+```{r}
+#remove NA values for outlier test
+data_temp <- Trees_AllYears_data %>%
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         !is.na(CharHt))
+# Perform Rosner test on the valid column values
+test <- rosnerTest(data_temp$CharHt)
+outliers <- test$all.stats$Value[test$all.stats$Outlier]
+max_char <- min(outliers) - 1
+```
 

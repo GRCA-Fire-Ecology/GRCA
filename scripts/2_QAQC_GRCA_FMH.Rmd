@@ -49,6 +49,7 @@ path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/2024/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
 #path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/2024/"
 #path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/2024/"
+path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/AllYears/"
 ```
 
 ### Load Data
@@ -67,7 +68,7 @@ HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv")
 HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
 Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
 Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+Trees_all <- read.csv(paste0(path_data, "I&M_Trees - Individuals (metric)_XPT.csv"))
 #PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
 
 # PostBurn_all <- read.csv("C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/AllYears/I&M_Post Burn Severity_XPT.csv")
@@ -1662,9 +1663,46 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 [Procedure:]{.underline}
 
--   Sort by CrwnCl. Scroll through the list and look for CrwnCl = BBD, CUS, or DD. Check that DBH, Ht, [and]{.underline} LiCrBHt are blank
+-   Filter for CrwnCl = BBD, CUS, or DD. Check that DBH, Ht, [and]{.underline} LiCrBHt are blank
 
--   [Note:]{.underline} Ignore all other crown classes in this query. BBD, CUS, and/or DD may not be on the list for a particular year.
+```{r}
+data <- Trees_data %>% 
+  filter(CrwnCl == c("BBD", "CUS", "DD"))
+query <- "Trees DD DBH" 
+query_message <- "DBH"  
+values_data <- data$DBH
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_DD_DBH <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(CrwnCl == c("BBD", "CUS", "DD"))
+query <- "Trees DD Ht" 
+query_message <- "Height"  
+values_data <- data$Ht
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_DD_Ht <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(CrwnCl == c("BBD", "CUS", "DD"))
+query <- "Trees DD CBH" 
+query_message <- "Live Crown Base Height"  
+values_data <- data$LiCrBHt
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_DD_LiCrBHt <- qaqc(data, query, query_message, values_check)
+```
 
 ### Trees Dead CBH
 
@@ -1674,31 +1712,109 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 -   Sort by Status. If Status = D, then check that LiCrBHt = blank
 
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+query <- "Trees Dead CBH" 
+query_message <- "Live Crown Base Height"  
+values_data <- data$LiCrBHt
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Dead Tree Errors
+
+```{r}
+# Combine
+errors_Trees_DD <- rbind(errors_Trees_DD_DBH, errors_Trees_DD_Ht, 
+                         errors_Trees_DD_LiCrBHt, errors_Trees_Dead_LiCrBHt)
+
+remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt, errors_Trees_Dead_LiCrBHt)
+```
+
 ### Trees Duplicates
 
 [Problem]{.underline}: Duplicate tree tag numbers entered for a plot visit.
 
-[Note:]{.underline} Not capturing all duplicates. Need to revise query. (check PIED plots - PIED02 especially). Need to categorize by pole and overstory trees
+[Note:]{.underline} FFI query not capturing all duplicates. Need to revise query. (check PIED plots - PIED02 especially). Need to categorize by pole and overstory trees
 
 [Procedure:]{.underline}
 
 -   Sort by RowCount. Check that RowCount = 1 for all entries.
 
+```{r}
+# Check for tag duplication (TRUE/FALSE) and store results in new column
+data_temp <- Trees_data %>%
+  group_by(MacroPlot.Name, TagNo) %>% 
+  mutate("Duplicate" = duplicated(TagNo))
+
+data <- merge(Trees_data, data_temp, all.x = T)
+query <- "Trees Duplicates" 
+query_message <- "Duplicate Tag"  
+values_data <- data$Duplicate
+values_valid <- FALSE
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_Duplicate <- qaqc(data, query, query_message, values_check)
+```
+
 ### Trees Frac
 
 [Problem:]{.underline} Incorrect subplot fraction entered for trees.
+
+[Note:]{.underline} In some cases pole SubFrac will differ from 0.5 if a smaller area was sampled in a particular year. Check yearly procedures to confirm correct values.
 
 [Procedure:]{.underline}
 
 -   If DBH = overstory, then check that SubFrac = 1
 
+```{r}
+data <- Trees_data %>% 
+   filter(DBH > 15.0)
+query <- "Trees Frac Overstory" 
+query_message <- "Subplot Fraction"  
+values_data <- data$SubFrac
+values_valid <- 1
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_Frac_Overstory <- qaqc(data, query, query_message, values_check)
+```
+
 -   If DBH = pole, then check that SubFrac = 0.5
 
-[Note:]{.underline} There will be rows with blank DBH that have a value for SubFrac. These represent plot summary lines and DD trees. In some cases pole SubFrac will differ from 0.5 if a smaller area was sampled in a particular year. Check yearly procedures to confirm correct values.
+```{r}
+data <- Trees_data %>% 
+  filter(DBH <= 15.0)
+query <- "Trees Frac Pole" 
+query_message <- "Subplot Fraction"  
+values_data <- data$SubFrac
+values_valid <- 0.5
+values_check <- !values_data == values_valid
 
-### Trees Area Multiplier
+# Identify errors
+errors_Trees_Frac_Pole <- qaqc(data, query, query_message, values_check)
 
-### Trees Sample Area
+errors_Trees_Frac_Pole <- errors_Trees_Frac_Pole %>% 
+  reframe("SavedQuery" = unique(query),
+          "MacroPlot.Name" = unique(MacroPlot.Name), 
+          "Date" = unique(Date),
+          "Error" = unique(Error),
+          "Comment" = unique(Comment)) 
+```
+
+#### Combine Frac Errors
+
+```{r}
+# Combine
+errors_Trees_Frac <- rbind(errors_Trees_Frac_Overstory, errors_Trees_Frac_Pole)
+
+remove(errors_Trees_Frac_Overstory, errors_Trees_Frac_Pole)
+```
 
 ### Trees Height
 
@@ -1706,9 +1822,49 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 [Procedure:]{.underline}
 
--   Sort by Ht. Check that Ht is not excessively large.
+-   Filter for Overstory trees. Check that Ht is not excessively large.
 
--   Sort by DBH. If DBH = pole, then check that Ht = 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10 or blank.
+```{r}
+# Perform Rosner's Test for outliers.
+# This test is most appropriate when the sample size is large (n > 20). 
+# Valid values were found by using the Rosner test on the full suite of data.
+# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+
+data <- Trees_data %>% 
+   filter(DBH > 15.0)
+query <- "Trees Height Overstory" 
+query_message <- "Height"  
+values_data <- data$Ht
+values_valid <- max(45)
+values_check <- !values_data < values_valid
+
+# Identify errors
+errors_Trees_Height_Overstory <- qaqc(data, query, query_message, values_check)
+```
+
+-   Filter for Pole trees. Check that Ht = 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10 or blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(DBH <= 15.0)
+query <- "Trees Height Pole" 
+query_message <- "Height"  
+values_data <- data$Ht
+values_valid <- c("", 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_Height_Pole <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Height Errors
+
+```{r}
+# Combine
+errors_Trees_Height <- rbind(errors_Trees_Height_Overstory, errors_Trees_Height_Pole)
+
+remove(errors_Trees_Height_Overstory, errors_Trees_Height_Pole)
+```
 
 ### Trees Non-Post Severity FMH
 
@@ -1716,9 +1872,55 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 [Procedure:]{.underline}
 
--   Check that all monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) except for immediate post (01Post, 02Post, etc) are chosen.
+-   Filter to exclude all POST reads (01Post, 02Post, etc). Check that CharHt = blank, ScorchHt = blank, [and]{.underline} CrScPct = blank (i.e. no records should appear in the query)
 
--   Check that CharHt = blank, ScorchHt = blank, [and]{.underline} CrScPct = blank (i.e. no records should appear in the query)
+```{r}
+data <- Trees_data %>% 
+  filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+query <- "Trees Non-Post Severity FMH CharHt" 
+query_message <- "Char Height"  
+values_data <- data$CharHt
+values_valid <- "NA"
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_NonPost_Severity_CharHt <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+query <- "Trees Non-Post Severity FMH ScorchHt" 
+query_message <- "Scorch Height"  
+values_data <- data$ScorchHt
+values_valid <- "NA"
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_NonPost_Severity_ScorchHt <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data %>% 
+  filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+query <- "Trees Non-Post Severity FMH CrScPct" 
+query_message <- "Crown Scorch Percent"  
+values_data <- data$CrScPct
+values_valid <- "NA"
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_NonPost_Severity_CrScPct <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Height Errors
+
+```{r}
+# Combine
+errors_Trees_NonPost_Severity <- rbind(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_ScorchHt, errors_Trees_NonPost_Severity_CrScPct)
+
+remove(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_ScorchHt, errors_Trees_NonPost_Severity_CrScPct)
+```
 
 ### Trees Post Char FMH
 
@@ -1726,11 +1928,44 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 [Procedure:]{.underline}
 
--   Check that all immediate post (01Post, 02Post, etc) monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) are chosen.
+-   Filter to include all POST reads (01Post, 02Post, etc). Check that all rows with CrwnCl = DD, BBD, or CUS have CharHt = blank.
 
--   Sort by CharHt. Check that CharHt is not blank or excessively high for standing trees. For rows that have a CharHt = blank, either TagNo should be blank OR CrwnCl should be DD, BBD, or CUS.
+```{r}
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         CrwnCl %in% c("DD", "BBD", "CUS"))
+query <- "Trees Post Char FMH DD" 
+query_message <- "Char Height"  
+values_data <- data$CharHt
+values_valid <- ""
+values_check <- !values_data == values_valid
 
--   Sort by CrwnCl. Check that all rows with CrwnCl = DD, BBD, or CUS have CharHt = blank.
+# Identify errors
+errors_Trees_Post_Char_DD <- qaqc(data, query, query_message, values_check)
+```
+
+-   Filter to include all POST reads (01Post, 02Post, etc). Check that CharHt is not blank or excessively high for standing trees. If CharHt is blank, TagNo should be blank
+
+```{r}
+# Perform Rosner's Test for outliers.
+# This test is most appropriate when the sample size is large (n > 20). 
+# Valid values were found by using the Rosner test on the full suite of data.
+# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         !CrwnCl %in% c("DD", "BBD", "CUS"),
+         # CharHt is blank when TagNo = 0. OK
+         !TagNo == 0)
+query <- "Trees Post Char FMH Standing" 
+query_message <- "Char Height"  
+values_data <- data$CharHt
+values_valid <- max(14)
+values_check <- !values_data < values_valid %>% replace_na(TRUE)
+
+# Identify errors
+errors_Trees_Post_Char_Standing <- qaqc(data, query, query_message, values_check)
+```
 
 ### Trees Post Scorch% FMH
 
@@ -1738,11 +1973,17 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 [Procedure:]{.underline}
 
--   Check that all immediate post (01Post, 02Post, etc) monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) are chosen.
+-   Filter to include all POST reads (01Post, 02Post, etc).
 
--   Sort by CrScPct. Check that CrScPct ≤ 100. Check that CrScPct is not blank for live trees. For rows that have a CrScPct = blank, either TagNo should be blank OR Status should be D.
+-   Check that all rows with CrwnCl = BAD, BBD, or CUS have CrScPct = blank. (CS? LBS?)
 
--   Sort by CrwnCl. Check that all rows with CrwnCl = BAD, BBD, or CUS have CrScPct = blank. (CS? LBS?) Check that all rows with CrwnCl = DD have CrScPct = blank or 100. (RS?)
+-   Check that all rows with CrwnCl = DD have CrScPct = blank or 100. (RS?)
+
+<!-- -->
+
+-   Check that CrScPct ≤ 100.
+
+-   Check that CrScPct is not blank for live trees. For rows that have a CrScPct = blank, either TagNo should be blank OR Status should be D.
 
 ### Trees Post ScorchHt FMH
 
@@ -1788,7 +2029,8 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 ```{r}
 errors_Trees <- rbind(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd,
-                      errors_Trees_DBH)
+                      errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, 
+                      errors_Trees_Frac, errors_Trees_Height)
 ```
 
 # ALL ERRORS
