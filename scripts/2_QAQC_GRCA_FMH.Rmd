@@ -285,7 +285,7 @@ qaqc <- function(data, query, query_message, values_check) {
     mutate("SavedQuery" = query, 
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
-    filter(values_check) %>%   
+    filter((values_check) %>% replace_na(TRUE)) %>%   
     select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
   
   # If no errors, add "No Errors" to existing data frame 
@@ -337,7 +337,7 @@ query <- "Fuel 1000 Header FMH NRim TranLen"
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 50  
-values_check <- !values_data == values_valid
+values_check <-!values_data == values_valid
 
 # Identify errors
 errors_Fuels1000_TranLen_N <- qaqc(data, query, query_message, values_check)
@@ -459,7 +459,7 @@ query <- "Fuel 1000 Values Slope"
 query_message <- "Slope"
 values_data <- data$Slope
 values_valid <- seq(0, 90, by = 1)
-values_check <- !values_data %in% values_valid
+values_check <- (!values_data %in% values_valid) %>% replace_na(TRUE)
 
 # Identify errors
 errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
@@ -617,7 +617,7 @@ query <- "Fuel DL Values LittDep"
 query_message <- "Litter Depth" 
 values_data <- data$LittDep
 values_valid <- max(7.6)
-values_check <- (!values_data < values_valid) %>% replace_na(TRUE)
+values_check <- !values_data < values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_LittDep <- qaqc(data, query, query_message, values_check)
@@ -637,7 +637,7 @@ query <- "Fuel DL Values DuffDep"
 query_message <- "Duff Depth" 
 values_data <- data$DuffDep
 values_valid <- max(13)
-values_check <- (!values_data < values_valid) %>% replace_na(TRUE)
+values_check <- !values_data < values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
@@ -925,47 +925,6 @@ kable(errors_FuelsFine, "pipe")
 path_errors
 #write.csv(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.xlsx"))
-```
-
-## 1000HR VS FINE SLOPE
-
-This code conducts quality control checks on slope data in the surface fuels coarse woody debris (1000-hr) and fine woody debris datasets. It also checks for overall consistency in slope and azimuth values across years.
-
-```{r}
-# Set parameters 
-data_Fuels1000_slope <- Fuels1000_data %>% 
-  group_by(MacroPlot.Name, Date, Transect, Slope) %>% 
-  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
-            "Transect" = unique(Transect)) %>% 
-  mutate(Slope_1000 = Slope) %>% 
-  arrange(MacroPlot.Name, Transect) %>% 
-  select(!Slope)
-
-data_FuelsFine_slope <- FuelsFine_data %>% 
-  group_by(MacroPlot.Name, Date, Transect, Comment, Slope) %>% 
-  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
-            "Transect" = unique(Transect)) %>% 
-  mutate(Slope_fine = Slope) %>% 
-  arrange(MacroPlot.Name, Transect) %>% 
-  select(!Slope)
-
-errors_Fuels_slope <- merge(data_Fuels1000_slope, data_FuelsFine_slope, all.y = T) %>% 
-  filter(Slope_fine != Slope_1000) %>% 
-  mutate(SavedQuery = "Fuel Slope FMH",
-         Error = paste("FWD slope", Slope_fine, "!=", "CWD slope", Slope_1000)) %>% 
-  reframe("SavedQuery" = unique(query),
-          "MacroPlot.Name" = unique(MacroPlot.Name), 
-          "Date" = unique(Date), 
-          "Error" = unique(Error),
-          "Comment" = unique(Comment))
-
-# If no errors, add "No Errors" to existing data frame 
-if (nrow(errors_Fuels_slope) == 0) {   
-    errors_Fuels_slope <- errors_blank %>%     
-    mutate(SavedQuery = query) 
-} else {   
-    errors_Fuels_slope <- errors_Fuels_slope
-}
 ```
 
 # PROTOCOL - POST BURN
@@ -1611,14 +1570,15 @@ remove(errors_Trees_DamCd_L, errors_Trees_DamCd_D, errors_Trees_DamCd_Blank)
 
 ### Trees DBH FMH
 
-[Problem]{.underline}: DBH values smaller than sampling parameters or excessively large.
+[Problem]{.underline}: DBH values smaller than sampling parameters or excessively large. DBH values for standing trees do not exist.
 
 [Procedure:]{.underline}
 
--   Check that DBH ≥ 2.5.
+-   Filter to exclude DD trees. Check that DBH ≥ 2.5.
 
 ```{r}
-data <- Trees_data
+data <- Trees_data %>% 
+  filter(CrwnCl != "DD")
 query <- "Trees DBH FMH Min" 
 query_message <- "DBH"  
 values_data <- data$DBH
@@ -1629,7 +1589,7 @@ values_check <- !values_data >= values_valid
 errors_Trees_DBH_Min <- qaqc(data, query, query_message, values_check)
 ```
 
--   Check that DBH is not excessively large.
+-   Filter to exclude DD trees. Check that DBH is not excessively large. Check that DBH values for standing trees exist.
 
 ```{r}
 # Perform Rosner's Test for outliers.
@@ -1637,7 +1597,8 @@ errors_Trees_DBH_Min <- qaqc(data, query, query_message, values_check)
 # Valid values were found by using the Rosner test on the full suite of data.
 # Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
 
-data <- Trees_data
+data <- Trees_data %>% 
+  filter(CrwnCl != "DD")
 query <- "Trees DBH FMH Max" 
 query_message <- "DBH"  
 values_data <- data$DBH
@@ -1655,6 +1616,36 @@ errors_Trees_DBH_Max <- qaqc(data, query, query_message, values_check)
 errors_Trees_DBH <- rbind(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 
 remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
+```
+
+### Trees CBH
+
+[Problem]{.underline}: Dead trees have live crown base height entered.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. If Status = D, then check that LiCrBHt = blank
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+query <- "Trees Dead CBH" 
+query_message <- "Live Crown Base Height"  
+values_data <- data$LiCrBHt
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine CBH Errors
+
+```{r}
+# Combine
+errors_Trees_CBH <- rbind()
+
+remove()
 ```
 
 ### Trees DD
@@ -1704,35 +1695,14 @@ values_check <- !values_data == values_valid
 errors_Trees_DD_LiCrBHt <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Dead CBH
-
-[Problem]{.underline}: Dead trees have live crown base height entered.
-
-[Procedure:]{.underline}
-
--   Sort by Status. If Status = D, then check that LiCrBHt = blank
-
-```{r}
-data <- Trees_data %>% 
-  filter(Status == "D")
-query <- "Trees Dead CBH" 
-query_message <- "Live Crown Base Height"  
-values_data <- data$LiCrBHt
-values_valid <- ""
-values_check <- !values_data == values_valid
-
-# Identify errors
-errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
-```
-
-#### Combine Dead Tree Errors
+#### Combine DD Errors
 
 ```{r}
 # Combine
 errors_Trees_DD <- rbind(errors_Trees_DD_DBH, errors_Trees_DD_Ht, 
-                         errors_Trees_DD_LiCrBHt, errors_Trees_Dead_LiCrBHt)
+                         errors_Trees_DD_LiCrBHt,)
 
-remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt, errors_Trees_Dead_LiCrBHt)
+remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
 ```
 
 ### Trees Duplicates
@@ -1913,7 +1883,7 @@ values_check <- !values_data == values_valid
 errors_Trees_NonPost_Severity_CrScPct <- qaqc(data, query, query_message, values_check)
 ```
 
-#### Combine Height Errors
+#### Combine Non-Post Severity Errors
 
 ```{r}
 # Combine
@@ -1928,14 +1898,14 @@ remove(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_Scorc
 
 [Procedure:]{.underline}
 
--   Filter to include all POST reads (01Post, 02Post, etc). Check that all rows with CrwnCl = DD, BBD, or CUS have CharHt = blank.
+-   DD Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter for DD crown classes (DD, BBD, and CUS). Check that CharHt = blank.
 
 ```{r}
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          CrwnCl %in% c("DD", "BBD", "CUS"))
 query <- "Trees Post Char FMH DD" 
-query_message <- "Char Height"  
+query_message <- "Char Height for DD Tree"  
 values_data <- data$CharHt
 values_valid <- ""
 values_check <- !values_data == values_valid
@@ -1944,7 +1914,26 @@ values_check <- !values_data == values_valid
 errors_Trees_Post_Char_DD <- qaqc(data, query, query_message, values_check)
 ```
 
--   Filter to include all POST reads (01Post, 02Post, etc). Check that CharHt is not blank or excessively high for standing trees. If CharHt is blank, TagNo should be blank
+-   Standing Dead Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter to exclude DD crown classes (DD, BBD, and CUS). Filter for Status = D. Check that CharHt is [not]{.underline} blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         !CrwnCl %in% c("DD", "BBD", "CUS"),
+         Status == "D",
+         # Blank Char Ht can have tag 0
+         !TagNo == 0)
+query <- "Trees Post Char FMH Dead" 
+query_message <- "Char Height for Standing Dead"  
+values_data <- data$CharHt
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_Post_Char_Dead <- qaqc(data, query, query_message, values_check)
+```
+
+-   Live trees. Filter to include all POST reads (01Post, 02Post, etc). Filter for Status = L. Check that CharHt is not blank or excessively high.
 
 ```{r}
 # Perform Rosner's Test for outliers.
@@ -1954,17 +1943,75 @@ errors_Trees_Post_Char_DD <- qaqc(data, query, query_message, values_check)
 
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
-         !CrwnCl %in% c("DD", "BBD", "CUS"),
-         # CharHt is blank when TagNo = 0. OK
-         !TagNo == 0)
-query <- "Trees Post Char FMH Standing" 
+         Status == "L")
+query <- "Trees Post Char FMH Live" 
 query_message <- "Char Height"  
 values_data <- data$CharHt
-values_valid <- max(14)
-values_check <- !values_data < values_valid %>% replace_na(TRUE)
+values_valid <- max(29)
+values_check <- !values_data < values_valid
 
 # Identify errors
-errors_Trees_Post_Char_Standing <- qaqc(data, query, query_message, values_check)
+errors_Trees_Post_Char_Live <- qaqc(data, query, query_message, values_check)
+```
+
+### Trees Post ScorchHt FMH
+
+[Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in FMH plots. Scorch height entered for trees that are no longer standing or are broken.
+
+[Procedure:]{.underline}
+
+-   DD Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter for DD crown classes (DD, BBD, and CUS). Check that ScorchHt = blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         CrwnCl %in% c("DD", "BBD", "CUS"))
+query <- "Trees Post Scorch FMH DD" 
+query_message <- "Scorch Height for DD Tree"  
+values_data <- data$ScorchHt
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_Post_Scorch_DD <- qaqc(data, query, query_message, values_check)
+```
+
+-   Standing Dead Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter to exclude DD crown classes (DD, BBD, and CUS). Filter for Status = D. Check that ScorchHt = blank.
+
+```{r}
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         !CrwnCl %in% c("DD", "BBD", "CUS"),
+         Status == "D")
+query <- "Trees Post Scorch FMH Dead"
+query_message <- "Scorch Height for Standing Dead"  
+values_data <- data$ScorchHt
+values_valid <- ""
+values_check <- !values_data < values_valid
+
+# Identify errors
+errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
+```
+
+-   Live trees. Filter to include all POST reads (01Post, 02Post, etc). Filter for Status = L. Check that ScorchHt is not blank or excessively high.
+
+```{r}
+# Perform Rosner's Test for outliers.
+# This test is most appropriate when the sample size is large (n > 20). 
+# Valid values were found by using the Rosner test on the full suite of data.
+# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         Status == "L")
+query <- "Trees Post Scorch FMH Live" 
+query_message <- "Scorch Height"  
+values_data <- data$ScorchHt
+values_valid <- max(39)
+values_check <- !values_data < values_valid
+
+# Identify errors
+errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Trees Post Scorch% FMH
@@ -1973,29 +2020,65 @@ errors_Trees_Post_Char_Standing <- qaqc(data, query, query_message, values_check
 
 [Procedure:]{.underline}
 
--   Filter to include all POST reads (01Post, 02Post, etc).
-
--   Check that all rows with CrwnCl = BAD, BBD, or CUS have CrScPct = blank. (CS? LBS?)
+-   DD Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter for DD crown classes (DD, BBD, and CUS). Check that CrScPct = blank.
 
 -   Check that all rows with CrwnCl = DD have CrScPct = blank or 100. (RS?)
 
-<!-- -->
+```{r}
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         CrwnCl %in% c("DD", "BBD", "CUS"))
+query <- "Trees Post Scorch% FMH DD" 
+query_message <- "Scorch Percent for DD Tree"  
+values_data <- data$CrScPct
+values_valid <- ""
+values_check <- !values_data == values_valid
 
--   Check that CrScPct ≤ 100.
+# Identify errors
+errors_Trees_Post_ScorchPct_DD <- qaqc(data, query, query_message, values_check)
+```
 
--   Check that CrScPct is not blank for live trees. For rows that have a CrScPct = blank, either TagNo should be blank OR Status should be D.
+-   Standing Dead Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter to exclude DD crown classes (DD, BBD, and CUS). Filter for Status = D. Check that CrScPct = blank.
 
-### Trees Post ScorchHt FMH
+```{r}
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         !CrwnCl %in% c("DD", "BBD", "CUS"),
+         Status == "D")
+query <- "Trees Post Scorch% FMH Dead"
+query_message <- "Scorch Percent for Standing Dead"  
+values_data <- data$CrScPct
+values_valid <- ""
+values_check <- !values_data < values_valid
 
-[Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in FMH plots. Scorch height entered for trees that are no longer standing or are broken.
+# Identify errors
+errors_Trees_Post_ScorchPct_Dead <- qaqc(data, query, query_message, values_check)
+```
 
-[Procedure:]{.underline}
+-   Live trees. Filter to include all POST reads (01Post, 02Post, etc). Filter for Status = L. Check that CrScPct is not blank. Check that CrScPct ≤ 100.
 
--   Check that all immediate post (01Post, 02Post, etc) monitoring statuses (Filter tab -\> Sample Event -\> Monitoring Status) are chosen.
+```{r}
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         Status == "L")
+query <- "Trees Post Scorch% FMH Live" 
+query_message <- "Scorch Percent"  
+values_data <- data$CrScPct
+values_valid <- max(100)
+values_check <- !values_data <= values_valid
 
--   Sort by ScorchHt. Check that ScorchHt is not excessively large. Check that ScorchHt is not blank for live trees. For rows that have a ScorchHt = blank, either TagNo should be blank OR Status should be D.
+# Identify errors
+errors_Trees_Post_ScorchPct_Live <- qaqc(data, query, query_message, values_check)
+```
 
--   Sort by CrwnCl. Check that all rows with CrwnCl = BAD, BBD, CUS, or DD have ScorchHt = blank. (CS? LBS?)
+#### Combine Post Severity Errors
+
+```{r}
+# Combine
+errors_Trees_Post_Severity <- rbind(errors_Trees_Post_Char_DD, errors_Trees_Post_Char_Dead, errors_Trees_Post_Char_Live, errors_Trees_Post_Scorch_DD, errors_Trees_Post_Scorch_Dead, errors_Trees_Post_Scorch_Live, errors_Trees_Post_ScorchPct_DD, errors_Trees_Post_ScorchPct_Dead, errors_Trees_Post_ScorchPct_Live)
+
+remove(errors_Trees_Post_Char_DD, errors_Trees_Post_Char_Dead, errors_Trees_Post_Char_Live, errors_Trees_Post_Scorch_DD, errors_Trees_Post_Scorch_Dead, errors_Trees_Post_Scorch_Live, errors_Trees_Post_ScorchPct_DD, errors_Trees_Post_ScorchPct_Dead, errors_Trees_Post_ScorchPct_Live)
+```
 
 ### Trees Status
 
@@ -2005,6 +2088,18 @@ errors_Trees_Post_Char_Standing <- qaqc(data, query, query_message, values_check
 
 -   Sort by Status. Check that Status = L or D
 
+```{r}
+data <- Trees_data
+query <- "Trees Status" 
+query_message <- "Status"  
+values_data <- data$Status
+values_valid <- c("L", "D")
+values_check <- !values_data %in% values_valid
+
+# Identify errors
+errors_Trees_Status <- qaqc(data, query, query_message, values_check)
+```
+
 ### Trees Life Form
 
 [Problem:]{.underline} Species entered that are not trees.
@@ -2012,6 +2107,18 @@ errors_Trees_Post_Char_Standing <- qaqc(data, query, query_message, values_check
 [Procedure:]{.underline}
 
 -   Check that Preferred Lifeform = Tree
+
+```{r}
+data <- Trees_data
+query <- "Trees Life Form" 
+query_message <- "Life Form"  
+values_data <- data$Preferred_Lifeform
+values_valid <- "Tree"
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_LifeForm <- qaqc(data, query, query_message, values_check)
+```
 
 ### Trees UV
 
@@ -2021,17 +2128,109 @@ errors_Trees_Post_Char_Standing <- qaqc(data, query, query_message, values_check
 
 -   Check that UV(1, 2, [or]{.underline} 3) is blank for all plots
 
-### Trees CBH and Tree CBH Range
+```{r}
+data <- Trees_data
+query <- "Trees UV1" 
+query_message <- "User Variable 1"  
+values_data <- data$UV1
+values_valid <- ""
+values_check <- !values_data == values_valid
 
-## Trees Dead to Alive and Changing DBH
+# Identify errors
+errors_Trees_UV1 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data
+query <- "Trees UV2" 
+query_message <- "User Variable 2"  
+values_data <- data$UV2
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_UV2 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+data <- Trees_data
+query <- "Trees UV3" 
+query_message <- "User Variable 3"  
+values_data <- data$UV3
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_UV3 <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine UV Errors
+
+```{r}
+# Combine
+errors_Trees_UV <- rbind(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
+
+remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
+```
 
 ## Trees Errors
 
 ```{r}
 errors_Trees <- rbind(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd,
                       errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, 
-                      errors_Trees_Frac, errors_Trees_Height)
+                      errors_Trees_Frac, errors_Trees_Height, 
+                      errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, 
+                      errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
 ```
+
+# CROSS PROTOCOL CHECKS
+
+## 1000HR VS FINE SLOPE
+
+This code conducts quality control checks on slope data in the surface fuels coarse woody debris (1000-hr) and fine woody debris datasets. It also checks for overall consistency in slope and azimuth values across years.
+
+```{r}
+# Set parameters 
+data_Fuels1000_slope <- Fuels1000_data %>% 
+  group_by(MacroPlot.Name, Date, Transect, Slope) %>% 
+  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
+            "Transect" = unique(Transect)) %>% 
+  mutate(Slope_1000 = Slope) %>% 
+  arrange(MacroPlot.Name, Transect) %>% 
+  select(!Slope)
+
+data_FuelsFine_slope <- FuelsFine_data %>% 
+  group_by(MacroPlot.Name, Date, Transect, Comment, Slope) %>% 
+  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
+            "Transect" = unique(Transect)) %>% 
+  mutate(Slope_fine = Slope) %>% 
+  arrange(MacroPlot.Name, Transect) %>% 
+  select(!Slope)
+
+errors_Fuels_slope <- merge(data_Fuels1000_slope, data_FuelsFine_slope, all.y = T) %>% 
+  filter(Slope_fine != Slope_1000) %>% 
+  mutate(SavedQuery = "Fuel Slope FMH",
+         Error = paste("FWD slope", Slope_fine, "!=", "CWD slope", Slope_1000)) %>% 
+  reframe("SavedQuery" = unique(query),
+          "MacroPlot.Name" = unique(MacroPlot.Name), 
+          "Date" = unique(Date), 
+          "Error" = unique(Error),
+          "Comment" = unique(Comment))
+
+# If no errors, add "No Errors" to existing data frame 
+if (nrow(errors_Fuels_slope) == 0) {   
+    errors_Fuels_slope <- errors_blank %>%     
+    mutate(SavedQuery = query) 
+} else {   
+    errors_Fuels_slope <- errors_Fuels_slope
+}
+```
+
+# CROSS YEAR CHECKS
+
+## Trees Dead to Alive
+
+## Trees Changing DBH
 
 # ALL ERRORS
 

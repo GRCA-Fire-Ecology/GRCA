@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 #install.packages("tidyverse")
 ```
 
-This script is meant to use the Rosner Test for outliers, using the full suite of data available. This test is most appropriate when the sample size is large (n \> 20). Valid values were found by using the Rosner test on the full suite of data. The values presented in this script can inform year-to-year estimates of what "reasonable" data values are in the grand scheme of things. Refer to the script 2_QAQC_GRCA_FMH.Rmd
+This script is meant to use the Rosner Test for outliers. This test is most appropriate when the sample size is large (n \> 20). Valid values were found by using the Rosner test on the full suite of data. The values presented in this script can inform year-to-year estimates of what "reasonable" data values are in the grand scheme of things. Refer to the script 2_QAQC_GRCA_FMH.Rmd
 
 # BEFORE STARTING
 
@@ -45,11 +45,8 @@ Make sure to update file paths to be specific for your data.
 # Identify working directory (specifically user name)
 getwd()
 
-# Load in data and name them based on file path
 # Change file path based on user name!
 path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/AllYears/"
-#path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/2024/"
-#path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/2024/"
 ```
 
 ### Load Data
@@ -282,7 +279,7 @@ data_temp <- Fuels1000_AllYears_data %>%
 # Perform Rosner test on the valid column values
 data_rosner <- rosnerTest(data_temp$Dia)
 outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
-max_dia <- min(outliers) - 1
+max_Dia <- min(outliers) - 1
 ```
 
 ### DUFF LITTER
@@ -296,7 +293,7 @@ data_temp <- FuelsDuffLitt_AllYears_data %>%
 # Perform Rosner test on the valid column values
 data_rosner <- rosnerTest(data_temp$LittDep)
 outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
-max_litt <- min(outliers) - 0.1
+max_Litt <- min(outliers) - 0.1
 ```
 
 #### Duff Depth
@@ -308,7 +305,7 @@ data_temp <- FuelsDuffLitt_AllYears_data %>%
 # Perform Rosner test on the valid column values
 data_rosner <- rosnerTest(data_temp$DuffDep)
 outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
-max_duff <- min(outliers) - 1
+max_Duff <- min(outliers) - 1
 ```
 
 ### FINE FUELS
@@ -322,9 +319,8 @@ data_temp <- FuelsFine_AllYears_data %>%
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$OneHr)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_one <- min(outliers) - 1
+max_One <- min(outliers) - 1
 ```
-
 
 #### Ten Hour Fuels
 
@@ -335,9 +331,8 @@ data_temp <- FuelsFine_AllYears_data %>%
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$TenHr)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_ten <- min(outliers) - 1
+max_Ten <- min(outliers) - 1
 ```
-
 
 #### Hundred Hour Fuels
 
@@ -348,13 +343,12 @@ data_temp <- FuelsFine_AllYears_data %>%
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$HunHr)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_hun <- min(outliers) - 1
+max_Hun <- min(outliers) - 1
 ```
-
 
 ## PROTOCOL - TREES
 
-#### Tree DBH Max
+#### Trees DBH
 
 ```{r}
 #remove NA values for outlier test
@@ -363,11 +357,10 @@ data_temp <- Trees_AllYears_data %>%
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$DBH)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_dbh <- min(outliers) - 1
+max_DBH <- min(outliers) - 1
 ```
 
-
-#### Tree Height Max
+#### Trees Height
 
 ```{r}
 #remove NA values for outlier test
@@ -378,10 +371,10 @@ test <- rosnerTest(data_temp$Ht)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
 max_ht <- min(outliers) - 1
 # Got no outlies
-max_ht <- max(data_temp$Ht)
+max_Ht <- max(data_temp$Ht)
 ```
 
-#### Tree Post Char
+#### Trees Post Char Height
 
 ```{r}
 #remove NA values for outlier test
@@ -391,6 +384,18 @@ data_temp <- Trees_AllYears_data %>%
 # Perform Rosner test on the valid column values
 test <- rosnerTest(data_temp$CharHt)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_char <- min(outliers) - 1
+max_Char <- min(outliers) - 1
 ```
 
+#### Trees Post Scorch Height
+
+```{r}
+#remove NA values for outlier test
+data_temp <- Trees_AllYears_data %>%
+  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+         !is.na(ScorchHt))
+# Perform Rosner test on the valid column values
+test <- rosnerTest(data_temp$ScorchHt)
+outliers <- test$all.stats$Value[test$all.stats$Outlier]
+max_Scorch <- min(outliers) - 1
+```
