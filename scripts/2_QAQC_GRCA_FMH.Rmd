@@ -43,8 +43,7 @@ Make sure to update file paths to be specific for your data.
 # Identify working directory (specifically user name)
 getwd()
 
-# Load in data and name them based on file path
-# Change file path based on user name!
+# Load in data. Change file path based on user name!
 path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/2024/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
 #path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/2024/"
@@ -276,9 +275,8 @@ PostBurn_header <- PostBurn_all %>%
 
 # FUNCTIONS
 
-Create functions for QAQC
-
 ```{r}
+# QAQC function
 qaqc <- function(data, query, query_message, values_check) {
   # Identify errors 
   errors <- data %>%   
@@ -298,7 +296,7 @@ qaqc <- function(data, query, query_message, values_check) {
 }
 ```
 
-# PROTOCOL - SURFACE FUELS {.tabs}
+# PROTOCOL - SURFACE FUELS
 
 ## 1000HR CWD
 
@@ -471,7 +469,7 @@ errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 # Set parameters
 data <- Fuels1000_data
@@ -609,7 +607,7 @@ errors_FuelsDuffLitt_Hits <- errors_FuelsDuffLitt_Hits %>%
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 # Set parameters 
 data <- FuelsDuffLitt_data
@@ -617,7 +615,7 @@ query <- "Fuel DL Values LittDep"
 query_message <- "Litter Depth" 
 values_data <- data$LittDep
 values_valid <- max(7.6)
-values_check <- !values_data < values_valid
+values_check <- !values_data <= values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_LittDep <- qaqc(data, query, query_message, values_check)
@@ -629,7 +627,7 @@ errors_FuelsDuffLitt_LittDep <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 # Set parameters 
 data <- FuelsDuffLitt_data
@@ -637,7 +635,7 @@ query <- "Fuel DL Values DuffDep"
 query_message <- "Duff Depth" 
 values_data <- data$DuffDep
 values_valid <- max(13)
-values_check <- !values_data < values_valid
+values_check <- !values_data <= values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
@@ -848,7 +846,7 @@ errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 # Set parameters 
 data <- FuelsFine_data
@@ -868,7 +866,7 @@ errors_FuelsFine_OneHr <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 # Set parameters 
 data <- FuelsFine_data
@@ -888,7 +886,7 @@ errors_FuelsFine_TenHr <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 # Set parameters 
 data <- FuelsFine_data
@@ -929,7 +927,7 @@ path_errors
 
 # PROTOCOL - POST BURN
 
-This code conducts quality control checks on post burn data within the surface fuels fine (FWD) data set.
+This code conducts quality control checks on post burn data within the post burn severity data set.
 
 It checks for: header info (number of transects, length of transects, number of points per transect), substrate and vegetation values.
 
@@ -1595,7 +1593,7 @@ errors_Trees_DBH_Min <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 data <- Trees_data %>% 
   filter(CrwnCl != "DD")
@@ -1603,7 +1601,7 @@ query <- "Trees DBH FMH Max"
 query_message <- "DBH"  
 values_data <- data$DBH
 values_valid <- max(118)
-values_check <- !values_data < values_valid
+values_check <- !values_data <= values_valid
 
 # Identify errors
 errors_Trees_DBH_Max <- qaqc(data, query, query_message, values_check)
@@ -1700,7 +1698,7 @@ errors_Trees_DD_LiCrBHt <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Combine
 errors_Trees_DD <- rbind(errors_Trees_DD_DBH, errors_Trees_DD_Ht, 
-                         errors_Trees_DD_LiCrBHt,)
+                         errors_Trees_DD_LiCrBHt)
 
 remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
 ```
@@ -1798,7 +1796,7 @@ remove(errors_Trees_Frac_Overstory, errors_Trees_Frac_Pole)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 data <- Trees_data %>% 
    filter(DBH > 15.0)
@@ -1806,7 +1804,7 @@ query <- "Trees Height Overstory"
 query_message <- "Height"  
 values_data <- data$Ht
 values_valid <- max(45)
-values_check <- !values_data < values_valid
+values_check <- !values_data <= values_valid
 
 # Identify errors
 errors_Trees_Height_Overstory <- qaqc(data, query, query_message, values_check)
@@ -1939,7 +1937,7 @@ errors_Trees_Post_Char_Dead <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
@@ -1948,7 +1946,7 @@ query <- "Trees Post Char FMH Live"
 query_message <- "Char Height"  
 values_data <- data$CharHt
 values_valid <- max(29)
-values_check <- !values_data < values_valid
+values_check <- !values_data <= values_valid
 
 # Identify errors
 errors_Trees_Post_Char_Live <- qaqc(data, query, query_message, values_check)
@@ -1987,7 +1985,7 @@ query <- "Trees Post Scorch FMH Dead"
 query_message <- "Scorch Height for Standing Dead"  
 values_data <- data$ScorchHt
 values_valid <- ""
-values_check <- !values_data < values_valid
+values_check <- !values_data == values_valid
 
 # Identify errors
 errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
@@ -1999,7 +1997,7 @@ errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers.
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
-# Refer to the script 2_QAQC_GRCA_FMH_Rosner.Rmd
+# Refer to the script 2_QAQC_Rosner.Rmd
 
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
@@ -2008,7 +2006,7 @@ query <- "Trees Post Scorch FMH Live"
 query_message <- "Scorch Height"  
 values_data <- data$ScorchHt
 values_valid <- max(39)
-values_check <- !values_data < values_valid
+values_check <- !values_data <= values_valid
 
 # Identify errors
 errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
@@ -2049,7 +2047,7 @@ query <- "Trees Post Scorch% FMH Dead"
 query_message <- "Scorch Percent for Standing Dead"  
 values_data <- data$CrScPct
 values_valid <- ""
-values_check <- !values_data < values_valid
+values_check <- !values_data == values_valid
 
 # Identify errors
 errors_Trees_Post_ScorchPct_Dead <- qaqc(data, query, query_message, values_check)
@@ -2177,7 +2175,7 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 
 ```{r}
 errors_Trees <- rbind(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd,
-                      errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, 
+                      errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, 
                       errors_Trees_Frac, errors_Trees_Height, 
                       errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, 
                       errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
