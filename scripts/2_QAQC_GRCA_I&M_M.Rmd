@@ -48,6 +48,10 @@ getwd()
 # Mixed Conifer
 path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/I&M/M_AllYears/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/I&M/M_errors/"
+
+# Pinyon Juniper
+#path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/I&M/P_AllYears/"
+#path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/I&M/P_errors/"
 ```
 
 ### Load Data
@@ -589,7 +593,7 @@ It checks for: header info (number of transects, length of transects for One/Ten
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header I&M NumTran" 
+query <- "Fuel Fine Header NumTran" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 3    
@@ -604,7 +608,7 @@ errors_FuelsFine_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header I&M OneHrTranLen" 
+query <- "Fuel Fine Header OneHrTranLen" 
 query_message <- "One Hour Transect Length"  
 values_data <- data$OneHrTranLen
 values_valid <- 6
@@ -619,7 +623,7 @@ errors_FuelsFine_OneHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header I&M TenHrTranLen" 
+query <- "Fuel Fine Header TenHrTranLen" 
 query_message <- "Ten Hour Transect Length"  
 values_data <- data$TenHrTranLen 
 values_valid <- 6
@@ -634,7 +638,7 @@ errors_FuelsFine_TenHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header I&M HunHrTranLen" 
+query <- "Fuel Fine Header HunHrTranLen" 
 query_message <- "Hundrend Hour Transect Length"  
 values_data <- data$HunHrTranLen 
 values_valid <- 12
@@ -665,7 +669,7 @@ values_check <- !values_data == values_valid
 errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
 ```
 
-### Fuel Fine Hits I&M
+### Fuel Fine Hits
 
 [Problem:]{.underline} Extra or missing data points in I&M plots. There should be 3 transects with 1 sample point per transect. 
 
@@ -1043,6 +1047,37 @@ errors_Trees_Header <- rbind(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSi
 remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia)
 ```
 
+### Trees CBH
+
+[Problem]{.underline}: Dead trees have live crown base height entered.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. If Status = D, then check that LiCrBHt = blank
+
+```{r}
+data <- Trees_data %>% 
+  filter(Status == "D")
+data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
+query <- "Trees Dead CBH" 
+query_message <- "Live Crown Base Height"  
+values_data <- data$LiCrBHt
+values_valid <- ""
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine CBH Errors
+
+```{r}
+# Combine
+errors_Trees_CBH <- rbind(errors_Trees_Dead_LiCrBHt)
+
+remove(errors_Trees_Dead_LiCrBHt)
+```
+
 ### Trees Crown Class
 
 [Problem]{.underline}: Incompatible values entered for tree crown class.
@@ -1074,11 +1109,19 @@ errors_Trees_CrwnCl <- qaqc(data, query, query_message, values_check)
 -   Sort by DamCd 1. Check that DamCd 1 corresponds to one of the choices on the I&M-1 overstory data sheets.
 
 ```{r}
+# Make sure damage codes are blank vs NA
 Trees_data$DamCd1[is.na(Trees_data$DamCd1)] <- ""
+Trees_data$DamCd2[is.na(Trees_data$DamCd2)] <- ""
+Trees_data$DamCd3[is.na(Trees_data$DamCd3)] <- ""
+Trees_data$DamCd4[is.na(Trees_data$DamCd4)] <- ""
+Trees_data$DamCd5[is.na(Trees_data$DamCd5)] <- ""
+```
 
+
+```{r}
 data <- Trees_data %>% 
   filter(Status == "L")
-query <- "Trees Damage Live 1" 
+query <- "Trees Damage Live" 
 query_message <- "Damage Code 1"  
 values_data <- data$DamCd1
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1091,10 +1134,9 @@ errors_Trees_DamCd_L_1 <- qaqc(data, query, query_message, values_check)
 -   Sort by DamCd 2. Check that DamCd 2 corresponds to one of the choices on the I&M-1 overstory data sheets.
 
 ```{r}
-Trees_data$DamCd2[is.na(Trees_data$DamCd2)] <- ""
-
-data <- Trees_data
-query <- "Trees Damage Live 2" 
+data <- Trees_data %>% 
+  filter(Status == "L")
+query <- "Trees Damage Live" 
 query_message <- "Damage Code 2"  
 values_data <- data$DamCd2
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1107,10 +1149,9 @@ errors_Trees_DamCd_L_2 <- qaqc(data, query, query_message, values_check)
 -   Sort by DamCd 3. Check that DamCd 3 corresponds to one of the choices on the I&M-1 overstory data sheets.
 
 ```{r}
-Trees_data$DamCd3[is.na(Trees_data$DamCd3)] <- ""
-
-data <- Trees_data
-query <- "Trees Damage Live 3" 
+data <- Trees_data %>% 
+  filter(Status == "L")
+query <- "Trees Damage Live" 
 query_message <- "Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1123,10 +1164,9 @@ errors_Trees_DamCd_L_3 <- qaqc(data, query, query_message, values_check)
 -   Sort by DamCd 4. Check that DamCd 4 corresponds to one of the choices on the I&M-1 overstory data sheets.
 
 ```{r}
-Trees_data$DamCd4[is.na(Trees_data$DamCd4)] <- ""
-
-data <- Trees_data
-query <- "Trees Damage Live 4" 
+data <- Trees_data %>% 
+  filter(Status == "L")
+query <- "Trees Damage Live" 
 query_message <- "Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1139,10 +1179,9 @@ errors_Trees_DamCd_L_4 <- qaqc(data, query, query_message, values_check)
 -   Sort by DamCd 5. Check that DamCd 5 corresponds to one of the choices on the I&M-1 overstory data sheets.
 
 ```{r}
-Trees_data$DamCd5[is.na(Trees_data$DamCd5)] <- ""
-
-data <- Trees_data
-query <- "Trees Damage Live 5" 
+data <- Trees_data %>% 
+  filter(Status == "L")
+query <- "Trees Damage Live" 
 query_message <- "Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1163,7 +1202,7 @@ errors_Trees_DamCd_L_5 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead 1" 
+query <- "Trees Damage Dead" 
 query_message <- "Damage Code 1"  
 values_data <- data$DamCd1
 values_valid <- ""
@@ -1176,7 +1215,7 @@ errors_Trees_DamCd_D_1 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead 2" 
+query <- "Trees Damage Dead" 
 query_message <- "Damage Code 2"  
 values_data <- data$DamCd2
 values_valid <- ""
@@ -1189,7 +1228,7 @@ errors_Trees_DamCd_D_2 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead 3" 
+query <- "Trees Damage Dead" 
 query_message <- "Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1202,7 +1241,7 @@ errors_Trees_DamCd_D_3 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead 4" 
+query <- "Trees Damage Dead" 
 query_message <- "Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1215,7 +1254,7 @@ errors_Trees_DamCd_D_4 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead 5" 
+query <- "Trees Damage Dead" 
 query_message <- "Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1236,7 +1275,7 @@ errors_Trees_DamCd_D_5 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 2"  
 values_data <- data$DamCd2
 values_valid <- ""
@@ -1249,7 +1288,7 @@ errors_Trees_DamCd_1_Blank_2 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1262,7 +1301,7 @@ errors_Trees_DamCd_1_Blank_3 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1275,7 +1314,7 @@ errors_Trees_DamCd_1_Blank_4 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1290,7 +1329,7 @@ errors_Trees_DamCd_1_Blank_5 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage 2 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 2 = Blank, Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1303,7 +1342,7 @@ errors_Trees_DamCd_2_Blank_3 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage 2 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 2 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1316,7 +1355,7 @@ errors_Trees_DamCd_2_Blank_4 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage 2 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 2 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1331,7 +1370,7 @@ errors_Trees_DamCd_2_Blank_5 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd3 == "")
-query <- "Trees Damage 3 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 3 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1344,7 +1383,7 @@ errors_Trees_DamCd_3_Blank_4 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd3 == "")
-query <- "Trees Damage 3 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 3 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1359,7 +1398,7 @@ errors_Trees_DamCd_3_Blank_5 <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(DamCd4 == "")
-query <- "Trees Damage 4 Blank" 
+query <- "Trees Damage Blank" 
 query_message <- "Damage Code 4 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1455,38 +1494,6 @@ errors_Trees_DBH <- rbind(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 ```
 
-### Trees CBH
-
-[Problem]{.underline}: Dead trees have live crown base height entered.
-
-[Procedure:]{.underline}
-
--   Sort by Status. If Status = D, then check that LiCrBHt = blank
-
-```{r}
-Trees_data$LiCrBHt[is.na(Trees_data$LiCrBHt)] <- ""
-
-data <- Trees_data %>% 
-  filter(Status == "D")
-query <- "Trees Dead CBH" 
-query_message <- "Live Crown Base Height"  
-values_data <- data$LiCrBHt
-values_valid <- ""
-values_check <- !values_data == values_valid
-
-# Identify errors
-errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
-```
-
-#### Combine CBH Errors
-
-```{r}
-# Combine
-errors_Trees_CBH <- rbind(errors_Trees_Dead_LiCrBHt)
-
-remove(errors_Trees_Dead_LiCrBHt)
-```
-
 ### Trees DD
 
 [Problem]{.underline}: DBH, height, and or crown base height entered for trees that are no longer standing.
@@ -1496,10 +1503,9 @@ remove(errors_Trees_Dead_LiCrBHt)
 -   Filter for CrwnCl = BBD, CUS, or DD. Check that DBH, Ht, [and]{.underline} LiCrBHt are blank
 
 ```{r}
-Trees_data$DBH[is.na(Trees_data$DBH)] <- ""
-
 data <- Trees_data %>% 
   filter(CrwnCl == c("BBD", "CUS", "DD"))
+data$DBH[is.na(data$DBH)] <- ""
 query <- "Trees DD DBH" 
 query_message <- "DBH"  
 values_data <- data$DBH
@@ -1511,10 +1517,9 @@ errors_Trees_DD_DBH <- qaqc(data, query, query_message, values_check)
 ```
 
 ```{r}
-Trees_data$Ht[is.na(Trees_data$Ht)] <- ""
-
 data <- Trees_data %>% 
   filter(CrwnCl == c("BBD", "CUS", "DD"))
+data$Ht[is.na(data$Ht)] <- ""
 query <- "Trees DD Ht" 
 query_message <- "Height"  
 values_data <- data$Ht
@@ -1528,6 +1533,7 @@ errors_Trees_DD_Ht <- qaqc(data, query, query_message, values_check)
 ```{r}
 data <- Trees_data %>% 
   filter(CrwnCl == c("BBD", "CUS", "DD"))
+data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
 query <- "Trees DD CBH" 
 query_message <- "Live Crown Base Height"  
 values_data <- data$LiCrBHt
@@ -1610,8 +1616,6 @@ errors_Trees_Frac <- qaqc(data, query, query_message, values_check)
 # Valid values were found by using the Rosner test on the full suite of data.
 # Refer to the script 2_QAQC_Rosner.Rmd
 
-Trees_data$Ht <- as.numeric(Trees_data$Ht)
-
 data <- Trees_data %>% 
    filter(DBH >= 15.0)
 query <- "Trees Height Overstory" 
@@ -1624,6 +1628,26 @@ values_check <- !values_data <= values_valid
 errors_Trees_Height <- qaqc(data, query, query_message, values_check)
 ```
 
+### Trees Life Form
+
+[Problem:]{.underline} Species entered that are not trees.
+
+[Procedure:]{.underline}
+
+-   Check that Preferred Lifeform = Tree
+
+```{r}
+data <- Trees_data
+query <- "Trees Life Form" 
+query_message <- "Life Form"  
+values_data <- data$Preferred_Lifeform
+values_valid <- "Tree"
+values_check <- !values_data == values_valid
+
+# Identify errors
+errors_Trees_LifeForm <- qaqc(data, query, query_message, values_check)
+```
+
 ### Trees Non-Post Severity
 
 [Problem]{.underline}: Scorch height, scorch %, and/or char height are entered in sample events other than immediate post for I&M plots. These values should only be collected at immediate post reads.
@@ -1633,10 +1657,9 @@ errors_Trees_Height <- qaqc(data, query, query_message, values_check)
 -   Filter to exclude all POST reads (01Post, 02Post, etc). Check that CharHt = blank, ScorchHt = blank, [and]{.underline} CrScPct = blank (i.e. no records should appear in the query)
 
 ```{r}
-Trees_data$CharHt[is.na(Trees_data$CharHt)] <- ""
-
 data <- Trees_data %>% 
   filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+data$CharHt[is.na(data$CharHt)] <- ""
 query <- "Trees Non-Post Severity CharHt" 
 query_message <- "Char Height"  
 values_data <- data$CharHt
@@ -1648,10 +1671,9 @@ errors_Trees_NonPost_Severity_CharHt <- qaqc(data, query, query_message, values_
 ```
 
 ```{r}
-Trees_data$ScorchHt[is.na(Trees_data$ScorchHt)] <- ""
-
 data <- Trees_data %>% 
   filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Non-Post Severity ScorchHt" 
 query_message <- "Scorch Height"  
 values_data <- data$ScorchHt
@@ -1663,10 +1685,9 @@ errors_Trees_NonPost_Severity_ScorchHt <- qaqc(data, query, query_message, value
 ```
 
 ```{r}
-Trees_data$CrScPct[is.na(Trees_data$CrScPct)] <- ""
-
 data <- Trees_data %>% 
   filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+data$CrScPct[is.na(data$CrScPct)] <- ""
 query <- "Trees Non-Post Severity CrScPct" 
 query_message <- "Crown Scorch Percent"  
 values_data <- data$CrScPct
@@ -1698,6 +1719,7 @@ remove(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_Scorc
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          CrwnCl %in% c("DD", "BBD", "CUS"))
+data$CharHt[is.na(data$CharHt)] <- ""
 query <- "Trees Post Char DD" 
 query_message <- "Char Height for DD Tree"  
 values_data <- data$CharHt
@@ -1717,6 +1739,7 @@ data <- Trees_data %>%
          Status == "D",
          # Blank Char Ht can have tag 0
          !TagNo == 0)
+data$CharHt[is.na(data$CharHt)] <- ""
 query <- "Trees Post Char Dead" 
 query_message <- "Char Height for Standing Dead"  
 values_data <- data$CharHt
@@ -1734,7 +1757,6 @@ errors_Trees_Post_Char_Dead <- qaqc(data, query, query_message, values_check)
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
 # Refer to the script 2_QAQC_Rosner.Rmd
-Trees_data$CharHt <- as.numeric(Trees_data$CharHt)
 
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
@@ -1749,7 +1771,7 @@ values_check <- !values_data <= values_valid
 errors_Trees_Post_Char_Live <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Post ScorchHt I&M
+### Trees Post ScorchHt
 
 [Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in I&M plots. Scorch height entered for trees that are no longer standing or are broken.
 
@@ -1761,6 +1783,7 @@ errors_Trees_Post_Char_Live <- qaqc(data, query, query_message, values_check)
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          CrwnCl %in% c("DD", "BBD", "CUS"))
+data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Post Scorch DD" 
 query_message <- "Scorch Height for DD Tree"  
 values_data <- data$ScorchHt
@@ -1778,6 +1801,7 @@ data <- Trees_data %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !CrwnCl %in% c("DD", "BBD", "CUS"),
          Status == "D")
+data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Post Scorch Dead"
 query_message <- "Scorch Height for Standing Dead"  
 values_data <- data$ScorchHt
@@ -1795,7 +1819,6 @@ errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
 # This test is most appropriate when the sample size is large (n > 20). 
 # Valid values were found by using the Rosner test on the full suite of data.
 # Refer to the script 2_QAQC_Rosner.Rmd
-Trees_data$ScorchHt <- as.numeric(Trees_data$ScorchHt)
 
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
@@ -1810,7 +1833,7 @@ values_check <- !values_data <= values_valid
 errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Post Scorch% I&M
+### Trees Post Scorch%
 
 [Problem]{.underline}: Scorch % missing or excessively large for live trees during the immediate post-fire sample events in I&M plots. Scorch % entered incorrectly for trees that are no longer standing.
 
@@ -1824,6 +1847,7 @@ errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          CrwnCl %in% c("DD", "BBD", "CUS"))
+data$CrScPct[is.na(data$CrScPct)] <- ""
 query <- "Trees Post Scorch% DD" 
 query_message <- "Scorch Percent for DD Tree"  
 values_data <- data$CrScPct
@@ -1841,6 +1865,7 @@ data <- Trees_data %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !CrwnCl %in% c("DD", "BBD", "CUS"),
          Status == "D")
+data$CrScPct[is.na(data$CrScPct)] <- ""
 query <- "Trees Post Scorch% Dead"
 query_message <- "Scorch Percent for Standing Dead"  
 values_data <- data$CrScPct
@@ -1854,8 +1879,6 @@ errors_Trees_Post_ScorchPct_Dead <- qaqc(data, query, query_message, values_chec
 -   Live trees. Filter to include all POST reads (01Post, 02Post, etc). Filter for Status = L. Check that CrScPct is not blank. Check that CrScPct ≤ 100.
 
 ```{r}
-Trees_data$CrScPct <- as.numeric(Trees_data$CrScPct)
-
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          Status == "L")
@@ -1898,26 +1921,6 @@ values_check <- !values_data %in% values_valid
 errors_Trees_Status <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Life Form
-
-[Problem:]{.underline} Species entered that are not trees.
-
-[Procedure:]{.underline}
-
--   Check that Preferred Lifeform = Tree
-
-```{r}
-data <- Trees_data
-query <- "Trees Life Form" 
-query_message <- "Life Form"  
-values_data <- data$Preferred_Lifeform
-values_valid <- "Tree"
-values_check <- !values_data == values_valid
-
-# Identify errors
-errors_Trees_LifeForm <- qaqc(data, query, query_message, values_check)
-```
-
 ### Trees UV
 
 [Problem]{.underline}: X present in the UV columns signifying respective data (DBH, Ht, or LiCrBHT) weren’t assessed.
@@ -1928,6 +1931,7 @@ errors_Trees_LifeForm <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 data <- Trees_data
+data$UV1[is.na(data$UV1)] <- ""
 query <- "Trees UV1" 
 query_message <- "User Variable 1"  
 values_data <- data$UV1
@@ -1940,6 +1944,7 @@ errors_Trees_UV1 <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 data <- Trees_data
+data$UV2[is.na(data$UV2)] <- ""
 query <- "Trees UV2" 
 query_message <- "User Variable 2"  
 values_data <- data$UV2
@@ -1952,6 +1957,7 @@ errors_Trees_UV2 <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 data <- Trees_data
+data$UV3[is.na(data$UV3)] <- ""
 query <- "Trees UV3" 
 query_message <- "User Variable 3"  
 values_data <- data$UV3
@@ -1974,9 +1980,9 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 ## Trees Errors
 
 ```{r}
-errors_Trees <- rbind(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd,
-                      errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, 
-                      errors_Trees_Frac, errors_Trees_Height, 
+errors_Trees <- rbind(errors_Trees_CrwnCl, errors_Trees_DamCd,
+                      errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, 
+                      errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, 
                       errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, 
                       errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
 
