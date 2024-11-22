@@ -283,7 +283,7 @@ qaqc <- function(data, query, query_message, values_check) {
     mutate("SavedQuery" = query, 
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
-    filter((values_check) %>% replace_na(TRUE)) %>%   
+    filter(!(values_check) %>% replace_na(TRUE)) %>%   
     select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
   
   # If no errors, add "No Errors" to existing data frame 
@@ -319,7 +319,7 @@ query <- "Fuel 1000 Header NumTran"
 query_message <- "Number of Transects" 
 values_data <- data$NumTran
 values_valid <- 4
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Fuels1000_NumTran <- qaqc(data, query, query_message, values_check)
@@ -335,7 +335,7 @@ query <- "Fuel 1000 Header NRim TranLen"
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 50  
-values_check <-!values_data == values_valid
+values_check <-values_data == values_valid
 
 # Identify errors
 errors_Fuels1000_TranLen_N <- qaqc(data, query, query_message, values_check)
@@ -351,7 +351,7 @@ query <- "Fuel 1000 Header SRim TranLen"
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 100 
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Fuels1000_TranLen_S <- qaqc(data, query, query_message, values_check)
@@ -372,7 +372,7 @@ query <- "Fuel 1000 DecayClass"
 query_message <- "Decay Class"
 values_data <- data$DecayCl
 values_valid <- c(3,4)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Fuels1000_DecayCl <- qaqc(data, query, query_message, values_check)
@@ -393,7 +393,7 @@ query <- "Fuel 1000 FuelConst"
 query_message <- "Fuel Constant"
 values_data <- data$CWDFuConSt
 values_valid <- data$MonitoringType
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Fuels1000_FuelConst <- qaqc(data, query, query_message, values_check)
@@ -421,7 +421,7 @@ query <- "Fuel 1000 LogNo"
 query_message <- "Duplicate Logs" 
 values_data <- data$Duplicate
 values_valid <- FALSE
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Fuels1000_LogNo <- qaqc(data, query, query_message, values_check)
@@ -442,7 +442,7 @@ query <- "Fuel 1000 Values TransNum"
 query_message <- "Transect Number"
 values_data <- data$Transect
 values_valid <- c(1, 2, 3, 4)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Fuels1000_TransNum <- qaqc(data, query, query_message, values_check)
@@ -457,7 +457,7 @@ query <- "Fuel 1000 Values Slope"
 query_message <- "Slope"
 values_data <- data$Slope
 values_valid <- seq(0, 90, by = 1)
-values_check <- (!values_data %in% values_valid) %>% replace_na(TRUE)
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
@@ -477,7 +477,7 @@ query <- "Fuel 1000 Values Dia"
 query_message <- "Diameter"
 values_data <- data$Dia
 values_valid <- seq(3, 35, by = 0.5)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Fuels1000_Dia <- qaqc(data, query, query_message, values_check)
@@ -527,7 +527,7 @@ query <- "Fuel DL Header NumTran"
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 4    
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
@@ -548,7 +548,7 @@ query <- "Fuel DL FuelConst"
 query_message <- "Fuel Constant" 
 values_data <- data$DLFuConSt 
 values_valid <- data$MonitoringType  
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
@@ -582,7 +582,7 @@ query <- "Fuel DL Hits"
 query_message <- "Number of Hits" 
 values_data <- data$sum_hits
 values_valid <- 40
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
@@ -615,7 +615,7 @@ query <- "Fuel DL Values LittDep"
 query_message <- "Litter Depth" 
 values_data <- data$LittDep
 values_valid <- max(7.6)
-values_check <- !values_data <= values_valid
+values_check <- values_data <= values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_LittDep <- qaqc(data, query, query_message, values_check)
@@ -635,7 +635,7 @@ query <- "Fuel DL Values DuffDep"
 query_message <- "Duff Depth" 
 values_data <- data$DuffDep
 values_valid <- max(13)
-values_check <- !values_data <= values_valid
+values_check <- values_data <= values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
@@ -683,7 +683,7 @@ query <- "Fuel Fine Header NumTran"
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 4    
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_NumTran <- qaqc(data, query, query_message, values_check)
@@ -698,7 +698,7 @@ query <- "Fuel Fine Header OneHrTranLen"
 query_message <- "One Hour Transect Length"  
 values_data <- data$OneHrTranLen
 values_valid <- 6
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_OneHrTranLen <- qaqc(data, query, query_message, values_check)
@@ -713,7 +713,7 @@ query <- "Fuel Fine Header TenHrTranLen"
 query_message <- "Ten Hour Transect Length"  
 values_data <- data$TenHrTranLen 
 values_valid <- 6
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_TenHrTranLen <- qaqc(data, query, query_message, values_check)
@@ -728,7 +728,7 @@ query <- "Fuel Fine Header HunHrTranLen"
 query_message <- "Hundrend Hour Transect Length"  
 values_data <- data$HunHrTranLen 
 values_valid <- 12
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
@@ -749,7 +749,7 @@ query <- "Fuel Fine FuelConst"
 query_message <- "Fuel Constant" 
 values_data <- data$FWDFuConSt 
 values_valid <- data$MonitoringType  
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
@@ -776,7 +776,7 @@ query <- "Fuel Fine Hits"
 query_message <- "Number of Hits" 
 values_data <- data$sum_hits
 values_valid <- 4
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_Hits <- qaqc(data, query, query_message, values_check)
@@ -804,7 +804,7 @@ query <- "Fuel Fine Values TransNum"
 query_message <- "Transect Number"
 values_data <- data$Transect
 values_valid <- c(1, 2, 3, 4)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_FuelsFine_TransNum <- qaqc(data, query, query_message, values_check)
@@ -819,7 +819,7 @@ query <- "Fuel Fine Values Azimuth"
 query_message <- "Azimuth"
 values_data <- data$Azimuth
 values_valid <- seq(0, 359, by = 1)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_FuelsFine_Azimuth <- qaqc(data, query, query_message, values_check)
@@ -834,7 +834,7 @@ query <- "Fuel Fine Values Slope"
 query_message <- "Slope"
 values_data <- data$Slope
 values_valid <- seq(0, 90, by = 1)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
@@ -854,7 +854,7 @@ query <- "Fuel Fine Values OneHr"
 query_message <- "One Hour Count" 
 values_data <- data$OneHr
 values_valid <- seq(0, 64, by = 1)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_FuelsFine_OneHr <- qaqc(data, query, query_message, values_check)
@@ -874,7 +874,7 @@ query <- "Fuel Fine Values TenHr"
 query_message <- "Ten Hour Count" 
 values_data <- data$TenHr
 values_valid <- seq(0, 26, by = 1)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_FuelsFine_TenHr <- qaqc(data, query, query_message, values_check)
@@ -894,7 +894,7 @@ query <- "Fuel Fine Values HunHr"
 query_message <- "Hundred Hour Count" 
 values_data <- data$HunHr
 values_valid <- seq(0, 15, by = 1)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
@@ -946,7 +946,7 @@ It checks for: header info (number of transects, length of transects, number of 
 # query_message <- "Number of Transects"  
 # values_data <- data$NumTran  
 # values_valid <- 4    
-# values_check <- !values_data == values_valid
+# values_check <- values_data == values_valid
 # 
 # # Identify errors
 # errors_PostBurn_NumTran <- qaqc(data, query, query_message, values_check)
@@ -961,7 +961,7 @@ It checks for: header info (number of transects, length of transects, number of 
 # query_message <- "Transect Length" 
 # values_data <- data$TranLen 
 # values_valid <- 50  
-# values_check <- !values_data == values_valid
+# values_check <- values_data == values_valid
 # 
 # # Identify errors
 # errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
@@ -976,7 +976,7 @@ It checks for: header info (number of transects, length of transects, number of 
 # query_message <- "Number of Points" 
 # values_data <- data$NumPtsTran
 # values_valid <- 10
-# values_check <- !values_data == values_valid
+# values_check <- values_data == values_valid
 # 
 # # Identify errors
 # errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
@@ -1003,7 +1003,7 @@ It checks for: header info (number of transects, length of transects, number of 
 # query_message <- "Number of Hits" 
 # values_data <- data$sum_hits
 # values_valid <- 40
-# values_check <- !values_data == values_valid
+# values_check <- values_data == values_valid
 # 
 # # Identify errors
 # errors_PostBurn_Hits <- qaqc(data, query, query_message, values_check)
@@ -1031,7 +1031,7 @@ It checks for: header info (number of transects, length of transects, number of 
 # query_message <- "Substrate Severity"
 # values_data <- data$Sub
 # values_valid <- c(0, 1, 2, 3, 4, 5)
-# values_check <- !values_data %in% values_valid
+# values_check <- values_data %in% values_valid
 # 
 # # Identify errors
 # errors_PostBurn_Sub <- qaqc(data, query, query_message, values_check)
@@ -1052,7 +1052,7 @@ It checks for: header info (number of transects, length of transects, number of 
 # query_message <- "Vegetation Severity"
 # values_data <- data$Veg
 # values_valid <- c(0, 1, 2, 3, 4, 5)
-# values_check <- !values_data %in% values_valid
+# values_check <- values_data %in% values_valid
 # 
 # # Identify errors
 # errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
@@ -1096,7 +1096,7 @@ query <- "Trees Header MacroPlotSize"
 query_message <- "Macro Plot Size"  
 values_data <- data$MacroPlotSize  
 values_valid <- 0.1    
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_MacroPlotSize <- qaqc(data, query, query_message, values_check)
@@ -1111,7 +1111,7 @@ query <- "Trees Header SnagPlotSize"
 query_message <- "Snag Plot Size"  
 values_data <- data$SnagPlotSize
 values_valid <- 0.1    
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_SnagPlotSize <- qaqc(data, query, query_message, values_check)
@@ -1126,7 +1126,7 @@ query <- "Trees Header BrkPntDia"
 query_message <- "Break Point Diameter"  
 values_data <- data$BrkPntDia
 values_valid <- 15
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_BrkPntDia <- qaqc(data, query, query_message, values_check)
@@ -1158,7 +1158,7 @@ query <- "Trees Dead CBH"
 query_message <- "Live Crown Base Height"  
 values_data <- data$LiCrBHt
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
@@ -1189,7 +1189,7 @@ query <- "Trees Crown Class D"
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
 values_valid <- c("BBD", "CUS", "DD")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_CrwnCl_1 <- qaqc(data, query, query_message, values_check)
@@ -1204,7 +1204,7 @@ query <- "Trees Crown Class L"
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_CrwnCl_2 <- qaqc(data, query, query_message, values_check)
@@ -1219,7 +1219,7 @@ query <- "Trees Crown Class Overstory D"
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
 values_valid <- c("BAD", "CS", "LBS", "RS")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_CrwnCl_3 <- qaqc(data, query, query_message, values_check)
@@ -1234,7 +1234,7 @@ query <- "Trees Crown Class Overstory L"
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
 values_valid <- c("C", "D", "I", "O", "SC")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_CrwnCl_4 <- qaqc(data, query, query_message, values_check)
@@ -1249,7 +1249,7 @@ query <- "Trees Crown Class Pole"
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
 values_valid <- c("X", "")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_CrwnCl_5 <- qaqc(data, query, query_message, values_check)
@@ -1291,7 +1291,7 @@ query <- "Trees Damage Live"
 query_message <- "Damage Code 1"  
 values_data <- data$DamCd1
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_L_1 <- qaqc(data, query, query_message, values_check)
@@ -1306,7 +1306,7 @@ query <- "Trees Damage Live"
 query_message <- "Damage Code 2"  
 values_data <- data$DamCd2
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_L_2 <- qaqc(data, query, query_message, values_check)
@@ -1321,7 +1321,7 @@ query <- "Trees Damage Live"
 query_message <- "Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_L_3 <- qaqc(data, query, query_message, values_check)
@@ -1336,7 +1336,7 @@ query <- "Trees Damage Live"
 query_message <- "Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_L_4 <- qaqc(data, query, query_message, values_check)
@@ -1351,7 +1351,7 @@ query <- "Trees Damage Live"
 query_message <- "Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_L_5 <- qaqc(data, query, query_message, values_check)
@@ -1372,7 +1372,7 @@ query <- "Trees Damage Dead"
 query_message <- "Damage Code 1"  
 values_data <- data$DamCd1
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_D_1 <- qaqc(data, query, query_message, values_check)
@@ -1385,7 +1385,7 @@ query <- "Trees Damage Dead"
 query_message <- "Damage Code 2"  
 values_data <- data$DamCd2
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_D_2 <- qaqc(data, query, query_message, values_check)
@@ -1398,7 +1398,7 @@ query <- "Trees Damage Dead"
 query_message <- "Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_D_3 <- qaqc(data, query, query_message, values_check)
@@ -1411,7 +1411,7 @@ query <- "Trees Damage Dead"
 query_message <- "Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_D_4 <- qaqc(data, query, query_message, values_check)
@@ -1424,7 +1424,7 @@ query <- "Trees Damage Dead"
 query_message <- "Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_D_5 <- qaqc(data, query, query_message, values_check)
@@ -1445,7 +1445,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 1 = Blank, Damage Code 2"  
 values_data <- data$DamCd2
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_1_Blank_2 <- qaqc(data, query, query_message, values_check)
@@ -1458,7 +1458,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 1 = Blank, Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_1_Blank_3 <- qaqc(data, query, query_message, values_check)
@@ -1471,7 +1471,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 1 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_1_Blank_4 <- qaqc(data, query, query_message, values_check)
@@ -1484,7 +1484,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 1 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_1_Blank_5 <- qaqc(data, query, query_message, values_check)
@@ -1499,7 +1499,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 2 = Blank, Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_2_Blank_3 <- qaqc(data, query, query_message, values_check)
@@ -1512,7 +1512,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 2 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_2_Blank_4 <- qaqc(data, query, query_message, values_check)
@@ -1525,7 +1525,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 2 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_2_Blank_5 <- qaqc(data, query, query_message, values_check)
@@ -1540,7 +1540,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 3 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_3_Blank_4 <- qaqc(data, query, query_message, values_check)
@@ -1553,7 +1553,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 3 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_3_Blank_5 <- qaqc(data, query, query_message, values_check)
@@ -1568,7 +1568,7 @@ query <- "Trees Damage Blank"
 query_message <- "Damage Code 4 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_DamCd_4_Blank_5 <- qaqc(data, query, query_message, values_check)
@@ -1625,7 +1625,7 @@ query <- "Trees DBH Min"
 query_message <- "DBH"  
 values_data <- data$DBH
 values_valid <- min(2.5)
-values_check <- !values_data >= values_valid
+values_check <- values_data >= values_valid
 
 # Identify errors
 errors_Trees_DBH_Min <- qaqc(data, query, query_message, values_check)
@@ -1645,7 +1645,7 @@ query <- "Trees DBH Max"
 query_message <- "DBH"  
 values_data <- data$DBH
 values_valid <- max(118)
-values_check <- !values_data <= values_valid
+values_check <- values_data <= values_valid
 
 # Identify errors
 errors_Trees_DBH_Max <- qaqc(data, query, query_message, values_check)
@@ -1676,7 +1676,7 @@ query <- "Trees DD DBH"
 query_message <- "DBH"  
 values_data <- data$DBH
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_DD_DBH <- qaqc(data, query, query_message, values_check)
@@ -1690,7 +1690,7 @@ query <- "Trees DD Ht"
 query_message <- "Height"  
 values_data <- data$Ht
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_DD_Ht <- qaqc(data, query, query_message, values_check)
@@ -1704,7 +1704,7 @@ query <- "Trees DD CBH"
 query_message <- "Live Crown Base Height"  
 values_data <- data$LiCrBHt
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_DD_LiCrBHt <- qaqc(data, query, query_message, values_check)
@@ -1742,7 +1742,7 @@ query <- "Trees Duplicates"
 query_message <- "Duplicate Tag"  
 values_data <- data$Duplicate
 values_valid <- FALSE
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Duplicate <- qaqc(data, query, query_message, values_check)
@@ -1765,7 +1765,7 @@ query <- "Trees Frac Overstory"
 query_message <- "Subplot Fraction"  
 values_data <- data$SubFrac
 values_valid <- 1
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Frac_Overstory <- qaqc(data, query, query_message, values_check)
@@ -1780,7 +1780,7 @@ query <- "Trees Frac Pole"
 query_message <- "Subplot Fraction"  
 values_data <- data$SubFrac
 values_valid <- 0.5
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Frac_Pole <- qaqc(data, query, query_message, values_check)
@@ -1822,7 +1822,7 @@ query <- "Trees Height Overstory"
 query_message <- "Height"  
 values_data <- data$Ht
 values_valid <- max(45)
-values_check <- !values_data <= values_valid
+values_check <- values_data <= values_valid
 
 # Identify errors
 errors_Trees_Height_Overstory <- qaqc(data, query, query_message, values_check)
@@ -1837,7 +1837,7 @@ query <- "Trees Height Pole"
 query_message <- "Height"  
 values_data <- data$Ht
 values_valid <- c("", 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_Height_Pole <- qaqc(data, query, query_message, values_check)
@@ -1866,7 +1866,7 @@ query <- "Trees Life Form"
 query_message <- "Life Form"  
 values_data <- data$Preferred_Lifeform
 values_valid <- "Tree"
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_LifeForm <- qaqc(data, query, query_message, values_check)
@@ -1888,7 +1888,7 @@ query <- "Trees Non-Post Severity CharHt"
 query_message <- "Char Height"  
 values_data <- data$CharHt
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_NonPost_Severity_CharHt <- qaqc(data, query, query_message, values_check)
@@ -1902,7 +1902,7 @@ query <- "Trees Non-Post Severity ScorchHt"
 query_message <- "Scorch Height"  
 values_data <- data$ScorchHt
 values_valid <- "NA"
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_NonPost_Severity_ScorchHt <- qaqc(data, query, query_message, values_check)
@@ -1916,7 +1916,7 @@ query <- "Trees Non-Post Severity CrScPct"
 query_message <- "Crown Scorch Percent"  
 values_data <- data$CrScPct
 values_valid <- "NA"
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_NonPost_Severity_CrScPct <- qaqc(data, query, query_message, values_check)
@@ -1948,7 +1948,7 @@ query <- "Trees Post Char DD"
 query_message <- "Char Height for DD Tree"  
 values_data <- data$CharHt
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Post_Char_DD <- qaqc(data, query, query_message, values_check)
@@ -1989,7 +1989,7 @@ query <- "Trees Post Char Live"
 query_message <- "Char Height"  
 values_data <- data$CharHt
 values_valid <- max(29)
-values_check <- !values_data <= values_valid
+values_check <- values_data <= values_valid
 
 # Identify errors
 errors_Trees_Post_Char_Live <- qaqc(data, query, query_message, values_check)
@@ -2012,7 +2012,7 @@ query <- "Trees Post Scorch DD"
 query_message <- "Scorch Height for DD Tree"  
 values_data <- data$ScorchHt
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Post_Scorch_DD <- qaqc(data, query, query_message, values_check)
@@ -2030,7 +2030,7 @@ query <- "Trees Post Scorch Dead"
 query_message <- "Scorch Height for Standing Dead"  
 values_data <- data$ScorchHt
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
@@ -2051,7 +2051,7 @@ query <- "Trees Post Scorch Live"
 query_message <- "Scorch Height"  
 values_data <- data$ScorchHt
 values_valid <- max(39)
-values_check <- !values_data <= values_valid
+values_check <- values_data <= values_valid
 
 # Identify errors
 errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
@@ -2076,7 +2076,7 @@ query <- "Trees Post Scorch% DD"
 query_message <- "Scorch Percent for DD Tree"  
 values_data <- data$CrScPct
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Post_ScorchPct_DD <- qaqc(data, query, query_message, values_check)
@@ -2094,7 +2094,7 @@ query <- "Trees Post Scorch% Dead"
 query_message <- "Scorch Percent for Standing Dead"  
 values_data <- data$CrScPct
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Post_ScorchPct_Dead <- qaqc(data, query, query_message, values_check)
@@ -2110,7 +2110,7 @@ query <- "Trees Post Scorch% Live"
 query_message <- "Scorch Percent"  
 values_data <- data$CrScPct
 values_valid <- max(100)
-values_check <- !values_data <= values_valid
+values_check <- values_data <= values_valid
 
 # Identify errors
 errors_Trees_Post_ScorchPct_Live <- qaqc(data, query, query_message, values_check)
@@ -2139,7 +2139,7 @@ query <- "Trees Status"
 query_message <- "Status"  
 values_data <- data$Status
 values_valid <- c("L", "D")
-values_check <- !values_data %in% values_valid
+values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_Status <- qaqc(data, query, query_message, values_check)
@@ -2160,7 +2160,7 @@ query <- "Trees UV1"
 query_message <- "User Variable 1"  
 values_data <- data$UV1
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_UV1 <- qaqc(data, query, query_message, values_check)
@@ -2173,7 +2173,7 @@ query <- "Trees UV2"
 query_message <- "User Variable 2"  
 values_data <- data$UV2
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_UV2 <- qaqc(data, query, query_message, values_check)
@@ -2186,7 +2186,7 @@ query <- "Trees UV3"
 query_message <- "User Variable 3"  
 values_data <- data$UV3
 values_valid <- ""
-values_check <- !values_data == values_valid
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_UV3 <- qaqc(data, query, query_message, values_check)
