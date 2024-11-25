@@ -1,0 +1,227 @@
+---
+title: "Grand Canyon QAQC for I&M Pinyon Juniper Data"
+author: "Alexandra Lalor"
+date: "2024-11-24"
+output:
+  html_document:
+    theme: readable
+    highlight: 
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+# Install packages (if needed)
+# install.packages("tidyverse")
+# install.packages("Rtools")
+```
+
+# BEFORE STARTING
+
+### Load Packages
+
+```{r}
+# Load packages
+library(tidyverse)
+library(writexl)
+library(dplyr)
+library(knitr)
+# EnvStats is needed for the rosnerTest() function
+library(EnvStats)
+```
+
+### Adjust File Paths
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
+# Identify working directory (specifically user name)
+getwd()
+
+# Load in data. Change file path based on user name!
+
+# Pinyon Juniper
+# path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/I&M/P_AllYears/"
+# path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/I&M/P_errors/"
+path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/I&M/P_AllYears/"
+path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/I&M/P_errors/"
+```
+
+### Load Data
+
+```{r}
+# Blank data frame for no errors
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Comment" = "")
+```
+
+```{r}
+# Load in data
+Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+```
+
+### Check Data
+
+Fuels1000
+
+```{r}
+# Clean up data frame
+Fuels1000_all <- Fuels1000_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day")) %>%
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>%
+  select(!c("Plot")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+  
+# Filter for only data, by year
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited), Year %in% c(2022, 2023))
+
+# Filter for only headers, by year
+Fuels1000_header <- Fuels1000_all %>%
+  filter(!is.na(Visited), Year %in% c(2022, 2023))
+```
+
+FuelsDuffLitt
+
+```{r}
+# Clean up data frame
+FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  select(!c("Month", "Day")) %>% 
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>% 
+  select(!c("Plot")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+# Ensure blanks in Visited column are NA
+FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA
+
+# Filter for only data, by year
+FuelsDuffLitt_data <- FuelsDuffLitt_all %>%
+  filter(is.na(Visited), Year %in% c(2022, 2023))
+
+# Filter for only headers, by year
+FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
+  filter(!is.na(Visited), Year %in% c(2022, 2023))
+```
+
+FuelsFine
+
+```{r}
+# Clean up data frame
+FuelsFine_all <- FuelsFine_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  select(!c("Month", "Day")) %>% 
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>% 
+  select(!c("Plot")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+# Ensure blanks in Visited column are NA
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
+  
+# Filter for only data, by year
+FuelsFine_data <- FuelsFine_all %>%
+  filter(is.na(Visited), Year %in% c(2022, 2023))
+
+# Filter for only headers, by year
+FuelsFine_header <- FuelsFine_all %>%
+  filter(!is.na(Visited), Year %in% c(2022, 2023))
+```
+
+Trees
+
+```{r}
+# Clean up data frame
+Trees_all <- Trees_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  select(!c("Month", "Day")) %>% 
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>% 
+  select(!c("Plot")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+# Ensure blanks in Visited column are NA
+Trees_all$Visited[Trees_all$Visited==""] <- NA
+  
+# Filter for only data, by year
+Trees_data <- Trees_all %>%
+  filter(is.na(Visited), Year %in% c(2022, 2023))
+
+# Filter for only headers, by year
+Trees_header <- Trees_all %>%
+  filter(!is.na(Visited), Year %in% c(2022, 2023))
+```
+
+PostBurn
+
+```{r}
+# Clean up data frame
+PostBurn_all <- PostBurn_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  select(!c("Month", "Day")) %>% 
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>% 
+  select(!c("Plot")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+# Ensure blanks in Visited column are NA
+PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
+  
+# Filter for only data, by year
+PostBurn_data <- PostBurn_all %>%
+  filter(is.na(Visited), Year %in% c(2022, 2023))
+
+# Filter for only headers, by year
+PostBurn_header <- PostBurn_all %>%
+  filter(!is.na(Visited), Year %in% c(2022, 2023))
+```
+
+# FUNCTIONS
+
+```{r}
+# QAQC function
+qaqc <- function(data, query, query_message, values_check) {
+  # Identify errors 
+  errors <- data %>%   
+    mutate("SavedQuery" = query, 
+           "Error" = paste(query_message, "=", values_data)) %>%   
+    # Data is equal exactly to a value
+    filter(!(values_check) %>% replace_na(TRUE)) %>%   
+    select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
+  
+  # If no errors, add "No Errors" to existing data frame 
+  if (nrow(errors) == 0) {   
+    errors <- errors_blank %>%     
+      mutate(SavedQuery = query) 
+  } else {   
+    errors <- errors
+  }
+}
+```
+
