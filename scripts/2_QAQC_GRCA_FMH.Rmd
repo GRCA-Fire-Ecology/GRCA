@@ -1161,7 +1161,6 @@ values_check <- values_data < values_valid
 errors_Trees_Ht_LiCrBHt <- qaqc(data, query, query_message, values_check)
 ```
 
-
 #### Combine CBH Errors
 
 ```{r}
