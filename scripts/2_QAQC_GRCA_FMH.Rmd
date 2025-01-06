@@ -46,10 +46,10 @@ Make sure to update file paths to be specific for your data.
 getwd()
 
 # Load in data. Change file path based on user name!
-#path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/2024/"
-#path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
-path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/FMH/2024/"
-path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/FMH/"
+path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/FMH/"
+path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/FMH/errors/2024/"
+#path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/FMH/2024/"
+#path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/FMH/"
 #path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/AllYears/"
 ```
 
@@ -62,8 +62,8 @@ errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","
 
 ```{r}
 # Load in data
-Fuels1000_all <- read.csv(paste0(path_data, "GRCA_FMH_2024_Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all <- read.csv(paste0(path_data, "GRCA_FMH_2024_Surface Fuels - Duff_Litter_XPT.csv"))
+Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
 FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
 # HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"))
 # HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
