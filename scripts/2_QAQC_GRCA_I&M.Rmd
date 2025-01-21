@@ -65,7 +65,7 @@ path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/I&M/P_e
 
 ```{r}
 # Blank data frame for no errors
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Comment" = "")
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error")
 ```
 
 ```{r}
@@ -121,7 +121,7 @@ FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day")) %>% 
+  select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
 
@@ -155,7 +155,7 @@ FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day")) %>% 
+  select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
 
@@ -189,7 +189,7 @@ Trees_all <- Trees_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day")) %>% 
+  select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
 
@@ -223,7 +223,7 @@ PostBurn_all <- PostBurn_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day")) %>% 
+  select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
 
@@ -260,7 +260,7 @@ qaqc <- function(data, query, query_message, values_check) {
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
     filter(!(values_check) %>% replace_na(TRUE)) %>%   
-    select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
+    select("SavedQuery", "MacroPlot.Name", "Date", "Error")
   
   # If no errors, add "No Errors" to existing data frame 
   if (nrow(errors) == 0) {   
@@ -1556,7 +1556,7 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl == c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
 data$DBH[is.na(data$DBH)] <- ""
 query <- "Trees DD DBH" 
 query_message <- "DBH"  
@@ -1571,7 +1571,7 @@ errors_Trees_DD_DBH <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl == c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
 data$Ht[is.na(data$Ht)] <- ""
 query <- "Trees DD Ht" 
 query_message <- "Height"  
@@ -1586,7 +1586,7 @@ errors_Trees_DD_Ht <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl == c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
 data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
 query <- "Trees DD CBH" 
 query_message <- "Live Crown Base Height"  
@@ -2090,6 +2090,6 @@ errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsF
 
 # Save as CSV or XLSX 
 #path_errors
-#write.csv(errors, paste0(path_errors, "errors_all.csv"), quote=FALSE, row.names = FALSE, na = "") 
-write_xlsx(errors_all, paste0(path_errors, "errors_all.xlsx"))
+#write.csv(errors_all, paste0(path_errors, "errors_all_I&M.csv"), quote=FALSE, row.names = FALSE, na = "") 
+write_xlsx(errors_all, paste0(path_errors, "errors_all_I&M.xlsx"))
 ```

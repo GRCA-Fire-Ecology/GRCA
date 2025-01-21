@@ -48,16 +48,13 @@ getwd()
 # Load in data. Change file path based on user name!
 path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/FMH/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/FMH/errors/2024/"
-#path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/FMH/2024/"
-#path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/FMH/"
-#path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/AllYears/"
 ```
 
 ### Load Data
 
 ```{r}
 # Blank data frame for no errors
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Comment" = "")
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error")
 ```
 
 ```{r}
@@ -71,23 +68,60 @@ FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
 # Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
 Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
 #PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
-
-# PostBurn_all <- read.csv("C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/AllYears/I&M_Post Burn Severity_XPT.csv")
 ```
 
 ### Check Data
+
+```{r}
+columns_remove <- c("MacroPlot.Latitude", 
+                    "MacroPlot.Longitude", 
+                    "MacroPlot.UTM.X", 
+                    "MacroPlot.UTM.Y", 
+                    "MacroPlot.UTM.Zone", 
+                    "MacroPlot.PDOP", 
+                    "MacroPlot.Error", 
+                    "MacroPlot.Date.In", 
+                    "MacroPlot.Elevation", 
+                    "MacroPlot.Azimuth", 
+                    "MacroPlot.Aspect", 
+                    "MacroPlot.Hill.Slope", 
+                    "MacroPlot.Transect.Slope", 
+                    "MacroPlot.Comment", 
+                    "MacroPlot.UV2", 
+                    "MacroPlot.UV3", 
+                    "MacroPlot.UV4", 
+                    "MacroPlot.UV5", 
+                    "MacroPlot.UV6", 
+                    "MacroPlot.UV7", 
+                    "MacroPlot.UV8",
+                    "Status.Prefix", 
+                    "Status.Base", 
+                    "Status.Suffix", 
+                    "Status.Order", 
+                    "Status.Comment", 
+                    "Status.UV1", 
+                    "Status.UV2", 
+                    "Status.UV3", 
+                    "Legacy.Monitoring.Status", 
+                    "SampleEvent_TreatmentUnit", 
+                    "Team", 
+                    "SampleEvent.Comment", 
+                    "SampleEvent.UV1", 
+                    "SampleEvent.UV2", 
+                    "SampleEvent.UV3")
+```
 
 Fuels1000
 
 ```{r}
 # Clean up data frame
 Fuels1000_all <- Fuels1000_all %>%
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>% 
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
 Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
@@ -105,13 +139,13 @@ FuelsDuffLitt
 
 ```{r}
 # Clean up data frame 
-FuelsDuffLitt_all <- FuelsDuffLitt_all %>%   
+FuelsDuffLitt_all <- FuelsDuffLitt_all %>%  
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>% 
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>% 
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
 FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA 
@@ -129,12 +163,12 @@ FuelsFine
 
 ```{r}
 # Clean up data frame 
-FuelsFine_all <- FuelsFine_all %>%   
+FuelsFine_all <- FuelsFine_all %>%
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>% 
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
 FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
@@ -152,12 +186,12 @@ HerbsPoints
 
 ```{r}
 # Clean up data frame 
-HerbsPoints_all <- HerbsPoints_all %>%   
+HerbsPoints_all <- HerbsPoints_all %>%  
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
 HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
@@ -175,12 +209,12 @@ HerbsObs
 
 ```{r}
 # Clean up data frame 
-HerbsObs_all <- HerbsObs_all %>%   
+HerbsObs_all <- HerbsObs_all %>%  
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
 HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA  
@@ -198,12 +232,12 @@ Shrubs
 
 ```{r}
 # Clean up data frame 
-Shrubs_all <- Shrubs_all %>%   
+Shrubs_all <- Shrubs_all %>%
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
 Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA 
@@ -221,12 +255,12 @@ Seedlings
 
 ```{r}
 # Clean up data frame 
-Seedlings_all <- Seedlings_all %>%   
+Seedlings_all <- Seedlings_all %>%
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
 Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA 
@@ -244,12 +278,12 @@ Trees
 
 ```{r}
 # Clean up data frame 
-Trees_all <- Trees_all %>%   
+Trees_all <- Trees_all %>%
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)   
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
 Trees_all$Visited[Trees_all$Visited==""] <- NA  
@@ -268,12 +302,12 @@ PostBurn
 ```{r}
 # Clean up data frame
 PostBurn_all <- PostBurn_all %>%
+  # Remove unnecessary columns for clarity
+  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
-  # Separate MacroPlotName to get Monitoring type (or export data with Monitoring Type already included)
-  separate(MacroPlot.Name, sep = " ", into = c("MonitoringType", "Plot"), remove = FALSE)
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
 PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
@@ -298,7 +332,7 @@ qaqc <- function(data, query, query_message, values_check) {
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
     filter(!(values_check) %>% replace_na(TRUE)) %>%   
-    select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
+    select("SavedQuery", "MacroPlot.Name", "Date", "Error")
   
   # If no errors, add "No Errors" to existing data frame 
   if (nrow(errors) == 0) {   
@@ -344,7 +378,7 @@ errors_Fuels1000_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Fuels1000_header %>% 
-  filter(MonitoringType %in% c("PIAB", "PIEN", "PIPN"))
+  filter(MacroPlot.Purpose %in% c("PIAB", "PIEN", "PIPN"))
 query <- "Fuel 1000 Header NRim TranLen" 
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
@@ -360,7 +394,7 @@ errors_Fuels1000_TranLen_N <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Fuels1000_header %>% 
-  filter(MonitoringType %in% c("PIED", "PIPO"))
+  filter(MacroPlot.Purpose %in% c("PIED", "PIPO"))
 query <- "Fuel 1000 Header SRim TranLen" 
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
@@ -394,11 +428,11 @@ errors_Fuels1000_DecayCl <- qaqc(data, query, query_message, values_check)
 
 ### Fuel 1000 FuelConst
 
-[Problem:]{.underline} Incorrect coarse woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
+[Problem:]{.underline} Incorrect coarse woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the MacroPlot Purpose.
 
 [Procedure:]{.underline}
 
--   Check that CWDFuConSt = Monitoring Type
+-   Check that CWDFuConSt = MacroPlot.Purpose
 
 ```{r}
 # Set parameters
@@ -406,7 +440,7 @@ data <- Fuels1000_data
 query <- "Fuel 1000 FuelConst"
 query_message <- "Fuel Constant"
 values_data <- data$CWDFuConSt
-values_valid <- data$MonitoringType
+values_valid <- data$MacroPlot.Purpose
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -506,9 +540,11 @@ errors_Fuels1000_Dia <- qaqc(data, query, query_message, values_check)
 errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
 
 remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
+```
 
+```{r}
 # Table of results for quick check
-kable(errors_Fuels1000, "pipe")
+#kable(errors_Fuels1000, "pipe")
 
 # Save as CSV or XLSX
 path_errors
@@ -545,11 +581,11 @@ errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
 
 ### Fuel DL FuelConst
 
-[Problem:]{.underline} Incorrect duff & litter fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
+[Problem:]{.underline} Incorrect duff & litter fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the MacroPlot Purpose.
 
 [Procedure:]{.underline}
 
--   Check that DLFuConSt = Monitoring Type
+-   Check that DLFuConSt = MacroPlot.Purpose
 
 ```{r}
 # Set parameters 
@@ -557,7 +593,7 @@ data <- FuelsDuffLitt_data
 query <- "Fuel DL FuelConst" 
 query_message <- "Fuel Constant" 
 values_data <- data$DLFuConSt 
-values_valid <- data$MonitoringType  
+values_valid <- data$MacroPlot.Purpose 
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -648,9 +684,11 @@ errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
 errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep))
 
 remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
+```
 
+```{r}
 # Table of results for quick check
-kable(errors_FuelsDuffLitt, "pipe")
+#kable(errors_FuelsDuffLitt, "pipe")
 
 # Save as CSV or XLSX
 path_errors
@@ -732,11 +770,11 @@ errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 
 ### Fuel Fine FuelConst
 
-[Problem:]{.underline} Incorrect fine woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the Monitoring Type.
+[Problem:]{.underline} Incorrect fine woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the MacroPlot Purpose.
 
 [Procedure:]{.underline}
 
--   Check that FWDFuConSt = Monitoring Type
+-   Check that FWDFuConSt = MacroPlot.Purpose
 
 ```{r}
 # Set parameters 
@@ -744,7 +782,7 @@ data <- FuelsFine_data
 query <- "Fuel Fine FuelConst" 
 query_message <- "Fuel Constant" 
 values_data <- data$FWDFuConSt 
-values_valid <- data$MonitoringType  
+values_valid <- data$MacroPlot.Purpose  
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -902,9 +940,11 @@ errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
 errors_FuelsFine <- unique(rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr))
 
 remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+```
 
+```{r}
 # Table of results for quick check
-kable(errors_FuelsFine, "pipe")
+#kable(errors_FuelsFine, "pipe")
 
 # Save as CSV or XLSX 
 path_errors
@@ -1151,7 +1191,7 @@ errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- Trees_data
-query <- "Trees Ht vs CBH" 
+query <- "Trees CBH vs Ht" 
 query_message <- "Height shorter than CBH. CBH"  
 values_data <- data$LiCrBHt
 values_valid <- data$Ht
@@ -1165,9 +1205,9 @@ errors_Trees_Ht_LiCrBHt <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Combine
-errors_Trees_CBH <- unique(rbind(errors_Trees_Dead_LiCrBHt))
+errors_Trees_CBH <- unique(rbind(errors_Trees_Dead_LiCrBHt, errors_Trees_Ht_LiCrBHt))
 
-remove(errors_Trees_Dead_LiCrBHt)
+remove(errors_Trees_Dead_LiCrBHt, errors_Trees_Ht_LiCrBHt)
 ```
 
 ### Trees Crown Class
@@ -1185,7 +1225,7 @@ data <- Trees_data %>%
 query <- "Trees Crown Class Dead" 
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
-values_valid <- c("BBD", "CUS", "DD")
+values_valid <- c("BBD", "CUS", "DD", "")
 values_check <- values_data %in% values_valid
 
 # Identify errors
@@ -1682,7 +1722,7 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl == c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
 data$DBH[is.na(data$DBH)] <- ""
 query <- "Trees DD DBH" 
 query_message <- "DBH"  
@@ -1697,7 +1737,7 @@ errors_Trees_DD_DBH <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl == c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
 data$Ht[is.na(data$Ht)] <- ""
 query <- "Trees DD Ht" 
 query_message <- "Height"  
@@ -1712,7 +1752,7 @@ errors_Trees_DD_Ht <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl == c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
 data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
 query <- "Trees DD CBH" 
 query_message <- "Live Crown Base Height"  
@@ -1919,7 +1959,7 @@ data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Non-Post Severity ScorchHt" 
 query_message <- "Scorch Height"  
 values_data <- data$ScorchHt
-values_valid <- "NA"
+values_valid <- ""
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -1934,7 +1974,7 @@ data$CrScPct[is.na(data$CrScPct)] <- ""
 query <- "Trees Non-Post Severity CrScPct" 
 query_message <- "Crown Scorch Percent"  
 values_data <- data$CrScPct
-values_valid <- "NA"
+values_valid <- ""
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -2246,14 +2286,16 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
 
 remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
+```
 
+```{r}
 # Table of results for quick check
 #kable(errors_Trees, "pipe")
 
 # Save as CSV or XLSX
-#path_errors
+path_errors
 #write.csv(errors_Trees, paste0(path_errors, "errors_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_Trees, paste0(path_errors, "errors_Trees.xlsx"))
+write_xlsx(errors_Trees, paste0(path_errors, "errors_Trees.xlsx"))
 ```
 
 # CROSS PROTOCOL CHECKS
@@ -2263,40 +2305,40 @@ remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Tree
 This code conducts quality control checks on slope data in the surface fuels coarse woody debris (1000-hr) and fine woody debris datasets. It also checks for overall consistency in slope and azimuth values across years.
 
 ```{r}
-# Set parameters 
-data_Fuels1000_slope <- Fuels1000_data %>% 
-  group_by(MacroPlot.Name, Date, Transect, Slope) %>% 
-  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
-            "Transect" = unique(Transect)) %>% 
-  mutate(Slope_1000 = Slope) %>% 
-  arrange(MacroPlot.Name, Transect) %>% 
-  select(!Slope)
-
-data_FuelsFine_slope <- FuelsFine_data %>% 
-  group_by(MacroPlot.Name, Date, Transect, Comment, Slope) %>% 
-  summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
-            "Transect" = unique(Transect)) %>% 
-  mutate(Slope_fine = Slope) %>% 
-  arrange(MacroPlot.Name, Transect) %>% 
-  select(!Slope)
-
-errors_Fuels_slope <- merge(data_Fuels1000_slope, data_FuelsFine_slope, all.y = T) %>% 
-  filter(Slope_fine != Slope_1000) %>% 
-  mutate(SavedQuery = "Fuel Slope",
-         Error = paste("FWD slope", Slope_fine, "!=", "CWD slope", Slope_1000)) %>% 
-  reframe("SavedQuery" = unique(query),
-          "MacroPlot.Name" = unique(MacroPlot.Name), 
-          "Date" = unique(Date), 
-          "Error" = unique(Error),
-          "Comment" = unique(Comment))
-
-# If no errors, add "No Errors" to existing data frame 
-if (nrow(errors_Fuels_slope) == 0) {   
-    errors_Fuels_slope <- errors_blank %>%     
-    mutate(SavedQuery = query) 
-} else {   
-    errors_Fuels_slope <- errors_Fuels_slope
-}
+# # Set parameters 
+# data_Fuels1000_slope <- Fuels1000_data %>% 
+#   group_by(MacroPlot.Name, Date, Transect, Slope) %>% 
+#   summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
+#             "Transect" = unique(Transect)) %>% 
+#   mutate(Slope_1000 = Slope) %>% 
+#   arrange(MacroPlot.Name, Transect) %>% 
+#   select(!Slope)
+# 
+# data_FuelsFine_slope <- FuelsFine_data %>% 
+#   group_by(MacroPlot.Name, Date, Transect, Comment, Slope) %>% 
+#   summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
+#             "Transect" = unique(Transect)) %>% 
+#   mutate(Slope_fine = Slope) %>% 
+#   arrange(MacroPlot.Name, Transect) %>% 
+#   select(!Slope)
+# 
+# errors_Fuels_slope <- merge(data_Fuels1000_slope, data_FuelsFine_slope, all.y = T) %>% 
+#   filter(Slope_fine != Slope_1000) %>% 
+#   mutate(SavedQuery = "Fuel Slope",
+#          Error = paste("FWD slope", Slope_fine, "!=", "CWD slope", Slope_1000)) %>% 
+#   reframe("SavedQuery" = unique(query),
+#           "MacroPlot.Name" = unique(MacroPlot.Name), 
+#           "Date" = unique(Date), 
+#           "Error" = unique(Error),
+#           "Comment" = unique(Comment))
+# 
+# # If no errors, add "No Errors" to existing data frame 
+# if (nrow(errors_Fuels_slope) == 0) {   
+#     errors_Fuels_slope <- errors_blank %>%     
+#     mutate(SavedQuery = query) 
+# } else {   
+#     errors_Fuels_slope <- errors_Fuels_slope
+# }
 ```
 
 # CROSS YEAR CHECKS
@@ -2313,17 +2355,17 @@ if (nrow(errors_Fuels_slope) == 0) {
 
 ```{r}
 # Save to master error list 
-errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsFine, errors_PostBurn, errors_Trees))
+errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsFine, errors_Trees))
 
 # errors_CrossProtocol <- unique(rbind(errors_Fuels_slope))
 # 
 # errors_CrossYear <- unique(rbind())
 
 # Table of results for quick check
-kable(errors_all, "pipe")
+#kable(errors_all, "pipe")
 
 # Save as CSV or XLSX 
 path_errors
-#write.csv(errors, paste0(path_errors, "errors_all.csv"), quote=FALSE, row.names = FALSE, na = "") 
-#write_xlsx(errors_all, paste0(path_errors, "errors_all.xlsx"))
+write.csv(errors_all, paste0(path_errors, "errors_all_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
+write_xlsx(errors_all, paste0(path_errors, "errors_all_FMH.xlsx"))
 ```
