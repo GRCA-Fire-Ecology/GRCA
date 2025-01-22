@@ -1,7 +1,7 @@
 ---
 title: "Grand Canyon QAQC for I&M Data"
 author: "Alexandra Lalor"
-date: "2024-11-06"
+date: "2024-01-22"
 output:
   html_document:
     theme: readable
@@ -49,16 +49,11 @@ getwd()
 # Load in data. Change file path based on user name!
 
 # Mixed Conifer
-# path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/I&M/M_AllYears/"
-# path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/I&M/M_errors/"
-# path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/I&M/M_AllYears/"
-# path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/I&M/M_errors/"
-
+path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-01-22/"
 # Pinyon Juniper
-path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/I&M/P_AllYears/"
-path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/I&M/P_errors/"
-# path_data <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/data/qaqc/I&M/P_AllYears/"
-# path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/I&M/P_errors/"
+path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-22/"
+# Errors
+path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
 ```
 
 ### Load Data
@@ -68,13 +63,42 @@ path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/I&M/P_e
 errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error")
 ```
 
+Mixed Conifer
+
 ```{r}
 # Load in data
-Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
-PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+Fuels1000_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Fine_XPT.csv"))
+Trees_all_M <- read.csv(paste0(path_data_M, "Trees - Individuals (metric)_XPT.csv"))
+PostBurn_all_M <- read.csv(paste0(path_data_M, "Post Burn Severity_XPT.csv"))
+```
+
+Pinyon Juniper
+
+```{r}
+# Load in data
+Fuels1000_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Fine_XPT.csv"))
+Trees_all_P <- read.csv(paste0(path_data_P, "Trees - Individuals (metric)_XPT.csv"))
+PostBurn_all_P <- read.csv(paste0(path_data_P, "Post Burn Severity_XPT.csv"))
+```
+
+### Merge Data
+
+```{r}
+# Merge M and P
+Fuels1000_all <- rbind(Fuels1000_all_M, Fuels1000_all_P)
+FuelsDuffLitt_all <- rbind(FuelsDuffLitt_all_M, FuelsDuffLitt_all_P)
+FuelsFine_all <- rbind(FuelsFine_all_M, FuelsFine_all_P)
+Trees_all <- rbind(Trees_all_M, Trees_all_P)
+PostBurn_all <- rbind(PostBurn_all_M, PostBurn_all_P)
+```
+
+```{r}
+# Remove extra data
+remove(Fuels1000_all_M, Fuels1000_all_P, FuelsDuffLitt_all_M, FuelsDuffLitt_all_P, FuelsFine_all_M, FuelsFine_all_P, Trees_all_M, Trees_all_P, PostBurn_all_M, PostBurn_all_P)
 ```
 
 ### Check Data
@@ -87,18 +111,11 @@ Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day")) %>%
+  select(!c("Month", "Day", "Time")) %>%
   # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
-
-verify <- Fuels1000_all$Name
-verify <- as.data.frame(verify) %>% 
-  filter(!is.na(verify))
-
-Fuels1000_all <- Fuels1000_all %>%
-  mutate(Name = ifelse(empty(verify) == FALSE, Name, Park)) %>% 
-  separate(Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>%
-  select(!c("Park", "Plot")) %>% 
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
 # Ensure blanks in Visited column are NA
@@ -123,16 +140,9 @@ FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
-
-verify <- FuelsDuffLitt_all$Name
-verify <- as.data.frame(verify) %>% 
-  filter(!is.na(verify))
-
-FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
-  mutate(Name = ifelse(empty(verify) == FALSE, Name, Park)) %>% 
-  separate(Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>%
-  select(!c("Park", "Plot")) %>% 
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
 # Ensure blanks in Visited column are NA
@@ -157,16 +167,9 @@ FuelsFine_all <- FuelsFine_all %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
-
-verify <- FuelsFine_all$Name
-verify <- as.data.frame(verify) %>% 
-  filter(!is.na(verify))
-
-FuelsFine_all <- FuelsFine_all %>%
-  mutate(Name = ifelse(empty(verify) == FALSE, Name, Park)) %>% 
-  separate(Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>%
-  select(!c("Park", "Plot")) %>% 
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
 # Ensure blanks in Visited column are NA
@@ -191,16 +194,9 @@ Trees_all <- Trees_all %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
-
-verify <- Trees_all$Name
-verify <- as.data.frame(verify) %>% 
-  filter(!is.na(verify))
-
-Trees_all <- Trees_all %>%
-  mutate(Name = ifelse(empty(verify) == FALSE, Name, Park)) %>% 
-  separate(Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>%
-  select(!c("Park", "Plot")) %>% 
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
 # Ensure blanks in Visited column are NA
@@ -225,16 +221,9 @@ PostBurn_all <- PostBurn_all %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Name"), remove = FALSE)
-
-verify <- PostBurn_all$Name
-verify <- as.data.frame(verify) %>% 
-  filter(!is.na(verify))
-
-PostBurn_all <- PostBurn_all %>%
-  mutate(Name = ifelse(empty(verify) == FALSE, Name, Park)) %>% 
-  separate(Name, sep = "(?=[[:digit:]])", into = c("MonitoringType", "Plot"), remove = FALSE) %>%
-  select(!c("Park", "Plot")) %>% 
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
 # Ensure blanks in Visited column are NA
@@ -451,14 +440,16 @@ errors_Fuels1000_Dia <- qaqc(data, query, query_message, values_check)
 errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
 
 remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
+```
 
+```{r}
 # Table of results for quick check
 kable(errors_Fuels1000, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
-#write.csv(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.xlsx"))
+#write.csv(errors_Fuels1000, paste0(path_errors, "errors_GRCA_I&M_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_GRCA_I&M_Fuels1000.xlsx"))
 ```
 
 ## DUFF LITTER
@@ -593,14 +584,16 @@ errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
 errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep))
 
 remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
+```
 
+```{r}
 # Table of results for quick check
 kable(errors_FuelsDuffLitt, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
-#write.csv(errors_FuelsDuffLitt, paste0(path_errors, "errors_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_FuelsDuffLitt.xlsx"))
+#write.csv(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_I&M_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_I&M_FuelsDuffLitt.xlsx"))
 ```
 
 ## FINE FUELS
@@ -849,14 +842,16 @@ errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
 errors_FuelsFine <- unique(rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr))
 
 remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen,errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+```
 
+```{r}
 # Table of results for quick check
-#kable(errors_FuelsFine, "pipe")
+kable(errors_FuelsFine, "pipe")
 
 # Save as CSV or XLSX 
 #path_errors
-#write.csv(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
-#write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.xlsx"))
+#write.csv(errors_FuelsFine, paste0(path_errors, "errors_GRCA_I&M_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_GRCA_I&M_FuelsFine.xlsx"))
 ```
 
 # PROTOCOL - POST BURN
@@ -992,14 +987,16 @@ errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
 errors_PostBurn <- unique(rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg))
 
 remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg)
+```
 
+```{r}
 # Table of results for quick check
 kable(errors_PostBurn, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
-#write.csv(errors_PostBurn, paste0(path_errors, "errors_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_PostBurn, paste0(path_errors, "errors_PostBurn.xlsx"))
+#write.csv(errors_PostBurn, paste0(path_errors, "errors_GRCA_I&M_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_PostBurn, paste0(path_errors, "errors_GRCA_I&M_PostBurn.xlsx"))
 ```
 
 # PROTOCOL - TREES
@@ -2067,14 +2064,16 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
 
 remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
+```
 
+```{r}
 # Table of results for quick check
 kable(errors_Trees, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
-#write.csv(errors_Trees, paste0(path_errors, "errors_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_Trees, paste0(path_errors, "errors_Trees.xlsx"))
+#write.csv(errors_Trees, paste0(path_errors, "errors_GRCA_I&M_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Trees, paste0(path_errors, "errors_GRCA_I&M_Trees.xlsx"))
 ```
 
 # NEW IDEAS
@@ -2084,12 +2083,14 @@ kable(errors_Trees, "pipe")
 ```{r}
 # Save to master error list 
 errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsFine, errors_PostBurn, errors_Trees))
+```
 
+```{r}
 # Table of results for quick check
 #kable(errors_all, "pipe")
 
 # Save as CSV or XLSX 
-#path_errors
-#write.csv(errors_all, paste0(path_errors, "errors_all_I&M.csv"), quote=FALSE, row.names = FALSE, na = "") 
-write_xlsx(errors_all, paste0(path_errors, "errors_all_I&M.xlsx"))
+path_errors
+#write.csv(errors_all, paste0(path_errors, "errors_GRCA_I&M.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_I&M.xlsx"))
 ```
