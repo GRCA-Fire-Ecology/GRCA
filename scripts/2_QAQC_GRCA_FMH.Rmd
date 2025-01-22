@@ -1,7 +1,7 @@
 ---
 title: "Grand Canyon QAQC for FMH Data"
 author: "Alexandra Lalor"
-date: "2024-11-06"
+date: "2024-01-22"
 output:
   html_document:
     theme: readable
@@ -46,8 +46,8 @@ Make sure to update file paths to be specific for your data.
 getwd()
 
 # Load in data. Change file path based on user name!
-path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/data/qaqc/FMH/"
-path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/FMH/errors/2024/"
+path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2024-12-04/"
+path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
 ```
 
 ### Load Data
@@ -72,52 +72,11 @@ Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
 
 ### Check Data
 
-```{r}
-columns_remove <- c("MacroPlot.Latitude", 
-                    "MacroPlot.Longitude", 
-                    "MacroPlot.UTM.X", 
-                    "MacroPlot.UTM.Y", 
-                    "MacroPlot.UTM.Zone", 
-                    "MacroPlot.PDOP", 
-                    "MacroPlot.Error", 
-                    "MacroPlot.Date.In", 
-                    "MacroPlot.Elevation", 
-                    "MacroPlot.Azimuth", 
-                    "MacroPlot.Aspect", 
-                    "MacroPlot.Hill.Slope", 
-                    "MacroPlot.Transect.Slope", 
-                    "MacroPlot.Comment", 
-                    "MacroPlot.UV2", 
-                    "MacroPlot.UV3", 
-                    "MacroPlot.UV4", 
-                    "MacroPlot.UV5", 
-                    "MacroPlot.UV6", 
-                    "MacroPlot.UV7", 
-                    "MacroPlot.UV8",
-                    "Status.Prefix", 
-                    "Status.Base", 
-                    "Status.Suffix", 
-                    "Status.Order", 
-                    "Status.Comment", 
-                    "Status.UV1", 
-                    "Status.UV2", 
-                    "Status.UV3", 
-                    "Legacy.Monitoring.Status", 
-                    "SampleEvent_TreatmentUnit", 
-                    "Team", 
-                    "SampleEvent.Comment", 
-                    "SampleEvent.UV1", 
-                    "SampleEvent.UV2", 
-                    "SampleEvent.UV3")
-```
-
 Fuels1000
 
 ```{r}
 # Clean up data frame
 Fuels1000_all <- Fuels1000_all %>%
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>% 
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
@@ -140,8 +99,6 @@ FuelsDuffLitt
 ```{r}
 # Clean up data frame 
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%  
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>% 
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>% 
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
@@ -164,8 +121,6 @@ FuelsFine
 ```{r}
 # Clean up data frame 
 FuelsFine_all <- FuelsFine_all %>%
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>% 
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
@@ -187,8 +142,6 @@ HerbsPoints
 ```{r}
 # Clean up data frame 
 HerbsPoints_all <- HerbsPoints_all %>%  
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
@@ -210,8 +163,6 @@ HerbsObs
 ```{r}
 # Clean up data frame 
 HerbsObs_all <- HerbsObs_all %>%  
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
@@ -233,8 +184,6 @@ Shrubs
 ```{r}
 # Clean up data frame 
 Shrubs_all <- Shrubs_all %>%
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
@@ -256,8 +205,6 @@ Seedlings
 ```{r}
 # Clean up data frame 
 Seedlings_all <- Seedlings_all %>%
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
@@ -279,8 +226,6 @@ Trees
 ```{r}
 # Clean up data frame 
 Trees_all <- Trees_all %>%
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns   
   separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
@@ -302,8 +247,6 @@ PostBurn
 ```{r}
 # Clean up data frame
 PostBurn_all <- PostBurn_all %>%
-  # Remove unnecessary columns for clarity
-  select(!columns_remove) %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
@@ -548,8 +491,8 @@ remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Nu
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_Fuels1000.xlsx"))
+#write.csv(errors_Fuels1000, paste0(path_errors, "errors_GRCA_FMH_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_GRCA_FMH_Fuels1000.xlsx"))
 ```
 
 ## DUFF LITTER
@@ -692,8 +635,8 @@ remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_Fuel
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors_FuelsDuffLitt, paste0(path_errors, "errors_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_FuelsDuffLitt.xlsx"))
+#write.csv(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_FMH_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_FMH_FuelsDuffLitt.xlsx"))
 ```
 
 ## FINE FUELS
@@ -948,8 +891,8 @@ remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_On
 
 # Save as CSV or XLSX 
 path_errors
-#write.csv(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
-#write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_FuelsFine.xlsx"))
+#write.csv(errors_FuelsFine, paste0(path_errors, "errors_GRCA_FMH_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_GRCA_FMH_FuelsFine.xlsx"))
 ```
 
 # PROTOCOL - POST BURN
@@ -1091,8 +1034,8 @@ It checks for: header info (number of transects, length of transects, number of 
 # 
 # # Save as CSV or XLSX
 # path_errors
-# #write.csv(errors_PostBurn, paste0(path_errors, "errors_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
-# #write_xlsx(errors_PostBurn, paste0(path_errors, "errors_PostBurn.xlsx"))
+# #write.csv(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
+# #write_xlsx(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.xlsx"))
 ```
 
 # PROTOCOL - TREES
@@ -2294,8 +2237,8 @@ remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Tree
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors_Trees, paste0(path_errors, "errors_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
-write_xlsx(errors_Trees, paste0(path_errors, "errors_Trees.xlsx"))
+#write.csv(errors_Trees, paste0(path_errors, "errors_GRCA_FMH_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Trees, paste0(path_errors, "errors_GRCA_FMH_Trees.xlsx"))
 ```
 
 # CROSS PROTOCOL CHECKS
@@ -2360,12 +2303,14 @@ errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsF
 # errors_CrossProtocol <- unique(rbind(errors_Fuels_slope))
 # 
 # errors_CrossYear <- unique(rbind())
+```
 
+```{r}
 # Table of results for quick check
 #kable(errors_all, "pipe")
 
 # Save as CSV or XLSX 
 path_errors
-write.csv(errors_all, paste0(path_errors, "errors_all_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
-write_xlsx(errors_all, paste0(path_errors, "errors_all_FMH.xlsx"))
+# write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
+# write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
 ```
