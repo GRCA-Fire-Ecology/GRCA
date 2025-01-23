@@ -32,6 +32,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(writexl)
 library(dplyr)
+detach(package:plyr)
 library(knitr)
 # EnvStats is needed for the rosnerTest() function
 library(EnvStats)
@@ -46,7 +47,7 @@ Make sure to update file paths to be specific for your data.
 getwd()
 
 # Load in data. Change file path based on user name!
-path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2024-12-04/"
+path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
 ```
 
@@ -59,15 +60,15 @@ errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","
 
 ```{r}
 # Load in data
-Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
-# HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"))
-# HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"))
-# Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"))
-# Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"))
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
-#PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"), quote = "")
+FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"), quote = "")
+# HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"), quote = "")
+# HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"), quote = "")
+# Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"), quote = "")
+# Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"), quote = "")
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+#PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"), quote = "")
 ```
 
 ### Check Data
@@ -2312,5 +2313,5 @@ errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsF
 # Save as CSV or XLSX 
 path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
-# write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
+write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
 ```
