@@ -49,9 +49,9 @@ getwd()
 # Load in data. Change file path based on user name!
 
 # Mixed Conifer
-path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-01-22/"
+path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-01-23/"
 # Pinyon Juniper
-path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-22/"
+path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
 # Errors
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
 ```
@@ -60,7 +60,7 @@ path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/
 
 ```{r}
 # Blank data frame for no errors
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error")
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Comment" = "")
 ```
 
 Mixed Conifer
@@ -249,7 +249,7 @@ qaqc <- function(data, query, query_message, values_check) {
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
     filter(!(values_check) %>% replace_na(TRUE)) %>%   
-    select("SavedQuery", "MacroPlot.Name", "Date", "Error")
+    select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
   
   # If no errors, add "No Errors" to existing data frame 
   if (nrow(errors) == 0) {   
