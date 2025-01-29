@@ -248,7 +248,7 @@ qaqc <- function(data, query, query_message, values_check) {
     mutate("SavedQuery" = query, 
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
-    filter(!(values_check) %>% replace_na(TRUE)) %>%   
+    filter(!(values_check)) %>%   
     select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
   
   # If no errors, add "No Errors" to existing data frame 
@@ -510,18 +510,26 @@ errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Filter NA values. Add number of hits and store in new column
-data_temp <- FuelsDuffLitt_data %>%
-  filter(!is.na(SampLoc)) %>% 
+data_temp1 <- FuelsDuffLitt_data %>%
+  filter(!is.na(LittDep)) %>%
+  filter(!is.na(DuffDep)) %>% 
   group_by(MacroPlot.Name) %>% 
   dplyr::summarise("sum_hits" = n())
 
+data_temp2 <- FuelsDuffLitt_header %>% 
+  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
+  select(MacroPlot.Name, Date)
+
+data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+remove(data_temp1, data_temp2)
+
 # Set parameters 
-data <- merge(FuelsDuffLitt_data, data_temp, all.x = T)
+data <- merge(FuelsDuffLitt_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
 query <- "Fuel DL Hits" 
 query_message <- "Number of Hits" 
 values_data <- data$sum_hits
 values_valid <- 30
-values_check <- values_data == values_valid
+values_check <- (values_data == values_valid) %>% replace_na(FALSE)
 
 # Identify errors
 errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
@@ -699,18 +707,24 @@ errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Filter NA values. Add number of hits and store in new column
-data_temp <- FuelsFine_data %>%
-  filter(!is.na(Transect)) %>% 
+data_temp1 <- FuelsFine_data %>%
   group_by(MacroPlot.Name) %>% 
   dplyr::summarize("sum_hits" = n())
 
+data_temp2 <- FuelsFine_header %>% 
+  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
+  select(MacroPlot.Name, Date)
+
+data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+remove(data_temp1, data_temp2)
+
 # Set parameters 
-data <- merge(FuelsFine_data, data_temp, all.x = T)
+data <- merge(FuelsFine_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
 query <- "Fuel Fine Hits" 
 query_message <- "Number of Hits" 
 values_data <- data$sum_hits
 values_valid <- 3
-values_check <- values_data == values_valid
+values_check <- (values_data == values_valid) %>% replace_na(FALSE)
 
 # Identify errors
 errors_FuelsFine_Hits <- qaqc(data, query, query_message, values_check)
@@ -798,8 +812,6 @@ data_temp <- FuelsFine_all %>%
 test <- rosnerTest(data_temp$TenHr)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
 max_Ten <- min(outliers) - 1
-# No outliers
-max_Ten <- max(data_temp$TenHr)
 
 # Set parameters 
 data <- FuelsFine_data
@@ -1669,8 +1681,6 @@ data_temp <- Trees_all %>%
 test <- rosnerTest(data_temp$Ht)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
 max_Ht <- min(outliers) - 1
-# No outliers
-max_Ht <- max(data_temp$Ht)
 
 # Set parameters 
 data <- Trees_data %>% 
@@ -1869,8 +1879,7 @@ errors_Trees_Post_Scorch_DD <- qaqc(data, query, query_message, values_check)
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !CrwnCl %in% c("DD", "BBD", "CUS"),
-         Status == "D",
-         is.na(CrScPct))
+         Status == "D")
 data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Post Scorch Dead"
 query_message <- "Scorch Height for Standing Dead"  
