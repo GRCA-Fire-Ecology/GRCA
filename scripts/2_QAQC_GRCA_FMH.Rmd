@@ -275,7 +275,7 @@ qaqc <- function(data, query, query_message, values_check) {
     mutate("SavedQuery" = query, 
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
-    filter(!(values_check)) %>%   
+    filter(!(values_check %>% replace_na(FALSE))) %>%   
     select("SavedQuery", "MacroPlot.Name", "Date", "Error")
   
   # If no errors, add "No Errors" to existing data frame 
@@ -461,8 +461,8 @@ errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- Fuels1000_all %>%
   filter(!is.na(Dia))
-data_rosner <- rosnerTest(data_temp$Dia)
-outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$Dia)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Dia <- min(outliers) - 1
 
 # Set parameters
@@ -591,8 +591,8 @@ errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsDuffLitt_all %>%
   filter(!is.na(LittDep))
-data_rosner <- rosnerTest(data_temp$LittDep)
-outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$LittDep)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Litt <- min(outliers) - 0.1
 
 # Set parameters 
@@ -613,8 +613,8 @@ errors_FuelsDuffLitt_LittDep <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsDuffLitt_all %>%
   filter(!is.na(DuffDep))
-data_rosner <- rosnerTest(data_temp$DuffDep)
-outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$DuffDep)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Duff <- min(outliers) - 1
 
 # Set parameters 
@@ -831,8 +831,8 @@ errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsFine_all %>%
   filter(!is.na(OneHr))
-test <- rosnerTest(data_temp$OneHr)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$OneHr)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_One <- min(outliers) - 1
 
 # Set parameters 
@@ -853,8 +853,8 @@ errors_FuelsFine_OneHr <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsFine_all %>%
   filter(!is.na(TenHr))
-test <- rosnerTest(data_temp$TenHr)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$TenHr)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Ten <- min(outliers) - 1
 
 # Set parameters 
@@ -875,8 +875,8 @@ errors_FuelsFine_TenHr <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsFine_all %>%
   filter(!is.na(HunHr))
-test <- rosnerTest(data_temp$HunHr)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$HunHr)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Hun <- min(outliers) - 1
 
 # Set parameters 

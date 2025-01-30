@@ -248,7 +248,7 @@ qaqc <- function(data, query, query_message, values_check) {
     mutate("SavedQuery" = query, 
            "Error" = paste(query_message, "=", values_data)) %>%   
     # Data is equal exactly to a value
-    filter(!(values_check)) %>%   
+    filter(!(values_check %>% replace_na(FALSE))) %>%   
     select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Comment")
   
   # If no errors, add "No Errors" to existing data frame 
@@ -417,8 +417,8 @@ errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- Fuels1000_all %>%
   filter(!is.na(Dia))
-data_rosner <- rosnerTest(data_temp$Dia)
-outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$Dia)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Dia <- min(outliers) - 1
 
 # Set parameters
@@ -529,7 +529,7 @@ query <- "Fuel DL Hits"
 query_message <- "Number of Hits" 
 values_data <- data$sum_hits
 values_valid <- 30
-values_check <- (values_data == values_valid) %>% replace_na(FALSE)
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
@@ -547,8 +547,8 @@ errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsDuffLitt_all %>%
   filter(!is.na(LittDep))
-data_rosner <- rosnerTest(data_temp$LittDep)
-outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$LittDep)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Litt <- min(outliers) - 0.1
 
 # Set parameters 
@@ -569,8 +569,8 @@ errors_FuelsDuffLitt_LittDep <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsDuffLitt_all %>%
   filter(!is.na(DuffDep))
-data_rosner <- rosnerTest(data_temp$DuffDep)
-outliers <- data_rosner$all.stats$Value[data_rosner$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$DuffDep)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Duff <- min(outliers) - 0.1
 
 # Set parameters 
@@ -724,7 +724,7 @@ query <- "Fuel Fine Hits"
 query_message <- "Number of Hits" 
 values_data <- data$sum_hits
 values_valid <- 3
-values_check <- (values_data == values_valid) %>% replace_na(FALSE)
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_Hits <- qaqc(data, query, query_message, values_check)
@@ -787,8 +787,8 @@ errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsFine_all %>%
   filter(!is.na(OneHr))
-test <- rosnerTest(data_temp$OneHr)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$OneHr)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_One <- min(outliers) - 1
 
 # Set parameters 
@@ -809,8 +809,8 @@ errors_FuelsFine_OneHr <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsFine_all %>%
   filter(!is.na(TenHr))
-test <- rosnerTest(data_temp$TenHr)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$TenHr)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Ten <- min(outliers) - 1
 
 # Set parameters 
@@ -831,8 +831,8 @@ errors_FuelsFine_TenHr <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- FuelsFine_all %>%
   filter(!is.na(HunHr))
-test <- rosnerTest(data_temp$HunHr)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$HunHr)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Hun <- min(outliers) - 1
 
 # Set parameters 
@@ -1111,7 +1111,7 @@ query <- "Trees Ht vs CBH"
 query_message <- "Height shorter than CBH. CBH"  
 values_data <- data$LiCrBHt
 values_valid <- data$Ht
-values_check <- values_data < values_valid
+values_check <- (values_data < values_valid) %>% replace_na(TRUE)
 
 # Identify errors
 errors_Trees_Ht_LiCrBHt <- qaqc(data, query, query_message, values_check)
@@ -1528,8 +1528,8 @@ errors_Trees_DBH_Min <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- Trees_all %>%
   filter(!is.na(DBH))
-test <- rosnerTest(data_temp$DBH)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$DBH)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_DBH <- min(outliers) - 1
 
 # Set parameters 
@@ -1678,8 +1678,8 @@ errors_Trees_Frac <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- Trees_all %>%
   filter(!is.na(Ht), DBH > 15.0)
-test <- rosnerTest(data_temp$Ht)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$Ht)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Ht <- min(outliers) - 1
 
 # Set parameters 
@@ -1689,7 +1689,7 @@ query <- "Trees Height Overstory"
 query_message <- "Height Outlier"  
 values_data <- data$Ht
 values_valid <- max_Ht
-values_check <- values_data <= values_valid
+values_check <- (values_data <= values_valid) %>% replace_na(TRUE)
 
 # Identify errors
 errors_Trees_Height <- qaqc(data, query, query_message, values_check)
@@ -1830,8 +1830,8 @@ errors_Trees_Post_Char_Dead <- qaqc(data, query, query_message, values_check)
 data_temp <- Trees_all %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !is.na(CharHt))
-test <- rosnerTest(data_temp$CharHt)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$CharHt)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Char <- min(outliers) - 1
 
 # Set parameters 
@@ -1898,8 +1898,8 @@ errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
 data_temp <- Trees_all %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !is.na(ScorchHt))
-test <- rosnerTest(data_temp$ScorchHt)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$ScorchHt)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Scorch <- min(outliers) - 1
 
 # Set parameters 
@@ -2084,8 +2084,6 @@ kable(errors_Trees, "pipe")
 #write.csv(errors_Trees, paste0(path_errors, "errors_GRCA_I&M_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
 #write_xlsx(errors_Trees, paste0(path_errors, "errors_GRCA_I&M_Trees.xlsx"))
 ```
-
-# NEW IDEAS
 
 # ALL ERRORS
 
