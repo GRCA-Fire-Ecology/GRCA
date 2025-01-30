@@ -1075,6 +1075,31 @@ remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPn
 
 ### Trees CBH
 
+#### Trees CBH Live
+
+[Problem]{.underline}: Live trees do not have live crown base height entered.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. If Status = L, then check that LiCrBHt is [not]{.underline} blank
+
+```{r}
+# Set parameters 
+data <- Trees_data %>% 
+  filter(Status == "L")
+data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
+query <- "Trees CBH Live" 
+query_message <- "Live tree. Live Crown Base Height"  
+values_data <- data$LiCrBHt
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Trees_CBH_Live <- qaqc(data, query, query_message, values_check)
+```
+
+#### Trees CBH Dead
+
 [Problem]{.underline}: Dead trees have live crown base height entered.
 
 [Procedure:]{.underline}
@@ -1086,17 +1111,17 @@ remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPn
 data <- Trees_data %>% 
   filter(Status == "D")
 data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
-query <- "Trees Dead CBH" 
-query_message <- "Live Crown Base Height"  
+query <- "Trees CBH Dead" 
+query_message <- "Dead tree. Live Crown Base Height"  
 values_data <- data$LiCrBHt
 values_valid <- ""
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
+errors_Trees_CBH_Dead <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees CBH vs Ht
+#### Trees CBH vs Ht
 
 [Problem]{.underline}: Check that Live Crown Base Height is shorter than total tree Height
 
@@ -1106,24 +1131,25 @@ errors_Trees_Dead_LiCrBHt <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Set parameters
-data <- Trees_data
-query <- "Trees Ht vs CBH" 
+data <- Trees_data %>% 
+  filter(!is.na(LiCrBHt), Status == "L")
+query <- "Trees CBH vs Ht" 
 query_message <- "Height shorter than CBH. CBH"  
 values_data <- data$LiCrBHt
 values_valid <- data$Ht
-values_check <- (values_data < values_valid) %>% replace_na(TRUE)
+values_check <- values_data < values_valid
 
 # Identify errors
-errors_Trees_Ht_LiCrBHt <- qaqc(data, query, query_message, values_check)
+errors_Trees_CBH_Ht <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine CBH Errors
 
 ```{r}
 # Combine
-errors_Trees_CBH <- unique(rbind(errors_Trees_Dead_LiCrBHt, errors_Trees_Ht_LiCrBHt))
+errors_Trees_CBH <- unique(rbind(errors_Trees_CBH_Live, errors_Trees_CBH_Dead, errors_Trees_CBH_Ht))
 
-remove(errors_Trees_Dead_LiCrBHt, errors_Trees_Ht_LiCrBHt)
+remove(errors_Trees_CBH_Live, errors_Trees_CBH_Dead, errors_Trees_CBH_Ht)
 ```
 
 ### Trees Crown Class
@@ -1132,7 +1158,7 @@ remove(errors_Trees_Dead_LiCrBHt, errors_Trees_Ht_LiCrBHt)
 
 [Procedure:]{.underline}
 
--   Filter by DBH = blank and Status = D. Check that CrwnCl = BBD, CUS, or DD
+-   Filter by Status = D and DBH = blank. Check that CrwnCl = BBD, CUS, or DD
 
 ```{r}
 # Set parameters  
@@ -1148,7 +1174,9 @@ values_check <- values_data %in% values_valid
 errors_Trees_CrwnCl <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Damage Live
+### Trees Damage
+
+#### Trees Damage Live
 
 [Problem]{.underline}: Tree damage codes are entered incorrectly.
 
@@ -1243,7 +1271,7 @@ values_check <- values_data %in% values_valid
 errors_Trees_DamCd_L_5 <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Damage Dead
+#### Trees Damage Dead
 
 [Problem]{.underline}: Damage codes entered for trees that are dead.
 
@@ -1321,7 +1349,7 @@ values_check <- values_data %in% values_valid
 errors_Trees_DamCd_D_5 <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Damage Blank
+#### Trees Damage Blank
 
 [Problem]{.underline}: Tree damage codes are entered incorrectly. Blank damages exist before entered damages
 
@@ -1502,7 +1530,7 @@ remove(errors_Trees_DamCd_L, errors_Trees_DamCd_D, errors_Trees_DamCd_Blank)
 
 ### Trees DBH
 
-[Problem]{.underline}: DBH values smaller than sampling parameters or excessively large. DBH values for standing trees do not exist.
+[Problem]{.underline}: DBH values are smaller than sampling parameters or excessively large. DBH values for standing trees do not exist.
 
 [Procedure:]{.underline}
 
@@ -1668,6 +1696,31 @@ errors_Trees_Frac <- qaqc(data, query, query_message, values_check)
 
 ### Trees Height
 
+#### Trees Height Standing
+
+[Problem:]{.underline} Height not recorded. Standing trees should have height values.
+
+[Procedure:]{.underline}
+
+-   Filter for standing trees. Check that Ht exists.
+
+```{r}
+# Set parameters 
+data <- Trees_data %>% 
+   filter(!CrwnCl %in% c("BBD", "CUS", "DD"))
+data$Ht[is.na(data$Ht)] <- ""
+query <- "Trees Height Standing" 
+query_message <- "Standing tree. Height"  
+values_data <- data$Ht
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Trees_Height_Standing <- qaqc(data, query, query_message, values_check)
+```
+
+#### Trees Height Overstory
+
 [Problem:]{.underline} Incorrect values entered for height. Overstory trees should have reasonable height values.
 
 [Procedure:]{.underline}
@@ -1677,22 +1730,31 @@ errors_Trees_Frac <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Perform Rosner's Test for outliers using all values
 data_temp <- Trees_all %>%
-  filter(!is.na(Ht), DBH > 15.0)
+  filter(!is.na(Ht), DBH >= 15.0)
 data_outlier <- rosnerTest(data_temp$Ht)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Ht <- min(outliers) - 1
 
 # Set parameters 
 data <- Trees_data %>% 
-   filter(DBH >= 15.0)
+   filter(!is.na(Ht), DBH >= 15.0)
 query <- "Trees Height Overstory" 
 query_message <- "Height Outlier"  
 values_data <- data$Ht
 values_valid <- max_Ht
-values_check <- (values_data <= values_valid) %>% replace_na(TRUE)
+values_check <- values_data <= values_valid
 
 # Identify errors
-errors_Trees_Height <- qaqc(data, query, query_message, values_check)
+errors_Trees_Height_Overstory <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Height Errors
+
+```{r}
+# Combine
+errors_Trees_Height <- unique(rbind(errors_Trees_Height_Standing, errors_Trees_Height_Overstory))
+
+remove(errors_Trees_Height_Standing, errors_Trees_Height_Overstory)
 ```
 
 ### Trees Life Form
@@ -1769,7 +1831,7 @@ values_check <- values_data == values_valid
 errors_Trees_NonPost_Severity_CrScPct <- qaqc(data, query, query_message, values_check)
 ```
 
-#### Combine Non-Post Severity Errors
+#### Combine Non-Post Errors
 
 ```{r}
 # Combine
@@ -1778,7 +1840,9 @@ errors_Trees_NonPost_Severity <- unique(rbind(errors_Trees_NonPost_Severity_Char
 remove(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_ScorchHt, errors_Trees_NonPost_Severity_CrScPct)
 ```
 
-### Trees Post Char
+### Trees Post
+
+#### Trees Post Char
 
 [Problem]{.underline}: Char height missing or excessively large for standing trees during the immediate post-fire sample events in I&M plots. Char height entered for trees that are no longer standing.
 
@@ -1848,7 +1912,7 @@ values_check <- values_data <= values_valid
 errors_Trees_Post_Char_Live <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Post ScorchHt
+#### Trees Post ScorchHt
 
 [Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in I&M plots. Scorch height entered for trees that are no longer standing or are broken.
 
@@ -1916,7 +1980,7 @@ values_check <- values_data <= values_valid
 errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Post Scorch%
+#### Trees Post Scorch%
 
 [Problem]{.underline}: Scorch % missing or excessively large for live trees during the immediate post-fire sample events in I&M plots. Scorch % entered incorrectly for trees that are no longer standing.
 
