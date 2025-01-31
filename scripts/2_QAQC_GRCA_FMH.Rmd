@@ -767,7 +767,7 @@ data <- merge(FuelsFine_data, data_temp, by = c("MacroPlot.Name", "Date"), all =
 query <- "Fuel Fine Hits" 
 query_message <- "Number of Hits" 
 values_data <- data$sum_hits
-values_valid <- 3
+values_valid <- 4
 values_check <- (values_data == values_valid) %>% replace_na(FALSE)
 
 # Identify errors
@@ -1119,7 +1119,7 @@ remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPn
 
 #### Trees CBH Live
 
-[Problem]{.underline}: Live trees do not have live crown base height entered.
+[Problem]{.underline}: Live overstory trees do not have live crown base height entered.
 
 [Procedure:]{.underline}
 
@@ -1128,7 +1128,7 @@ remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPn
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Status == "L")
+  filter(Status == "L", DBH > 15.0)
 data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
 query <- "Trees CBH Live" 
 query_message <- "Live tree. Live Crown Base Height"  
@@ -1200,7 +1200,7 @@ remove(errors_Trees_CBH_Live, errors_Trees_CBH_Dead, errors_Trees_CBH_Ht)
 
 [Procedure:]{.underline}
 
--   Sort by DBH. If DBH = blank and Status = D, then check that CrwnCl = BBD, CUS, or DD or blank
+-   Sort by DBH. If DBH = blank and Status = D, then check that CrwnCl = BBD, CUS, or DD
 
 ```{r}
 # Set parameters  
@@ -1209,7 +1209,7 @@ data <- Trees_data %>%
 query <- "Trees Crown Class Dead" 
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
-values_valid <- c("BBD", "CUS", "DD", "")
+values_valid <- c("BBD", "CUS", "DD")
 values_check <- values_data %in% values_valid
 
 # Identify errors
