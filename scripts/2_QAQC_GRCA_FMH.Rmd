@@ -463,7 +463,7 @@ data_temp <- Fuels1000_all %>%
   filter(!is.na(Dia))
 data_outlier <- rosnerTest(data_temp$Dia)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
-max_Dia <- min(outliers) - 1
+max_Dia <- ifelse(length(outliers) == 0, max(data_temp$Dia), min(outliers) - 1)
 
 # Set parameters
 data <- Fuels1000_data
@@ -593,7 +593,7 @@ data_temp <- FuelsDuffLitt_all %>%
   filter(!is.na(LittDep))
 data_outlier <- rosnerTest(data_temp$LittDep)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
-max_Litt <- min(outliers) - 0.1
+max_Litt <- ifelse(length(outliers) == 0, max(data_temp$LittDep), min(outliers) - 0.1)
 
 # Set parameters 
 data <- FuelsDuffLitt_data
@@ -615,7 +615,7 @@ data_temp <- FuelsDuffLitt_all %>%
   filter(!is.na(DuffDep))
 data_outlier <- rosnerTest(data_temp$DuffDep)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
-max_Duff <- min(outliers) - 1
+max_Duff <- ifelse(length(outliers) == 0, max(data_temp$DuffDep), min(outliers) - 0.1)
 
 # Set parameters 
 data <- FuelsDuffLitt_data
@@ -833,7 +833,7 @@ data_temp <- FuelsFine_all %>%
   filter(!is.na(OneHr))
 data_outlier <- rosnerTest(data_temp$OneHr)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
-max_One <- min(outliers) - 1
+max_One <- ifelse(length(outliers) == 0, max(data_temp$OneHr), min(outliers) - 1)
 
 # Set parameters 
 data <- FuelsFine_data
@@ -855,7 +855,7 @@ data_temp <- FuelsFine_all %>%
   filter(!is.na(TenHr))
 data_outlier <- rosnerTest(data_temp$TenHr)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
-max_Ten <- min(outliers) - 1
+max_Ten <- ifelse(length(outliers) == 0, max(data_temp$TenHr), min(outliers) - 1)
 
 # Set parameters 
 data <- FuelsFine_data
@@ -877,7 +877,7 @@ data_temp <- FuelsFine_all %>%
   filter(!is.na(HunHr))
 data_outlier <- rosnerTest(data_temp$HunHr)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
-max_Hun <- min(outliers) - 1
+max_Hun <- ifelse(length(outliers) == 0, max(data_temp$HunHr), min(outliers) - 1)
 
 # Set parameters 
 data <- FuelsFine_data
@@ -1673,7 +1673,7 @@ data_temp <- Trees_all %>%
   filter(!is.na(DBH))
 test <- rosnerTest(data_temp$DBH)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_DBH <- min(outliers) - 1
+max_DBH <- ifelse(length(outliers) == 0, max(data_temp$DBH), min(outliers) - 1)
 
 # Set parameters 
 data <- Trees_data %>% 
@@ -1898,9 +1898,7 @@ data_temp <- Trees_all %>%
   filter(!is.na(Ht), DBH > 15.0)
 test <- rosnerTest(data_temp$Ht)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_Ht <- min(outliers) - 1
-# No outliers
-max_Ht <- max(data_temp$Ht)
+max_Ht <- ifelse(length(outliers) == 0, max(data_temp$Ht), min(outliers) - 1)
 
 # Set parameters 
 data <- Trees_data %>% 
@@ -2063,7 +2061,7 @@ data_temp <- Trees_all %>%
          !is.na(CharHt))
 test <- rosnerTest(data_temp$CharHt)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_Char <- min(outliers) - 1
+max_Char <- ifelse(length(outliers) == 0, max(data_temp$CharHt), min(outliers) - 1)
 
 # Set parameters 
 data <- Trees_data %>% 
@@ -2131,7 +2129,7 @@ data_temp <- Trees_all %>%
          !is.na(ScorchHt))
 test <- rosnerTest(data_temp$ScorchHt)
 outliers <- test$all.stats$Value[test$all.stats$Outlier]
-max_Scorch <- min(outliers) - 1
+max_Scorch <- ifelse(length(outliers) == 0, max(data_temp$ScorchHt), min(outliers) - 1)
 
 # Set parameters 
 data <- Trees_data %>% 
