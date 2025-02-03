@@ -1209,7 +1209,7 @@ data <- Trees_data %>%
 query <- "Trees Crown Class Dead" 
 query_message <- "Crown Class"  
 values_data <- data$CrwnCl
-values_valid <- c("BBD", "CUS", "DD")
+values_valid <- c("DD", "BBD", "CUS")
 values_check <- values_data %in% values_valid
 
 # Identify errors
@@ -1654,7 +1654,7 @@ remove(errors_Trees_DamCd_L, errors_Trees_DamCd_D, errors_Trees_DamCd_Blank)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl != "DD")
+  filter(!CrwnCl %in% c("DD", "BBD", "CUS"))
 query <- "Trees DBH Min" 
 query_message <- "DBH"  
 values_data <- data$DBH
@@ -1677,7 +1677,7 @@ max_DBH <- min(outliers) - 1
 
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl != "DD")
+  filter(!CrwnCl %in% c("DD", "BBD", "CUS"))
 query <- "Trees DBH Max" 
 query_message <- "DBH Outlier"  
 values_data <- data$DBH
@@ -1708,7 +1708,7 @@ remove(errors_Trees_DBH_Min, errors_Trees_DBH_Max)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("DD", "BBD", "CUS"))
 data$DBH[is.na(data$DBH)] <- ""
 query <- "Trees DD DBH" 
 query_message <- "DBH"  
@@ -1723,7 +1723,7 @@ errors_Trees_DD_DBH <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("DD", "BBD", "CUS"))
 data$Ht[is.na(data$Ht)] <- ""
 query <- "Trees DD Ht" 
 query_message <- "Height"  
@@ -1738,7 +1738,7 @@ errors_Trees_DD_Ht <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(CrwnCl %in% c("BBD", "CUS", "DD"))
+  filter(CrwnCl %in% c("DD", "BBD", "CUS"))
 data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
 query <- "Trees DD CBH" 
 query_message <- "Live Crown Base Height"  
@@ -1850,7 +1850,7 @@ remove(errors_Trees_Frac_Overstory, errors_Trees_Frac_Pole)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-   filter(!CrwnCl %in% c("BBD", "CUS", "DD"))
+   filter(!CrwnCl %in% c("DD", "BBD", "CUS"))
 data$Ht[is.na(data$Ht)] <- ""
 query <- "Trees Height Standing" 
 query_message <- "Standing tree. Height"  
