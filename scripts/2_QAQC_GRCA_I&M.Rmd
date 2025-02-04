@@ -60,7 +60,49 @@ path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/
 path_errors_name <- "2021-2023 GRCA I&M QAQC Errors"
 ```
 
-### Load Data
+### Create Function
+
+```{r}
+# QAQC function
+qaqc <- function(data, query, query_message, values_check) {
+  # Check if there is data to QAQC
+  if(nrow(data) == 0) {
+  # If there is no data, default to "No Error" data frame
+  errors <- errors_blank_NoError %>%     
+      mutate(SavedQuery = query)
+  # If there is data, perform error check
+} else {
+  # Use relevant dataset to look for errors
+  errors <- data %>%  
+    # Add columns relevant to error checking
+           # Populate the "SavedQuery" column with the query name
+    mutate("SavedQuery" = query, 
+           # Populate the "Error" column with the query message and relevant data
+           "Error" = paste(query_message, "=", values_data),
+           # Create a blank "Fixed" column
+           "Fixed" = "",
+           # Create a blank "Explanation" column
+           "Explanation" = "",
+           # Create a blank "Queryers" column
+           "Queryers" = "") %>%   
+    # Filter for data which is "false" (data does not match valid conditions)
+    # NA values are treated as "false" (missing data is not valid)
+    filter(!(values_check %>% replace_na(FALSE))) %>%   
+    # Select relevant columns to view errors
+    select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+}
+  
+  # Check if there are no errors
+  if (nrow(errors) == 0) {  
+    # If there are no errors, default to "No Error" data frame
+    errors <- errors_blank_NoError %>%     
+      mutate(SavedQuery = query) 
+    # If there are errors, keep error log you just created
+  } else {   
+    errors <- errors
+  }
+}
+```
 
 ```{r}
 # Blank data frame for no errors
@@ -68,6 +110,8 @@ errors_blank_NoError <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date
 # Blank data frame
 errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 ```
+
+### Load Data
 
 Mixed Conifer
 
@@ -107,7 +151,7 @@ PostBurn_all <- rbind(PostBurn_all_M, PostBurn_all_P)
 remove(Fuels1000_all_M, Fuels1000_all_P, FuelsDuffLitt_all_M, FuelsDuffLitt_all_P, FuelsFine_all_M, FuelsFine_all_P, Trees_all_M, Trees_all_P, PostBurn_all_M, PostBurn_all_P)
 ```
 
-### Check Data
+### Clean & Filter Data
 
 Fuels1000
 
@@ -242,50 +286,6 @@ PostBurn_data <- PostBurn_all %>%
 # Filter for only headers, by year
 PostBurn_header <- PostBurn_all %>%
   filter(!is.na(Visited), Year %in% c(2021, 2022, 2023))
-```
-
-### Create Function
-
-```{r}
-# QAQC function
-qaqc <- function(data, query, query_message, values_check) {
-  # Check if there is data to QAQC
-  if(nrow(data) == 0) {
-  # If there is no data, default to "No Error" data frame
-  errors <- errors_blank_NoError %>%     
-      mutate(SavedQuery = query)
-  # If there is data, perform error check
-} else {
-  # Use relevant dataset to look for errors
-  errors <- data %>%  
-    # Add columns relevant to error checking
-           # Populate the "SavedQuery" column with the query name
-    mutate("SavedQuery" = query, 
-           # Populate the "Error" column with the query message and relevant data
-           "Error" = paste(query_message, "=", values_data),
-           # Create a blank "Fixed" column
-           "Fixed" = "",
-           # Create a blank "Explanation" column
-           "Explanation" = "",
-           # Create a blank "Queryers" column
-           "Queryers" = "") %>%   
-    # Filter for data which is "false" (data does not match valid conditions)
-    # NA values are treated as "false" (missing data is not valid)
-    filter(!(values_check %>% replace_na(FALSE))) %>%   
-    # Select relevant columns to view errors
-    select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
-}
-  
-  # Check if there are no errors
-  if (nrow(errors) == 0) {  
-    # If there are no errors, default to "No Error" data frame
-    errors <- errors_blank_NoError %>%     
-      mutate(SavedQuery = query) 
-    # If there are errors, keep error log you just created
-  } else {   
-    errors <- errors
-  }
-}
 ```
 
 # PROTOCOL - SURFACE FUELS
