@@ -57,6 +57,7 @@ path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-01-23/"
 path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
 # Errors
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
+path_errors_name <- "2021-2023 GRCA I&M QAQC Errors"
 ```
 
 ### Load Data
@@ -454,7 +455,7 @@ remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Nu
 
 ```{r}
 # Table of results for quick check
-kable(errors_Fuels1000, "pipe")
+#kable(errors_Fuels1000, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
@@ -531,19 +532,19 @@ data_temp2 <- FuelsDuffLitt_header %>%
   select(MacroPlot.Name, Date)
 
 data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
 remove(data_temp1, data_temp2)
 
 # Set parameters 
 data <- merge(FuelsDuffLitt_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
 query <- "Fuel DL Hits" 
-query_message <- "Number of Hits" 
+query_message <- "Complete Sample Locations"
 values_data <- data$sum_hits
 values_valid <- 30
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
-errors_FuelsDuffLitt_Hits <- unique(errors_FuelsDuffLitt_Hits)
+errors_FuelsDuffLitt_Hits <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### Fuel DL Values
@@ -565,7 +566,7 @@ max_Litt <- ifelse(length(outliers) == 0, max(data_temp$LittDep), min(outliers) 
 # Set parameters 
 data <- FuelsDuffLitt_data
 query <- "Fuel DL Values LittDep" 
-query_message <- "Litter Depth Outlier" 
+query_message <- "Litter Depth" 
 values_data <- data$LittDep
 values_valid <- max_Litt
 values_check <- values_data <= values_valid
@@ -587,7 +588,7 @@ max_Duff <- ifelse(length(outliers) == 0, max(data_temp$DuffDep), min(outliers) 
 # Set parameters 
 data <- FuelsDuffLitt_data
 query <- "Fuel DL Values DuffDep" 
-query_message <- "Duff Depth Outlier" 
+query_message <- "Duff Depth" 
 values_data <- data$DuffDep
 values_valid <- max_Duff
 values_check <- values_data <= values_valid
@@ -609,7 +610,7 @@ remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_Fuel
 
 ```{r}
 # Table of results for quick check
-kable(errors_FuelsDuffLitt, "pipe")
+#kable(errors_FuelsDuffLitt, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
@@ -729,18 +730,19 @@ data_temp2 <- FuelsFine_header %>%
   select(MacroPlot.Name, Date)
 
 data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
 remove(data_temp1, data_temp2)
 
 # Set parameters 
 data <- merge(FuelsFine_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
 query <- "Fuel Fine Hits" 
-query_message <- "Number of Hits" 
+query_message <- "Complete Transects" 
 values_data <- data$sum_hits
 values_valid <- 3
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_Hits <- qaqc(data, query, query_message, values_check)
+errors_FuelsFine_Hits <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### Fuel Fine Values
@@ -807,7 +809,7 @@ max_One <- ifelse(length(outliers) == 0, max(data_temp$OneHr), min(outliers) - 1
 # Set parameters 
 data <- FuelsFine_data
 query <- "Fuel Fine Values OneHr" 
-query_message <- "One Hour Count Outlier" 
+query_message <- "One Hour Count" 
 values_data <- data$OneHr
 values_valid <- seq(0, max_One, by = 1)
 values_check <- values_data %in% values_valid
@@ -829,7 +831,7 @@ max_Ten <- ifelse(length(outliers) == 0, max(data_temp$TenHr), min(outliers) - 1
 # Set parameters 
 data <- FuelsFine_data
 query <- "Fuel Fine Values TenHr" 
-query_message <- "Ten Hour Count Outlier" 
+query_message <- "Ten Hour Count" 
 values_data <- data$TenHr
 values_valid <- seq(0, max_Ten, by = 1)
 values_check <- values_data %in% values_valid
@@ -851,7 +853,7 @@ max_Hun <- ifelse(length(outliers) == 0, max(data_temp$HunHr), min(outliers) - 1
 # Set parameters 
 data <- FuelsFine_data
 query <- "Fuel Fine Values HunHr" 
-query_message <- "Hundred Hour Count Outlier" 
+query_message <- "Hundred Hour Count" 
 values_data <- data$HunHr
 values_valid <- seq(0, max_Hun, by = 1)
 values_check <- values_data %in% values_valid
@@ -873,7 +875,7 @@ remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_On
 
 ```{r}
 # Table of results for quick check
-kable(errors_FuelsFine, "pipe")
+#kable(errors_FuelsFine, "pipe")
 
 # Save as CSV or XLSX 
 #path_errors
@@ -1020,7 +1022,7 @@ remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsT
 
 ```{r}
 # Table of results for quick check
-kable(errors_PostBurn, "pipe")
+#kable(errors_PostBurn, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
@@ -1581,7 +1583,7 @@ max_DBH <- ifelse(length(outliers) == 0, max(data_temp$DBH), min(outliers) - 1)
 data <- Trees_data %>% 
   filter(!CrwnCl %in% c("DD", "BBD", "CUS"))
 query <- "Trees DBH Max" 
-query_message <- "DBH Outlier"  
+query_message <- "DBH"  
 values_data <- data$DBH
 values_valid <- max_DBH
 values_check <- values_data <= values_valid
@@ -1686,7 +1688,7 @@ values_valid <- c(FALSE, "")
 values_check <- values_data %in% values_valid
 
 # Identify errors
-errors_Trees_Duplicate <- qaqc(data, query, query_message, values_check)
+errors_Trees_Duplicate <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### Trees Frac
@@ -1756,7 +1758,7 @@ max_Ht <- ifelse(length(outliers) == 0, max(data_temp$Ht), min(outliers) - 1)
 data <- Trees_data %>% 
    filter(!is.na(Ht), DBH >= 15.0)
 query <- "Trees Height Overstory" 
-query_message <- "Height Outlier"  
+query_message <- "Height"  
 values_data <- data$Ht
 values_valid <- max_Ht
 values_check <- values_data <= values_valid
@@ -1920,7 +1922,7 @@ data <- Trees_data %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          Status == "L")
 query <- "Trees Post Char Live" 
-query_message <- "Char Height Outlier"  
+query_message <- "Char Height"  
 values_data <- data$CharHt
 values_valid <- max_Char
 values_check <- values_data <= values_valid
@@ -1988,7 +1990,7 @@ data <- Trees_data %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          Status == "L")
 query <- "Trees Post Scorch Live" 
-query_message <- "Scorch Height Outlier"  
+query_message <- "Scorch Height"  
 values_data <- data$ScorchHt
 values_valid <- max_Scorch
 values_check <- values_data <= values_valid
@@ -2160,7 +2162,7 @@ remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Tree
 
 ```{r}
 # Table of results for quick check
-kable(errors_Trees, "pipe")
+#kable(errors_Trees, "pipe")
 
 # Save as CSV or XLSX
 #path_errors
@@ -2181,15 +2183,24 @@ errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors
 # Table of results for quick check
 #kable(errors_all, "pipe")
 
+# Create conditional formatting rule
+cf_post <- as.data.frame(grepl("PBSev", errors_all$SavedQuery, fixed = TRUE) | grepl(" Post", errors_all$SavedQuery, fixed = TRUE))
+colnames(cf_post) <- c("Post")
+errors_all_cf <- cbind(errors_all, cf_post) %>% 
+  mutate(Post = ifelse(SavedQuery == "", NA, Post))
+
 # Add conditional formating to ouput
-errors_all <- condformat(errors_all[1:(nrow(errors_all)), 1:7]) %>% 
-  rule_fill_discrete(columns = c("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers"), 
-                     expression = SavedQuery != "",
-                     colours = c("TRUE"="#C6E0B4"))
+errors_all <- condformat(errors_all_cf[1:(nrow(errors_all_cf)), 1:8]) %>%
+  rule_fill_discrete(columns = 1:7,
+                     expression = (errors_all_cf$Post == "FALSE"),
+                     colours = c("TRUE"="#C6E0B4",
+                                 "FALSE"="#FFC000"),
+                     na.value = "#FFFFFF") %>%
+  select(!c("Post"))
 
 # Save as CSV or XLSX 
 path_errors
 #write.csv(errors_all, paste0(path_errors, "errors_GRCA_I&M.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_I&M.xlsx"))
-condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_I&M_formatted.xlsx"), overwrite_wb = TRUE)
+condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_I&M_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
