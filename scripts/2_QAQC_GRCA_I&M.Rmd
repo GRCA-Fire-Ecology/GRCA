@@ -249,21 +249,39 @@ PostBurn_header <- PostBurn_all %>%
 ```{r}
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
-  # Identify errors 
-  errors <- data %>%   
+  # Check if there is data to QAQC
+  if(nrow(errors) == 0) {
+  # If there is no data, default to "No Error" data frame
+  errors <- errors_blank_NoError %>%     
+      mutate(SavedQuery = query)
+  # If there is data, perform error check
+} else {
+  # Use relevant dataset to look for errors
+  errors <- data %>%  
+    # Add columns relevant to error checking
+           # Populate the "SavedQuery" column with the query name
     mutate("SavedQuery" = query, 
+           # Populate the "Error" column with the query message and relevant data
            "Error" = paste(query_message, "=", values_data),
+           # Create a blank "Fixed" column
            "Fixed" = "",
+           # Create a blank "Explanation" column
            "Explanation" = "",
+           # Create a blank "Queryers" column
            "Queryers" = "") %>%   
-    # Data is equal exactly to a value
+    # Filter for data which is "false" (data does not match valid conditions)
+    # NA values are treated as "false" (missing data is not valid)
     filter(!(values_check %>% replace_na(FALSE))) %>%   
+    # Select relevant columns to view errors
     select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+}
   
-  # If no errors, add "No Errors" to existing data frame 
-  if (nrow(errors) == 0) {   
+  # Check if there are no errors
+  if (nrow(errors) == 0) {  
+    # If there are no errors, default to "No Error" data frame
     errors <- errors_blank_NoError %>%     
       mutate(SavedQuery = query) 
+    # If there are errors, keep error log you just created
   } else {   
     errors <- errors
   }
@@ -950,21 +968,30 @@ errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Filter NA values. Add number of hits and store in new column
-data_temp <- PostBurn_data %>%
-  filter(!is.na(Point)) %>%
-  group_by(MacroPlot.Name) %>%
-  dplyr::summarize("sum_hits" = n())
+data_temp1 <- PostBurn_data %>%
+  filter(!is.na(Veg)) %>%
+  filter(!is.na(Sub)) %>% 
+  group_by(MacroPlot.Name) %>% 
+  dplyr::summarise("sum_hits" = n())
 
-# Set parameters
-data <- merge(PostBurn_data, data_temp, all.x = T)
-query <- "PBSev Hits"
-query_message <- "Number of Hits"
+data_temp2 <- PostBurn_header %>% 
+  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
+  select(MacroPlot.Name, Date)
+
+data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(PostBurn_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "PBSev Hits" 
+query_message <- "Complete Sample Locations"
 values_data <- data$sum_hits
 values_valid <- 30
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_PostBurn_Hits <- qaqc(data, query, query_message, values_check)
+errors_PostBurn_Hits <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### PBSev Substrate

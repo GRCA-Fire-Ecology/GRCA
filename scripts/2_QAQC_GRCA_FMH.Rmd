@@ -74,7 +74,7 @@ FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"), quo
 # Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"), quote = "")
 # Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"), quote = "")
 Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
-#PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"), quote = "")
+PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"), quote = "")
 ```
 
 ### Check Data
@@ -129,7 +129,8 @@ FuelsFine
 # Clean up data frame 
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -150,7 +151,8 @@ HerbsPoints
 # Clean up data frame 
 HerbsPoints_all <- HerbsPoints_all %>%  
   # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -171,7 +173,8 @@ HerbsObs
 # Clean up data frame 
 HerbsObs_all <- HerbsObs_all %>%  
   # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -192,7 +195,8 @@ Shrubs
 # Clean up data frame 
 Shrubs_all <- Shrubs_all %>%
   # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -213,7 +217,8 @@ Seedlings
 # Clean up data frame 
 Seedlings_all <- Seedlings_all %>%
   # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -234,7 +239,8 @@ Trees
 # Clean up data frame 
 Trees_all <- Trees_all %>%
   # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -276,21 +282,39 @@ PostBurn_header <- PostBurn_all %>%
 ```{r}
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
-  # Identify errors 
-  errors <- data %>%   
+  # Check if there is data to QAQC
+  if(nrow(errors) == 0) {
+  # If there is no data, default to "No Error" data frame
+  errors <- errors_blank_NoError %>%     
+      mutate(SavedQuery = query)
+  # If there is data, perform error check
+} else {
+  # Use relevant dataset to look for errors
+  errors <- data %>%  
+    # Add columns relevant to error checking
+           # Populate the "SavedQuery" column with the query name
     mutate("SavedQuery" = query, 
+           # Populate the "Error" column with the query message and relevant data
            "Error" = paste(query_message, "=", values_data),
+           # Create a blank "Fixed" column
            "Fixed" = "",
+           # Create a blank "Explanation" column
            "Explanation" = "",
+           # Create a blank "Queryers" column
            "Queryers" = "") %>%   
-    # Data is equal exactly to a value
+    # Filter for data which is "false" (data does not match valid conditions)
+    # NA values are treated as "false" (missing data is not valid)
     filter(!(values_check %>% replace_na(FALSE))) %>%   
+    # Select relevant columns to view errors
     select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+}
   
-  # If no errors, add "No Errors" to existing data frame 
-  if (nrow(errors) == 0) {   
+  # Check if there are no errors
+  if (nrow(errors) == 0) {  
+    # If there are no errors, default to "No Error" data frame
     errors <- errors_blank_NoError %>%     
       mutate(SavedQuery = query) 
+    # If there are errors, keep error log you just created
   } else {   
     errors <- errors
   }
@@ -952,46 +976,46 @@ It checks for: header info (number of transects, length of transects, number of 
 -   Check that NumTran = 4
 
 ```{r}
-# # Set parameters  
-# data <- PostBurn_header
-# query <- "PBSev Header NumTran" 
-# query_message <- "Number of Transects"  
-# values_data <- data$NumTran  
-# values_valid <- 4    
-# values_check <- values_data == values_valid
-# 
-# # Identify errors
-# errors_PostBurn_NumTran <- qaqc(data, query, query_message, values_check)
+# Set parameters
+data <- PostBurn_header
+query <- "PBSev Header NumTran"
+query_message <- "Number of Transects"
+values_data <- data$NumTran
+values_valid <- 4
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_NumTran <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that TranLen = 50
 
 ```{r}
-# # Set parameters 
-# data <- PostBurn_header
-# query <- "PBSev Header TranLen" 
-# query_message <- "Transect Length" 
-# values_data <- data$TranLen 
-# values_valid <- 50  
-# values_check <- values_data == values_valid
-# 
-# # Identify errors
-# errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
+# Set parameters
+data <- PostBurn_header
+query <- "PBSev Header TranLen"
+query_message <- "Transect Length"
+values_data <- data$TranLen
+values_valid <- 50
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that NumPtsTran = 10
 
 ```{r}
-# # Set parameters 
-# data <- PostBurn_header
-# query <- "PBSev Header NumPtsTran" 
-# query_message <- "Number of Points" 
-# values_data <- data$NumPtsTran
-# values_valid <- 10
-# values_check <- values_data == values_valid
-# 
-# # Identify errors
-# errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
+# Set parameters
+data <- PostBurn_header
+query <- "PBSev Header NumPtsTran"
+query_message <- "Number of Points"
+values_data <- data$NumPtsTran
+values_valid <- 10
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 ```
 
 ### PBSev Hits
@@ -1003,22 +1027,31 @@ It checks for: header info (number of transects, length of transects, number of 
 -   Group by Macroplot. Calculate number of hits per plot. Check that sum_hits = 40
 
 ```{r}
-# # Filter NA values. Add number of hits and store in new column
-# data_temp <- PostBurn_data %>%
-#   filter(!is.na(Point)) %>% 
-#   group_by(MacroPlot.Name) %>% 
-#   summarize("sum_hits" = n())
-# 
-# # Set parameters 
-# data <- merge(PostBurn_data, data_temp, all.x = T)
-# query <- "PBSev Hits" 
-# query_message <- "Number of Hits" 
-# values_data <- data$sum_hits
-# values_valid <- 40
-# values_check <- values_data == values_valid
-# 
-# # Identify errors
-# errors_PostBurn_Hits <- qaqc(data, query, query_message, values_check)
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- PostBurn_data %>%
+  filter(!is.na(Veg)) %>%
+  filter(!is.na(Sub)) %>% 
+  group_by(MacroPlot.Name) %>% 
+  dplyr::summarise("sum_hits" = n())
+
+data_temp2 <- PostBurn_header %>% 
+  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
+  select(MacroPlot.Name, Date)
+
+data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(PostBurn_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "PBSev Hits" 
+query_message <- "Complete Sample Locations"
+values_data <- data$sum_hits
+values_valid <- 40
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_Hits <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### PBSev Substrate
@@ -1030,16 +1063,16 @@ It checks for: header info (number of transects, length of transects, number of 
 -   Check that Sub = 0, 1, 2, 3, 4, or 5
 
 ```{r}
-# # Set parameters
-# data <- PostBurn_data
-# query <- "PBSev Substrate"
-# query_message <- "Substrate Severity"
-# values_data <- data$Sub
-# values_valid <- c(0, 1, 2, 3, 4, 5)
-# values_check <- values_data %in% values_valid
-# 
-# # Identify errors
-# errors_PostBurn_Sub <- qaqc(data, query, query_message, values_check)
+# Set parameters
+data <- PostBurn_data
+query <- "PBSev Substrate"
+query_message <- "Substrate Severity"
+values_data <- data$Sub
+values_valid <- c(0, 1, 2, 3, 4, 5)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_PostBurn_Sub <- qaqc(data, query, query_message, values_check)
 ```
 
 ### PBSev Veg
@@ -1051,35 +1084,35 @@ It checks for: header info (number of transects, length of transects, number of 
 -   Check that Veg = 0, 1, 2, 3, 4, or 5
 
 ```{r}
-# # Set parameters
-# data <- PostBurn_data
-# query <- "PBSev Veg"
-# query_message <- "Vegetation Severity"
-# values_data <- data$Veg
-# values_valid <- c(0, 1, 2, 3, 4, 5)
-# values_check <- values_data %in% values_valid
-# 
-# # Identify errors
-# errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
+# Set parameters
+data <- PostBurn_data
+query <- "PBSev Veg"
+query_message <- "Vegetation Severity"
+values_data <- data$Veg
+values_valid <- c(0, 1, 2, 3, 4, 5)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
 ```
 
 ### PBSev Errors
 
 ```{r}
-# # Save to master error list
+# Save to master error list
 # errors_PostBurn <- unique(rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg))
-#
-# errors_PostBurn_1 <- rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_blank, errors_PostBurn_Hits, errors_blank, errors_PostBurn_Sub, errors_blank, errors_PostBurn_Veg)
-# 
-# remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg)
-# 
-# # Table of results for quick check
-# kable(errors_PostBurn, "pipe")
-# 
-# # Save as CSV or XLSX
-# path_errors
-# #write.csv(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
-# #write_xlsx(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.xlsx"))
+
+errors_PostBurn <- rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_blank, errors_PostBurn_Hits, errors_blank, errors_PostBurn_Sub, errors_blank, errors_PostBurn_Veg)
+
+remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg)
+
+# Table of results for quick check
+kable(errors_PostBurn, "pipe")
+
+# Save as CSV or XLSX
+path_errors
+#write.csv(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.xlsx"))
 ```
 
 # PROTOCOL - TREES
@@ -2430,13 +2463,10 @@ errors_all <- condformat(errors_all_cf[1:(nrow(errors_all_cf)), 1:8]) %>%
                      na.value = "#FFFFFF") %>%
   select(!c("Post"))
 
-
-
-
 # Save as CSV or XLSX 
 path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
 # condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
-condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
