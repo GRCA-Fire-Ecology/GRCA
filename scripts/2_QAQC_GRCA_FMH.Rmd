@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 # Install packages (if needed)
 # install.packages("tidyverse")
 # install.packages("Rtools")
+# install.packages("condformat")
 ```
 
 # BEFORE STARTING
@@ -32,10 +33,12 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(writexl)
 library(dplyr)
-detach(package:plyr)
+#detach(package:plyr)
 library(knitr)
 # EnvStats is needed for the rosnerTest() function
 library(EnvStats)
+# condformat is used to format excel output files
+library(condformat)
 ```
 
 ### Adjust File Paths
@@ -55,7 +58,9 @@ path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/
 
 ```{r}
 # Blank data frame for no errors
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error")
+errors_blank_NoError <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+# Blank data frame
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 ```
 
 ```{r}
@@ -273,14 +278,17 @@ qaqc <- function(data, query, query_message, values_check) {
   # Identify errors 
   errors <- data %>%   
     mutate("SavedQuery" = query, 
-           "Error" = paste(query_message, "=", values_data)) %>%   
+           "Error" = paste(query_message, "=", values_data),
+           "Fixed" = "",
+           "Explanation" = "",
+           "Queryers" = "") %>%   
     # Data is equal exactly to a value
     filter(!(values_check %>% replace_na(FALSE))) %>%   
-    select("SavedQuery", "MacroPlot.Name", "Date", "Error")
+    select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
   
   # If no errors, add "No Errors" to existing data frame 
   if (nrow(errors) == 0) {   
-    errors <- errors_blank %>%     
+    errors <- errors_blank_NoError %>%     
       mutate(SavedQuery = query) 
   } else {   
     errors <- errors
@@ -481,7 +489,19 @@ errors_Fuels1000_Dia <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Save to master error list
-errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
+# errors_Fuels1000_DecayCl <- unique(errors_Fuels1000_DecayCl)
+# errors_errors_Fuels1000_FuelConst <- unique(errors_Fuels1000_FuelConst)
+# errors_Fuels1000_NumTran <- unique(errors_Fuels1000_NumTran)
+# errors_Fuels1000_TranLen_N <- unique(errors_Fuels1000_TranLen_N)
+# errors_Fuels1000_TranLen_S <- unique(errors_Fuels1000_TranLen_S)
+# errors_Fuels1000_LogNo <- unique(errors_Fuels1000_LogNo)
+# errors_Fuels1000_TransNum <- unique(errors_Fuels1000_TransNum)
+# errors_Fuels1000_Slope <- unique(errors_Fuels1000_Slope)
+# errors_Fuels1000_Dia <- unique(errors_Fuels1000_Dia)
+
+# errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst,errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo,errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
+
+errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_blank, errors_Fuels1000_FuelConst, errors_blank, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_blank, errors_Fuels1000_LogNo, errors_blank, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
 
 remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
 ```
@@ -633,7 +653,9 @@ errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Save to master error list 
-errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep))
+# errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep))
+
+errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_FuelConst, errors_blank,  errors_FuelsDuffLitt_NumTran, errors_blank, errors_FuelsDuffLitt_Hits, errors_blank,  errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 
 remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 ```
@@ -895,7 +917,9 @@ errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Save to master error list 
-errors_FuelsFine <- unique(rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr))
+# errors_FuelsFine <- unique(rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr))
+
+errors_FuelsFine <- rbind(errors_FuelsFine_FuelConst, errors_blank,  errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_blank, errors_FuelsFine_Hits, errors_blank,  errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
 
 remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
 ```
@@ -1041,6 +1065,8 @@ It checks for: header info (number of transects, length of transects, number of 
 ```{r}
 # # Save to master error list
 # errors_PostBurn <- unique(rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg))
+#
+# errors_PostBurn_1 <- rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_blank, errors_PostBurn_Hits, errors_blank, errors_PostBurn_Sub, errors_blank, errors_PostBurn_Veg)
 # 
 # remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg)
 # 
@@ -1476,7 +1502,7 @@ errors_Trees_DamCd_D_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 1 Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 2"  
 values_data <- data$DamCd2
 values_valid <- ""
@@ -1490,7 +1516,7 @@ errors_Trees_DamCd_1_Blank_2 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 1 Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1504,7 +1530,7 @@ errors_Trees_DamCd_1_Blank_3 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 1 Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1518,7 +1544,7 @@ errors_Trees_DamCd_1_Blank_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data  %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 1 Blank" 
 query_message <- "Damage Code 1 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1534,7 +1560,7 @@ errors_Trees_DamCd_1_Blank_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 2 Blank" 
 query_message <- "Damage Code 2 = Blank, Damage Code 3"  
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1548,7 +1574,7 @@ errors_Trees_DamCd_2_Blank_3 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 2 Blank" 
 query_message <- "Damage Code 2 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1562,7 +1588,7 @@ errors_Trees_DamCd_2_Blank_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 2 Blank" 
 query_message <- "Damage Code 2 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1578,7 +1604,7 @@ errors_Trees_DamCd_2_Blank_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd3 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 3 Blank" 
 query_message <- "Damage Code 3 = Blank, Damage Code 4"  
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1592,7 +1618,7 @@ errors_Trees_DamCd_3_Blank_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd3 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 3 Blank" 
 query_message <- "Damage Code 3 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1608,7 +1634,7 @@ errors_Trees_DamCd_3_Blank_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd4 == "")
-query <- "Trees Damage Blank" 
+query <- "Trees Damage 4 Blank" 
 query_message <- "Damage Code 4 = Blank, Damage Code 5"  
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1671,8 +1697,8 @@ errors_Trees_DBH_Min <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- Trees_all %>%
   filter(!is.na(DBH))
-test <- rosnerTest(data_temp$DBH)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$DBH)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_DBH <- ifelse(length(outliers) == 0, max(data_temp$DBH), min(outliers) - 1)
 
 # Set parameters 
@@ -1896,8 +1922,8 @@ errors_Trees_Height_Pole <- qaqc(data, query, query_message, values_check)
 # Perform Rosner's Test for outliers using all values
 data_temp <- Trees_all %>%
   filter(!is.na(Ht), DBH > 15.0)
-test <- rosnerTest(data_temp$Ht)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$Ht)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Ht <- ifelse(length(outliers) == 0, max(data_temp$Ht), min(outliers) - 1)
 
 # Set parameters 
@@ -2059,8 +2085,8 @@ errors_Trees_Post_Char_Dead <- qaqc(data, query, query_message, values_check)
 data_temp <- Trees_all %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !is.na(CharHt))
-test <- rosnerTest(data_temp$CharHt)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$CharHt)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Char <- ifelse(length(outliers) == 0, max(data_temp$CharHt), min(outliers) - 1)
 
 # Set parameters 
@@ -2127,8 +2153,8 @@ errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
 data_temp <- Trees_all %>%
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !is.na(ScorchHt))
-test <- rosnerTest(data_temp$ScorchHt)
-outliers <- test$all.stats$Value[test$all.stats$Outlier]
+data_outlier <- rosnerTest(data_temp$ScorchHt)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_Scorch <- ifelse(length(outliers) == 0, max(data_temp$ScorchHt), min(outliers) - 1)
 
 # Set parameters 
@@ -2299,7 +2325,9 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 ## Trees Errors
 
 ```{r}
-errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
+# errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
+
+errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
 
 remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
 ```
@@ -2350,7 +2378,7 @@ This code conducts quality control checks on slope data in the surface fuels coa
 # 
 # # If no errors, add "No Errors" to existing data frame 
 # if (nrow(errors_Fuels_slope) == 0) {   
-#     errors_Fuels_slope <- errors_blank %>%     
+#     errors_Fuels_slope <- errors_blank_NoError %>%     
 #     mutate(SavedQuery = query) 
 # } else {   
 #     errors_Fuels_slope <- errors_Fuels_slope
@@ -2371,7 +2399,9 @@ This code conducts quality control checks on slope data in the surface fuels coa
 
 ```{r}
 # Save to master error list 
-errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsFine, errors_Trees))
+# errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsFine, errors_Trees))
+
+errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_FuelsFine, errors_blank, errors_Trees)
 
 # errors_CrossProtocol <- unique(rbind(errors_Fuels_slope))
 # 
@@ -2382,8 +2412,15 @@ errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsF
 # Table of results for quick check
 #kable(errors_all, "pipe")
 
+# Add conditional formating to ouput
+errors_all <- condformat(errors_all[1:(nrow(errors_all)), 1:7]) %>% 
+  rule_fill_discrete(columns = c("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers"), 
+                     expression = SavedQuery != "",
+                     colours = c("TRUE"="#C6E0B4"))
+
 # Save as CSV or XLSX 
 path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
-write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
+#write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
+# condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
 ```
