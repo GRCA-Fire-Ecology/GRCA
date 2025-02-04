@@ -283,7 +283,7 @@ PostBurn_header <- PostBurn_all %>%
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
   # Check if there is data to QAQC
-  if(nrow(errors) == 0) {
+  if(nrow(data) == 0) {
   # If there is no data, default to "No Error" data frame
   errors <- errors_blank_NoError %>%     
       mutate(SavedQuery = query)
@@ -1847,7 +1847,7 @@ values_valid <- FALSE
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Trees_Duplicate <- qaqc(data, query, query_message, values_check)
+errors_Trees_Duplicate <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### Trees Frac
@@ -2437,7 +2437,7 @@ This code conducts quality control checks on slope data in the surface fuels coa
 # Save to master error list 
 # errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsFine, errors_Trees))
 
-errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_FuelsFine, errors_blank, errors_Trees)
+errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_FuelsFine, errors_blank, errors_PostBurn, errors_blank, errors_Trees)
 
 # errors_CrossProtocol <- unique(rbind(errors_Fuels_slope))
 # 
@@ -2449,9 +2449,9 @@ errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors
 #kable(errors_all, "pipe")
 
 # Create conditional formatting rule
-cf_post <- as.data.frame(grepl("PBSev", errors_all$SavedQuery, fixed = TRUE) | grepl(" Post", errors_all$SavedQuery, fixed = TRUE))
-colnames(cf_post) <- c("Post")
-errors_all_cf <- cbind(errors_all, cf_post) %>% 
+data_temp <- as.data.frame(grepl("PBSev", errors_all$SavedQuery, fixed = TRUE) | grepl(" Post", errors_all$SavedQuery, fixed = TRUE))
+colnames(data_temp) <- c("Post")
+errors_all_cf <- cbind(errors_all, data_temp) %>% 
   mutate(Post = ifelse(SavedQuery == "", NA, Post))
 
 # Add conditional formating to ouput
