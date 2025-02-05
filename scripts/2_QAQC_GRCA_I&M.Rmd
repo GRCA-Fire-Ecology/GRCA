@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 # Install packages (if needed)
 # install.packages("tidyverse")
 # install.packages("Rtools")
+# install.packages("janitor")
 # install.packages("condformat")
 ```
 
@@ -33,6 +34,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(writexl)
 library(dplyr)
+library(janitor)
 library(plyr)
 library(knitr)
 # EnvStats is needed for the rosnerTest() function
@@ -1696,23 +1698,21 @@ remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
 
 [Procedure:]{.underline}
 
--   Sort by RowCount. Check that RowCount = 1 for all entries.
+-   Check for duplicate tree tags across Year, MacroPlot.Name, SubFrac [and]{.underline} TagNo.
 
 ```{r}
-# Check for tag duplication (TRUE/FALSE) and store results in new column
-data_temp <- Trees_data %>%
-  group_by(MacroPlot.Name, TagNo) %>% 
-  filter(!TagNo == 0) %>% 
-  mutate("Duplicate" = duplicated(TagNo))
+# Check for tag duplication and store results in new column
+data_temp <- Trees_data %>% 
+  get_dupes(Year, MacroPlot.Name, SubFrac, TagNo)
 
 # Set parameters 
 data <- merge(Trees_data, data_temp, all.x = T)
-data$Duplicate[is.na(data$Duplicate)] <- ""
+data$dupe_count[is.na(data$dupe_count)] <- 0
 query <- "Trees Duplicates" 
-query_message <- "Duplicate Tag"  
-values_data <- data$Duplicate
-values_valid <- c(FALSE, "")
-values_check <- values_data %in% values_valid
+query_message <- "Number of Duplicates"  
+values_data <- data$dupe_count
+values_valid <- 0
+values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_Duplicate <- unique(qaqc(data, query, query_message, values_check))
