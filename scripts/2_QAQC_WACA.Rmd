@@ -1,7 +1,7 @@
 ---
-title: "Grand Canyon QAQC for I&M Data"
+title: "Grand Canyon QAQC for WACA Data"
 author: "Alexandra Lalor"
-date: "2024-01-22"
+date: "2024-02-05"
 output:
   html_document:
     theme: readable
@@ -50,14 +50,9 @@ Make sure to update file paths to be specific for your data.
 getwd()
 
 # Load in data. Change file path based on user name!
-
-# Mixed Conifer
-path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-01-23/"
-# Pinyon Juniper
-path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
-# Errors
+path_data <- "X:/FFI Data Management/Exports from FFI/WACA/2025-02-04/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
-path_errors_name <- "2021-2023 GRCA I&M QAQC Errors"
+path_errors_name <- "2020 WACA QAQC Errors"
 ```
 
 ### Create Function
@@ -113,42 +108,13 @@ errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","
 
 ### Load Data
 
-Mixed Conifer
-
 ```{r}
 # Load in data
-Fuels1000_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Fine_XPT.csv"))
-Trees_all_M <- read.csv(paste0(path_data_M, "Trees - Individuals (metric)_XPT.csv"))
-PostBurn_all_M <- read.csv(paste0(path_data_M, "Post Burn Severity_XPT.csv"))
-```
-
-Pinyon Juniper
-
-```{r}
-# Load in data
-Fuels1000_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Fine_XPT.csv"))
-Trees_all_P <- read.csv(paste0(path_data_P, "Trees - Individuals (metric)_XPT.csv"))
-PostBurn_all_P <- read.csv(paste0(path_data_P, "Post Burn Severity_XPT.csv"))
-```
-
-### Merge Data
-
-```{r}
-# Merge M and P
-Fuels1000_all <- rbind(Fuels1000_all_M, Fuels1000_all_P)
-FuelsDuffLitt_all <- rbind(FuelsDuffLitt_all_M, FuelsDuffLitt_all_P)
-FuelsFine_all <- rbind(FuelsFine_all_M, FuelsFine_all_P)
-Trees_all <- rbind(Trees_all_M, Trees_all_P)
-PostBurn_all <- rbind(PostBurn_all_M, PostBurn_all_P)
-```
-
-```{r}
-# Remove extra data
-remove(Fuels1000_all_M, Fuels1000_all_P, FuelsDuffLitt_all_M, FuelsDuffLitt_all_P, FuelsFine_all_M, FuelsFine_all_P, Trees_all_M, Trees_all_P, PostBurn_all_M, PostBurn_all_P)
+Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
 ```
 
 ### Clean & Filter Data
@@ -161,23 +127,18 @@ Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time")) %>%
-  # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
-  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
-  select(!c("Park", "PlotNumber")) %>% 
-  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
 Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
   
 # Filter for only data, by year
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(is.na(Visited), Year %in% c(2020))
 
 # Filter for only headers, by year
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(!is.na(Visited), Year %in% c(2020))
 ```
 
 FuelsDuffLitt
@@ -187,24 +148,19 @@ FuelsDuffLitt
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day", "Time")) %>% 
-  # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
-  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
-  select(!c("Park", "PlotNumber")) %>% 
-  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
 FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA
   
 # Filter for only data, by year
 FuelsDuffLitt_data <- FuelsDuffLitt_all %>%
-  filter(is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(is.na(Visited), Year %in% c(2020))
 
 # Filter for only headers, by year
 FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
-  filter(!is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(!is.na(Visited), Year %in% c(2020))
 ```
 
 FuelsFine
@@ -214,24 +170,19 @@ FuelsFine
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day", "Time")) %>% 
-  # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
-  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
-  select(!c("Park", "PlotNumber")) %>% 
-  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
 FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
   
 # Filter for only data, by year
 FuelsFine_data <- FuelsFine_all %>%
-  filter(is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(is.na(Visited), Year %in% c(2020))
 
 # Filter for only headers, by year
 FuelsFine_header <- FuelsFine_all %>%
-  filter(!is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(!is.na(Visited), Year %in% c(2020))
 ```
 
 Trees
@@ -242,23 +193,18 @@ Trees_all <- Trees_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time")) %>% 
-  # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
-  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
-  select(!c("Park", "PlotNumber")) %>% 
-  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
 Trees_all$Visited[Trees_all$Visited==""] <- NA
   
 # Filter for only data, by year
 Trees_data <- Trees_all %>%
-  filter(is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(is.na(Visited), Year %in% c(2020))
 
 # Filter for only headers, by year
 Trees_header <- Trees_all %>%
-  filter(!is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(!is.na(Visited), Year %in% c(2020))
 ```
 
 PostBurn
@@ -268,24 +214,19 @@ PostBurn
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day", "Time")) %>% 
-  # Add Monitoring Type
-  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
-  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
-  select(!c("Park", "PlotNumber")) %>% 
-  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
 PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
   
 # Filter for only data, by year
 PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(is.na(Visited), Year %in% c(2020))
 
 # Filter for only headers, by year
 PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2021, 2022, 2023))
+  filter(!is.na(Visited), Year %in% c(2020))
 ```
 
 # PROTOCOL - SURFACE FUELS
