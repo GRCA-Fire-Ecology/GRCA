@@ -287,7 +287,7 @@ errors_Fuels1000_TranLen <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- Fuels1000_data
 query <- "Fuel 1000 DecayClass"
-query_message <- "Decay Class"
+query_message <- paste0("Log ", data$LogNum, ". ", "Decay Class")
 values_data <- data$DecayCl
 values_valid <- c(3,4)
 values_check <- values_data %in% values_valid
@@ -314,7 +314,7 @@ values_valid <- "Default"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Fuels1000_FuelConst <- qaqc(data, query, query_message, values_check)
+errors_Fuels1000_FuelConst <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### Fuel 1000 LogNo
@@ -336,7 +336,7 @@ data_temp <- Fuels1000_data %>%
 data <- data_temp %>%
   mutate("Duplicate" = duplicated(data_temp))
 query <- "Fuel 1000 LogNo" 
-query_message <- "Duplicate Logs" 
+query_message <- paste0("Log ", data$LogNum, ". ", "Duplicate")
 values_data <- data$Duplicate
 values_valid <- FALSE
 values_check <- values_data == values_valid
@@ -372,7 +372,7 @@ errors_Fuels1000_TransNum <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- Fuels1000_data
 query <- "Fuel 1000 Values Slope"
-query_message <- "Slope"
+query_message <- paste0("Transect = ", data$Transect, ". ", "Slope")
 values_data <- data$Slope
 values_valid <- seq(0, 90, by = 1)
 values_check <- values_data %in% values_valid
@@ -394,7 +394,7 @@ max_Dia <- ifelse(length(outliers) == 0, max(data_temp$Dia), min(outliers) - 1)
 # Set parameters
 data <- Fuels1000_data
 query <- "Fuel 1000 Values Dia"
-query_message <- "Diameter"
+query_message <- paste0("Log ", data$LogNum, ". ", "Diameter")
 values_data <- data$Dia
 values_valid <- seq(3, max_Dia, by = 0.5)
 values_check <- values_data %in% values_valid
@@ -469,7 +469,7 @@ values_valid <- "Default"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
+errors_FuelsDuffLitt_FuelConst <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### Fuel DL Hits
@@ -527,7 +527,7 @@ max_Litt <- ifelse(length(outliers) == 0, max(data_temp$LittDep), min(outliers) 
 # Set parameters 
 data <- FuelsDuffLitt_data
 query <- "Fuel DL Values LittDep" 
-query_message <- "Litter Depth" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Sample Location = ", data$SampLoc, ". ", "Litter Depth")
 values_data <- data$LittDep
 values_valid <- max_Litt
 values_check <- values_data <= values_valid
@@ -549,7 +549,7 @@ max_Duff <- ifelse(length(outliers) == 0, max(data_temp$DuffDep), min(outliers) 
 # Set parameters 
 data <- FuelsDuffLitt_data
 query <- "Fuel DL Values DuffDep" 
-query_message <- "Duff Depth" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Sample Location = ", data$SampLoc, ". ", "Duff Depth")
 values_data <- data$DuffDep
 values_valid <- max_Duff
 values_check <- values_data <= values_valid
@@ -669,7 +669,7 @@ values_valid <- "Default"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
+errors_FuelsFine_FuelConst <- unique(qaqc(data, query, query_message, values_check))
 ```
 
 ### Fuel Fine Hits
@@ -733,7 +733,7 @@ errors_FuelsFine_TransNum <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- FuelsFine_data
 query <- "Fuel Fine Values Azimuth"
-query_message <- "Azimuth"
+query_message <- paste0("Transect = ", data$Transect, ". ", "Azimuth")
 values_data <- data$Azimuth
 values_valid <- seq(0, 359, by = 1)
 values_check <- values_data %in% values_valid
@@ -748,7 +748,7 @@ errors_FuelsFine_Azimuth <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- FuelsFine_data
 query <- "Fuel Fine Values Slope"
-query_message <- "Slope"
+query_message <- paste0("Transect = ", data$Transect, ". ", "Slope")
 values_data <- data$Slope
 values_valid <- seq(0, 90, by = 1)
 values_check <- values_data %in% values_valid
@@ -770,7 +770,7 @@ max_One <- ifelse(length(outliers) == 0, max(data_temp$OneHr), min(outliers) - 1
 # Set parameters 
 data <- FuelsFine_data
 query <- "Fuel Fine Values OneHr" 
-query_message <- "One Hour Count" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "One Hour Count")
 values_data <- data$OneHr
 values_valid <- seq(0, max_One, by = 1)
 values_check <- values_data %in% values_valid
@@ -792,7 +792,7 @@ max_Ten <- ifelse(length(outliers) == 0, max(data_temp$TenHr), min(outliers) - 1
 # Set parameters 
 data <- FuelsFine_data
 query <- "Fuel Fine Values TenHr" 
-query_message <- "Ten Hour Count" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Ten Hour Count")
 values_data <- data$TenHr
 values_valid <- seq(0, max_Ten, by = 1)
 values_check <- values_data %in% values_valid
@@ -814,7 +814,7 @@ max_Hun <- ifelse(length(outliers) == 0, max(data_temp$HunHr), min(outliers) - 1
 # Set parameters 
 data <- FuelsFine_data
 query <- "Fuel Fine Values HunHr" 
-query_message <- "Hundred Hour Count" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Hundred Hour Count")
 values_data <- data$HunHr
 values_valid <- seq(0, max_Hun, by = 1)
 values_check <- values_data %in% values_valid
