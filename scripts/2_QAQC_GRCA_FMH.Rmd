@@ -1840,7 +1840,7 @@ data_temp <- Trees_data %>%
 data <- merge(Trees_data, data_temp, all.x = T)
 data$dupe_count[is.na(data$dupe_count)] <- 0
 query <- "Trees Duplicates" 
-query_message <- "Number of Duplicates"  
+query_message <- paste0("TagNo = ", data$TagNo, ", ", "Duplicates")
 values_data <- data$dupe_count
 values_valid <- 0
 values_check <- values_data == values_valid
