@@ -1576,7 +1576,7 @@ path_errors
 
 [Procedure:]{.underline}
 
--   Check that MacroPlotSize = 0.1
+-   Check that MacroPlotSize = 0.03
 
 ```{r}
 # Set parameters  
@@ -1584,14 +1584,14 @@ data <- Trees_header
 query <- "Trees Header MacroPlotSize" 
 query_message <- "Macro Plot Size"  
 values_data <- data$MacroPlotSize  
-values_valid <- 0.1    
+values_valid <- 0.03    
 values_check <- values_data == values_valid
 
 # Identify errors
 errors_Trees_MacroPlotSize <- qaqc(data, query, query_message, values_check)
 ```
 
--   Check that SnagPlotSize = 0.1
+-   Check that SnagPlotSize = 0.03
 
 ```{r}
 # Set parameters  
@@ -1599,7 +1599,7 @@ data <- Trees_header
 query <- "Trees Header SnagPlotSize" 
 query_message <- "Snag Plot Size"  
 values_data <- data$SnagPlotSize
-values_valid <- 0.1    
+values_valid <- 0.03 
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -2164,7 +2164,7 @@ remove(errors_Trees_DamCd_L, errors_Trees_DamCd_D, errors_Trees_DamCd_Blank)
 
 [Procedure:]{.underline}
 
--   Filter to exclude DD trees. Check that DBH ≥ 2.5.
+-   Filter to exclude DD trees. Check that DBH ≥ 15.1.
 
 ```{r}
 # Set parameters 
@@ -2173,7 +2173,7 @@ data <- Trees_data %>%
 query <- "Trees DBH Min" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "DBH")
 values_data <- data$DBH
-values_valid <- min(2.5)
+values_valid <- min(15.1)
 values_check <- values_data >= values_valid
 
 # Identify errors
@@ -2285,7 +2285,7 @@ remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
 ```{r}
 # Check for tag duplication and store results in new column
 data_temp <- Trees_data %>% 
-  get_dupes(Year, MacroPlot.Name, SubFrac, TagNo)
+  get_dupes(Date, MacroPlot.Name, SubFrac, TagNo)
 
 # Set parameters 
 data <- merge(Trees_data, data_temp, all.x = T)
@@ -2466,7 +2466,7 @@ errors_Trees_LifeForm <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+  filter(!Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"))
 data$CharHt[is.na(data$CharHt)] <- ""
 query <- "Trees Non-Post Severity CharHt" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Non-post read. Char Height")
@@ -2481,7 +2481,7 @@ errors_Trees_NonPost_Severity_CharHt <- qaqc(data, query, query_message, values_
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+  filter(!Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"))
 data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Non-Post Severity ScorchHt" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Non-post read. Scorch Height")
@@ -2496,7 +2496,7 @@ errors_Trees_NonPost_Severity_ScorchHt <- qaqc(data, query, query_message, value
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
+  filter(!Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"))
 data$CrScPct[is.na(data$CrScPct)] <- ""
 query <- "Trees Non-Post Severity CrScPct" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Non-post read. Crown Scorch Percent")
@@ -2532,7 +2532,7 @@ remove(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_Scorc
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          CrwnCl %in% c("DD", "BBD", "CUS"))
 data$CharHt[is.na(data$CharHt)] <- ""
 query <- "Trees Post Char DD" 
@@ -2550,7 +2550,7 @@ errors_Trees_Post_Char_DD <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          !CrwnCl %in% c("DD", "BBD", "CUS"))
 data$CharHt[is.na(data$CharHt)] <- ""
 query <- "Trees Post Char Standing" 
@@ -2568,7 +2568,7 @@ errors_Trees_Post_Char_Standing <- qaqc(data, query, query_message, values_check
 ```{r}
 # Perform Rosner's Test for outliers using all values
 data_temp <- Trees_all %>%
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          !is.na(CharHt))
 data_outlier <- rosnerTest(data_temp$CharHt)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
@@ -2576,7 +2576,7 @@ max_Char <- ifelse(length(outliers) == 0, max(data_temp$CharHt), min(outliers) -
 
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          !is.na(CharHt))
 query <- "Trees Post Char Max" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Char Height")
@@ -2601,7 +2601,7 @@ errors_Trees_Post_Char_Max <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          CrwnCl %in% c("DD", "BBD", "CUS"))
 data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Post Scorch DD" 
@@ -2619,7 +2619,7 @@ errors_Trees_Post_Scorch_DD <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          !CrwnCl %in% c("DD", "BBD", "CUS"),
          Status == "D")
 data$ScorchHt[is.na(data$ScorchHt)] <- ""
@@ -2638,7 +2638,7 @@ errors_Trees_Post_Scorch_Dead <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Perform Rosner's Test for outliers using all values
 data_temp <- Trees_all %>%
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          !is.na(ScorchHt))
 data_outlier <- rosnerTest(data_temp$ScorchHt)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
@@ -2646,7 +2646,7 @@ max_Scorch <- ifelse(length(outliers) == 0, max(data_temp$ScorchHt), min(outlier
 
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          Status == "L")
 query <- "Trees Post Scorch Live" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. Scorch Height")
@@ -2673,7 +2673,7 @@ errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          CrwnCl %in% c("DD", "BBD", "CUS"))
 data$CrScPct[is.na(data$CrScPct)] <- ""
 query <- "Trees Post Scorch% DD" 
@@ -2691,7 +2691,7 @@ errors_Trees_Post_ScorchPct_DD <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          !CrwnCl %in% c("DD", "BBD", "CUS"),
          Status == "D")
 data$CrScPct[is.na(data$CrScPct)] <- ""
@@ -2710,7 +2710,7 @@ errors_Trees_Post_ScorchPct_Dead <- qaqc(data, query, query_message, values_chec
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
-  filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
          Status == "L")
 query <- "Trees Post Scorch% Live" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. Scorch Percent")
@@ -2816,7 +2816,7 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 ```{r}
 # errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
 
-errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
+errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank) #errors_Trees_UV)
 
 remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
 ```
