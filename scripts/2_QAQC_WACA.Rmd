@@ -1,5 +1,5 @@
 ---
-title: "Grand Canyon QAQC for WACA Data"
+title: "Walnut Canyon QAQC for FMH Data"
 author: "Alexandra Lalor"
 date: "2024-02-05"
 output:
