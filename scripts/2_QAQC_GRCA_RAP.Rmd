@@ -1,7 +1,7 @@
 ---
-title: "Grand Canyon QAQC for FMH Data"
+title: "Grand Canyon QAQC for RAP Data"
 author: "Alexandra Lalor"
-date: "2025-01-22"
+date: "2025-02-10"
 output:
   html_document:
     theme: readable
@@ -52,9 +52,14 @@ Make sure to update file paths to be specific for your data.
 getwd()
 
 # Load in data. Change file path based on user name!
-path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+
+# North Rim
+path_data_N <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/North Rim/2025-02-10/"
+# South Rim
+path_data_S <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/South Rim/2025-02-10/"
+# Errors
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
-path_errors_name <- "2024 GRCA FMH QAQC Errors"
+path_errors_name <- "GRCA RAP QAQC Errors"
 ```
 
 ### Create Function
@@ -110,17 +115,48 @@ errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","
 
 ### Load Data
 
+North Rim
+
 ```{r}
 # Load in data
-Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
-FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"), quote = "")
-FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"), quote = "")
-# HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"), quote = "")
-# HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"), quote = "")
-# Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"), quote = "")
-# Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"), quote = "")
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
-PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"), quote = "")
+Fuels1000_all_N <- read.csv(paste0(path_data_N, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all_N <- read.csv(paste0(path_data_N, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all_N <- read.csv(paste0(path_data_N, "Surface Fuels - Fine_XPT.csv"))
+HerbsObs_all_N <- read.csv(paste0(path_data_N, "Cover - Species Composition (metric)_XPT.csv"), quote = "")
+Seedlings_all_N <- read.csv(paste0(path_data_N, "Density - Quadrats (metric)_XPT.csv"), quote = "")
+Trees_all_N <- read.csv(paste0(path_data_N, "Trees - Individuals (metric)_XPT.csv"))
+PostBurn_all_N <- read.csv(paste0(path_data_N, "Post Burn Severity_XPT.csv"))
+```
+
+South Rim
+
+```{r}
+# Load in data
+Fuels1000_all_S <- read.csv(paste0(path_data_S, "Surface Fuels - 1000Hr_XPT.csv"))
+FuelsDuffLitt_all_S <- read.csv(paste0(path_data_S, "Surface Fuels - Duff_Litter_XPT.csv"))
+FuelsFine_all_S <- read.csv(paste0(path_data_S, "Surface Fuels - Fine_XPT.csv"))
+HerbsObs_all_S <- read.csv(paste0(path_data_S, "Cover - Species Composition (metric)_XPT.csv"), quote = "")
+Seedlings_all_S <- read.csv(paste0(path_data_S, "Density - Quadrats (metric)_XPT.csv"), quote = "")
+Trees_all_S <- read.csv(paste0(path_data_S, "Trees - Individuals (metric)_XPT.csv"))
+PostBurn_all_S <- read.csv(paste0(path_data_S, "Post Burn Severity_XPT.csv"))
+```
+
+### Merge Data
+
+```{r}
+# Merge M and P
+Fuels1000_all <- rbind(Fuels1000_all_N, Fuels1000_all_S)
+FuelsDuffLitt_all <- rbind(FuelsDuffLitt_all_N, FuelsDuffLitt_all_S)
+FuelsFine_all <- rbind(FuelsFine_all_N, FuelsFine_all_S)
+HerbsObs_all <- rbind(HerbsObs_all_N, HerbsObs_all_S)
+Seedlings_all <- rbind(Seedlings_all_N, Seedlings_all_S)
+Trees_all <- rbind(Trees_all_N, Trees_all_S)
+PostBurn_all <- rbind(PostBurn_all_N, PostBurn_all_S)
+```
+
+```{r}
+# Remove extra data
+remove(Fuels1000_all_N, Fuels1000_all_S, FuelsDuffLitt_all_N, FuelsDuffLitt_all_S, FuelsFine_all_N, FuelsFine_all_S, HerbsObs_all_N, HerbsObs_all_S, Seedlings_all_N, Seedlings_all_S, Trees_all_N, Trees_all_S, PostBurn_all_N, PostBurn_all_S)
 ```
 
 ### Clean & Filter Data
@@ -140,11 +176,11 @@ Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 
 # Filter for only data
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited))
 
 # Filter for only headers
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 FuelsDuffLitt
@@ -162,11 +198,11 @@ FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA
 
 # Filter for only data 
 FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited))  
 
 # Filter for only headers 
 FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 FuelsFine
@@ -184,33 +220,11 @@ FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
 
 # Filter for only data 
 FuelsFine_data <- FuelsFine_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited))  
 
 # Filter for only headers 
 FuelsFine_header <- FuelsFine_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
-```
-
-HerbsPoints
-
-```{r}
-# Clean up data frame 
-HerbsPoints_all <- HerbsPoints_all %>%  
-  # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time"))
-
-# Ensure blanks in Visited column are NA 
-HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
-
-# Filter for only data 
-HerbsPoints_data <- HerbsPoints_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
-
-# Filter for only headers 
-HerbsPoints_header <- HerbsPoints_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 HerbsObs
@@ -228,33 +242,11 @@ HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA
 
 # Filter for only data 
 HerbsObs_data <- HerbsObs_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited))  
 
 # Filter for only headers 
 HerbsObs_header <- HerbsObs_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
-```
-
-Shrubs
-
-```{r}
-# Clean up data frame 
-Shrubs_all <- Shrubs_all %>%
-  # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time"))
-
-# Ensure blanks in Visited column are NA 
-Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA 
-
-# Filter for only data 
-Shrubs_data <- Shrubs_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
-
-# Filter for only headers 
-Shrubs_header <- Shrubs_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 Seedlings
@@ -272,11 +264,11 @@ Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA
 
 # Filter for only data 
 Seedlings_data <- Seedlings_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited))  
 
 # Filter for only headers 
 Seedlings_header <- Seedlings_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 Trees
@@ -294,11 +286,11 @@ Trees_all$Visited[Trees_all$Visited==""] <- NA
 
 # Filter for only data 
 Trees_data <- Trees_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited))  
 
 # Filter for only headers 
 Trees_header <- Trees_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 PostBurn
@@ -316,11 +308,28 @@ PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
 
 # Filter for only data
 PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited))
 
 # Filter for only headers
 PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
+```
+
+# Metadata
+
+```{r}
+unique(Fuels1000_all$MacroPlot.Purpose)
+
+z_meta <- as.data.frame(unique(Fuels1000_all$MacroPlot.Purpose))
+z_FuConSt <- Fuels1000_data %>% 
+  group_by(MacroPlot.Purpose) %>% 
+  summarize(CWDFuConSt = unique(CWDFuConSt))
+z_NumTran <- Fuels1000_header %>% 
+  group_by(MacroPlot.Purpose) %>% 
+  summarize(NumTran = unique(NumTran))
+z_TranLen <- Fuels1000_header %>% 
+  group_by(MacroPlot.Purpose) %>% 
+  summarize(TranLen = unique(TranLen))
 ```
 
 # PROTOCOL - SURFACE FUELS
@@ -333,55 +342,64 @@ It checks for: header info (number of transects, length of transects), decay cla
 
 ### Fuel 1000 Header
 
-[Problem:]{.underline} Incorrect header information entered for FMH plots.
+[Problem:]{.underline} Incorrect header information entered for RAP plots.
 
 [Procedure:]{.underline}
 
--   Check that NumTran = 4
-
-```{r}
-# Set parameters 
-data <- Fuels1000_header
-query <- "Fuel 1000 Header NumTran"
-query_message <- "Number of Transects" 
-values_data <- data$NumTran
-values_valid <- 4
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_Fuels1000_NumTran <- qaqc(data, query, query_message, values_check)
-```
-
--   Check that North Rim TranLen = 50 (or very close). North Rim plots include PIAB, PIEN, and PIPN.
+-   Check that NumTran = 1 for the appropriate project units: Moqui, Picnic, Quarry
 
 ```{r}
 # Set parameters 
 data <- Fuels1000_header %>% 
-  filter(MacroPlot.Purpose %in% c("PIAB", "PIEN", "PIPN"))
-query <- "Fuel 1000 Header NRim TranLen" 
+  filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
+query <- "Fuel 1000 Header NumTran"
+query_message <- "Number of Transects" 
+values_data <- data$NumTran
+values_valid <- 1
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_NumTran_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumTran = 2 for the appropriate project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
+
+```{r}
+# Set parameters 
+data <- Fuels1000_header %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
+query <- "Fuel 1000 Header NumTran"
+query_message <- "Number of Transects" 
+values_data <- data$NumTran
+values_valid <- 2
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_NumTran_2 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that TranLen = 50
+
+```{r}
+# Set parameters 
+data <- Fuels1000_header
+query <- "Fuel 1000 Header TranLen" 
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 50  
 values_check <-values_data == values_valid
 
 # Identify errors
-errors_Fuels1000_TranLen_N <- qaqc(data, query, query_message, values_check)
+errors_Fuels1000_TranLen <- qaqc(data, query, query_message, values_check)
 ```
 
--   Check that S Rim TranLen = 100 (or very close). South Rim plots include PIED and PIPO.
+#### Combine Header Errors
 
 ```{r}
-# Set parameters 
-data <- Fuels1000_header %>% 
-  filter(MacroPlot.Purpose %in% c("PIED", "PIPO"))
-query <- "Fuel 1000 Header SRim TranLen" 
-query_message <- "Transect Length" 
-values_data <- data$TranLen 
-values_valid <- 100 
-values_check <- values_data == values_valid
+# Combine
+errors_Fuels1000_Header <- unique(rbind(errors_Fuels1000_NumTran_1, errors_Fuels1000_NumTran_2, errors_Fuels1000_TranLen))
 
-# Identify errors
-errors_Fuels1000_TranLen_S <- qaqc(data, query, query_message, values_check)
+remove(errors_Fuels1000_NumTran_1, errors_Fuels1000_NumTran_2, errors_Fuels1000_TranLen)
 ```
 
 ### Fuel 1000 DecayClass
@@ -407,23 +425,65 @@ errors_Fuels1000_DecayCl <- qaqc(data, query, query_message, values_check)
 
 ### Fuel 1000 FuelConst
 
-[Problem:]{.underline} Incorrect coarse woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the MacroPlot Purpose.
+[Problem:]{.underline} Incorrect coarse woody debris fuel constant entered.
 
 [Procedure:]{.underline}
 
--   Check that CWDFuConSt = MacroPlot.Purpose
+-   Check that CWDFuConSt = Mixed Conifer for the appropriate project units: Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover
 
 ```{r}
 # Set parameters
-data <- Fuels1000_data
+data <- Fuels1000_data %>% 
+  filter(MacroPlot.Purpose %in% c("Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover"))
 query <- "Fuel 1000 FuelConst"
 query_message <- "Fuel Constant"
 values_data <- data$CWDFuConSt
-values_valid <- data$MacroPlot.Purpose
+values_valid <- "Mixed Conifer"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Fuels1000_FuelConst <- unique(qaqc(data, query, query_message, values_check))
+errors_Fuels1000_FuelConst_MixCon <- unique(qaqc(data, query, query_message, values_check))
+```
+
+-   Check that CWDFuConSt = PIPO for the appropriate project units: Burnt Corral, Moqui, Picnic, Quarry
+
+```{r}
+# Set parameters
+data <- Fuels1000_data %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Moqui", "Picnic", "Quarry"))
+query <- "Fuel 1000 FuelConst"
+query_message <- "Fuel Constant"
+values_data <- data$CWDFuConSt
+values_valid <- "PIPO"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_FuelConst_PIPO <- unique(qaqc(data, query, query_message, values_check))
+```
+
+-   Check that CWDFuConSt = PIED for the appropriate project units: Tusayan Pueblo (Thinning)
+
+```{r}
+# Set parameters
+data <- Fuels1000_data %>% 
+  filter(MacroPlot.Purpose %in% c("Tusayan Pueblo (Thinning)"))
+query <- "Fuel 1000 FuelConst"
+query_message <- "Fuel Constant"
+values_data <- data$CWDFuConSt
+values_valid <- "PIED"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Fuels1000_FuelConst_PIED <- unique(qaqc(data, query, query_message, values_check))
+```
+
+#### Combine FuelConst Errors
+
+```{r}
+# Combine
+errors_Fuels1000_FuelConst <- unique(rbind(errors_Fuels1000_FuelConst_MixCon, errors_Fuels1000_FuelConst_PIPO, errors_Fuels1000_FuelConst_PIED))
+
+remove(errors_Fuels1000_FuelConst_MixCon, errors_Fuels1000_FuelConst_PIPO, errors_Fuels1000_FuelConst_PIED)
 ```
 
 ### Fuel 1000 LogNo
@@ -460,19 +520,36 @@ errors_Fuels1000_LogNo <- qaqc(data, query, query_message, values_check)
 
 [Procedure:]{.underline}
 
--   Check that Transect = 1, 2, 3, or 4
+-   Check that Transect = 1 for the appropriate project units: Moqui, Picnic, Quarry
 
 ```{r}
 # Set parameters
-data <- Fuels1000_data
+data <- Fuels1000_data %>% 
+  filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
 query <- "Fuel 1000 Values TransNum"
 query_message <- "Transect Number"
 values_data <- data$Transect
-values_valid <- c(1, 2, 3, 4)
+values_valid <- c(1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
-errors_Fuels1000_TransNum <- qaqc(data, query, query_message, values_check)
+errors_Fuels1000_TransNum_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Transect = 1 or 2 for the appropriate project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
+
+```{r}
+# Set parameters
+data <- Fuels1000_data %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
+query <- "Fuel 1000 Values TransNum"
+query_message <- "Transect Number"
+values_data <- data$Transect
+values_valid <- c(1, 2)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Fuels1000_TransNum_2 <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that Slope values are reasonable.
@@ -515,22 +592,11 @@ errors_Fuels1000_Dia <- qaqc(data, query, query_message, values_check)
 ### Fuel 1000 Errors
 
 ```{r}
-# Save to master error list
-# errors_Fuels1000_DecayCl <- unique(errors_Fuels1000_DecayCl)
-# errors_errors_Fuels1000_FuelConst <- unique(errors_Fuels1000_FuelConst)
-# errors_Fuels1000_NumTran <- unique(errors_Fuels1000_NumTran)
-# errors_Fuels1000_TranLen_N <- unique(errors_Fuels1000_TranLen_N)
-# errors_Fuels1000_TranLen_S <- unique(errors_Fuels1000_TranLen_S)
-# errors_Fuels1000_LogNo <- unique(errors_Fuels1000_LogNo)
-# errors_Fuels1000_TransNum <- unique(errors_Fuels1000_TransNum)
-# errors_Fuels1000_Slope <- unique(errors_Fuels1000_Slope)
-# errors_Fuels1000_Dia <- unique(errors_Fuels1000_Dia)
+# errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_LogNo,errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
 
-# errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst,errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo,errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
+errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_blank, errors_Fuels1000_FuelConst, errors_blank, errors_Fuels1000_Header, errors_blank, errors_Fuels1000_LogNo, errors_blank, errors_Fuels1000_TransNum_1, errors_Fuels1000_TransNum_2, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
 
-errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_blank, errors_Fuels1000_FuelConst, errors_blank, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_blank, errors_Fuels1000_LogNo, errors_blank, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
-
-remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
+remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum_1, errors_Fuels1000_TransNum_2, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
 ```
 
 ```{r}
@@ -539,8 +605,8 @@ remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Nu
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors_Fuels1000, paste0(path_errors, "errors_GRCA_FMH_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_GRCA_FMH_Fuels1000.xlsx"))
+#write.csv(errors_Fuels1000, paste0(path_errors, "errors_GRCA_RAP_Fuels1000.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_GRCA_RAP_Fuels1000.xlsx"))
 ```
 
 ## DUFF LITTER
@@ -551,80 +617,191 @@ It checks for: number of transects, fuel constants, number of points sampled, re
 
 ### Fuel DL Header
 
-[Problem:]{.underline} Incorrect header information entered for FMH plots.
+[Problem:]{.underline} Incorrect header information entered for RAP plots.
 
 [Procedure:]{.underline}
 
--   Check that NumTran = 4
+-   Check that NumTran = 1 for the appropriate project units: Moqui, Picnic, Quarry
 
 ```{r}
 # Set parameters  
-data <- FuelsDuffLitt_header
+data <- FuelsDuffLitt_header %>% 
+  filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
 query <- "Fuel DL Header NumTran" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
-values_valid <- 4    
+values_valid <- 1   
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
+errors_FuelsDuffLitt_NumTran_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumTran = 2 for the appropriate project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
+
+```{r}
+# Set parameters  
+data <- FuelsDuffLitt_header %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
+query <- "Fuel DL Header NumTran" 
+query_message <- "Number of Transects"  
+values_data <- data$NumTran  
+values_valid <- 2 
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_NumTran_2 <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Header Errors
+
+```{r}
+# Combine
+errors_FuelsDuffLitt_Header <- unique(rbind(errors_FuelsDuffLitt_NumTran_1, errors_FuelsDuffLitt_NumTran_2))
+
+remove(errors_FuelsDuffLitt_NumTran_1, errors_FuelsDuffLitt_NumTran_2)
 ```
 
 ### Fuel DL FuelConst
 
-[Problem:]{.underline} Incorrect duff & litter fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the MacroPlot Purpose.
+[Problem:]{.underline} Incorrect duff & litter fuel constant entered.
 
 [Procedure:]{.underline}
 
--   Check that DLFuConSt = MacroPlot.Purpose
+-   Check that DLFuConSt = Mixed Conifer for the appropriate project units: Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover
 
 ```{r}
 # Set parameters 
-data <- FuelsDuffLitt_data
+data <- FuelsDuffLitt_data %>% 
+  filter(MacroPlot.Purpose %in% c("Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover"))
 query <- "Fuel DL FuelConst" 
 query_message <- "Fuel Constant" 
 values_data <- data$DLFuConSt 
-values_valid <- data$MacroPlot.Purpose 
+values_valid <- "Mixed Conifer"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_FuelConst <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_FuelConst_MixCon <- unique(qaqc(data, query, query_message, values_check))
+```
+
+-   Check that DLFuConSt = PIPO for the appropriate project units: Burnt Corral, Moqui, Picnic, Quarry
+
+```{r}
+# Set parameters 
+data <- FuelsDuffLitt_data %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Moqui", "Picnic", "Quarry"))
+query <- "Fuel DL FuelConst" 
+query_message <- "Fuel Constant" 
+values_data <- data$DLFuConSt 
+values_valid <- "PIPO"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_FuelConst_PIPO <- unique(qaqc(data, query, query_message, values_check))
+```
+
+-   Check that DLFuConSt = PIED for the appropriate project units: Tusayan Pueblo (Thinning)
+
+```{r}
+# Set parameters 
+data <- FuelsDuffLitt_data %>% 
+  filter(MacroPlot.Purpose %in% c("Tusayan Pueblo (Thinning)"))
+query <- "Fuel DL FuelConst" 
+query_message <- "Fuel Constant" 
+values_data <- data$DLFuConSt 
+values_valid <- "PIED"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_FuelConst_PIED <- unique(qaqc(data, query, query_message, values_check))
+```
+
+#### Combine FuelConst Errors
+
+```{r}
+# Combine
+errors_FuelsDuffLitt_FuelConst <- unique(rbind(errors_FuelsDuffLitt_FuelConst_MixCon, errors_FuelsDuffLitt_FuelConst_PIPO, errors_FuelsDuffLitt_FuelConst_PIED))
+
+remove(errors_FuelsDuffLitt_FuelConst_MixCon, errors_FuelsDuffLitt_FuelConst_PIPO, errors_FuelsDuffLitt_FuelConst_PIED)
 ```
 
 ### Fuel DL Hits
 
-[Problem:]{.underline} Extra or missing data points in FMH plots. There should be 4 transects with 10 sample points per transect. 
+[Problem:]{.underline} Extra or missing data points in RAP plots. There should be 1 or 2 transects with 10 sample points per transect. 
 
 [Procedure:]{.underline}
 
--   Group by Macroplot. Calculate number of hits per plot. Check that sum_hits = 40
+-   1 transect project units: Moqui, Picnic, Quarry
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits = 10
 
 ```{r}
 # Filter NA values. Add number of hits and store in new column
 data_temp1 <- FuelsDuffLitt_data %>%
   filter(!is.na(LittDep)) %>%
   filter(!is.na(DuffDep)) %>% 
-  group_by(MacroPlot.Name) %>% 
+  group_by(MacroPlot.Name, Date) %>% 
   dplyr::summarise("sum_hits" = n())
 
 data_temp2 <- FuelsDuffLitt_header %>% 
-  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
-  select(MacroPlot.Name, Date)
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
 
-data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
 data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
 remove(data_temp1, data_temp2)
 
 # Set parameters 
-data <- merge(FuelsDuffLitt_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+data <- merge(FuelsDuffLitt_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T) %>% 
+  filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
 query <- "Fuel DL Hits" 
 query_message <- "Complete Sample Locations"
 values_data <- data$sum_hits
-values_valid <- 40
+values_valid <- 10
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_Hits <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_Hits_10 <- unique(qaqc(data, query, query_message, values_check))
+```
+
+-   2 transect project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits = 20
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- FuelsDuffLitt_data %>%
+  filter(!is.na(LittDep)) %>%
+  filter(!is.na(DuffDep)) %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise("sum_hits" = n())
+
+data_temp2 <- FuelsDuffLitt_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(FuelsDuffLitt_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T) %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
+query <- "Fuel DL Hits" 
+query_message <- "Complete Sample Locations"
+values_data <- data$sum_hits
+values_valid <- 20
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_Hits_20 <- unique(qaqc(data, query, query_message, values_check))
+```
+
+#### Combine Hits Errors
+
+```{r}
+# Combine
+errors_FuelsDuffLitt_Hits <- unique(rbind(errors_FuelsDuffLitt_Hits_10, errors_FuelsDuffLitt_Hits_20))
+
+remove(errors_FuelsDuffLitt_Hits_10, errors_FuelsDuffLitt_Hits_20)
 ```
 
 ### Fuel DL Values
@@ -683,9 +860,9 @@ errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
 # Save to master error list 
 # errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep))
 
-errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_FuelConst, errors_blank,  errors_FuelsDuffLitt_NumTran, errors_blank, errors_FuelsDuffLitt_Hits, errors_blank,  errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
+errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_FuelConst, errors_blank,  errors_FuelsDuffLitt_Header, errors_blank, errors_FuelsDuffLitt_Hits, errors_blank,  errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 
-remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
+remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 ```
 
 ```{r}
@@ -694,8 +871,8 @@ remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_Fuel
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_FMH_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_FMH_FuelsDuffLitt.xlsx"))
+#write.csv(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_RAP_FuelsDuffLitt.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_RAP_FuelsDuffLitt.xlsx"))
 ```
 
 ## FINE FUELS
@@ -706,23 +883,40 @@ It checks for: header info (number of transects, length of transects for One/Ten
 
 ### Fuel Fine Header
 
-[Problem:]{.underline} Incorrect header information entered for FMH plots.
+[Problem:]{.underline} Incorrect header information entered for RAP plots.
 
 [Procedure:]{.underline}
 
--   Check that NumTran = 4
+-   Check that NumTran = 1 for the appropriate project units: Moqui, Picnic, Quarry
 
 ```{r}
 # Set parameters  
-data <- FuelsFine_header
+data <- FuelsFine_header %>% 
+  filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
 query <- "Fuel Fine Header NumTran" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
-values_valid <- 4    
+values_valid <- 1   
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_NumTran <- qaqc(data, query, query_message, values_check)
+errors_FuelsFine_NumTran_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumTran = 2 for the appropriate project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
+
+```{r}
+# Set parameters  
+data <- FuelsFine_header %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
+query <- "Fuel Fine Header NumTran" 
+query_message <- "Number of Transects"  
+values_data <- data$NumTran  
+values_valid <-2   
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_NumTran_2 <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that OneHrTranLen = 6
@@ -770,6 +964,15 @@ values_check <- values_data == values_valid
 errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Header Errors
+
+```{r}
+# Combine
+errors_FuelsFine_Header <- unique(rbind(errors_FuelsFine_NumTran_1, errors_FuelsFine_NumTran_2, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen))
+
+remove(errors_FuelsFine_NumTran_1, errors_FuelsFine_NumTran_2, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen)
+```
+
 ### Fuel Fine FuelConst
 
 [Problem:]{.underline} Incorrect fine woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the MacroPlot Purpose.
@@ -793,7 +996,7 @@ errors_FuelsFine_FuelConst <- unique(qaqc(data, query, query_message, values_che
 
 ### Fuel Fine Hits
 
-[Problem:]{.underline} Extra or missing data points in FMH plots. There should be 4 transects with 1 sample point per transect. 
+[Problem:]{.underline} Extra or missing data points in RAP plots. There should be 4 transects with 1 sample point per transect. 
 
 [Procedure:]{.underline}
 
@@ -948,9 +1151,9 @@ errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
 # Save to master error list 
 # errors_FuelsFine <- unique(rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr))
 
-errors_FuelsFine <- rbind(errors_FuelsFine_FuelConst, errors_blank,  errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_blank, errors_FuelsFine_Hits, errors_blank,  errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+errors_FuelsFine <- rbind(errors_FuelsFine_FuelConst, errors_blank,  errors_FuelsFine_Header, errors_blank, errors_FuelsFine_Hits, errors_blank,  errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
 
-remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+remove(errors_FuelsFine_FuelConst, errors_FuelsFine_Header, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
 ```
 
 ```{r}
@@ -959,8 +1162,8 @@ remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_On
 
 # Save as CSV or XLSX 
 path_errors
-#write.csv(errors_FuelsFine, paste0(path_errors, "errors_GRCA_FMH_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
-#write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_GRCA_FMH_FuelsFine.xlsx"))
+#write.csv(errors_FuelsFine, paste0(path_errors, "errors_GRCA_RAP_FuelsFine.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_GRCA_RAP_FuelsFine.xlsx"))
 ```
 
 # PROTOCOL - POST BURN
@@ -971,7 +1174,7 @@ It checks for: header info (number of transects, length of transects, number of 
 
 ### PBSev Header
 
-[Problem:]{.underline} Incorrect header information entered for FMH plots.
+[Problem:]{.underline} Incorrect header information entered for RAP plots.
 
 [Procedure:]{.underline}
 
@@ -1022,7 +1225,7 @@ errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 
 ### PBSev Hits
 
-[Problem:]{.underline} Extra or missing data points in FMH plots. There should be 4 transects with 10 sample points per transect.
+[Problem:]{.underline} Extra or missing data points in RAP plots. There should be 4 transects with 10 sample points per transect.
 
 [Procedure:]{.underline}
 
@@ -1113,15 +1316,15 @@ kable(errors_PostBurn, "pipe")
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_PostBurn, paste0(path_errors, "errors_GRCA_FMH_PostBurn.xlsx"))
+#write.csv(errors_PostBurn, paste0(path_errors, "errors_GRCA_RAP_PostBurn.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_PostBurn, paste0(path_errors, "errors_GRCA_RAP_PostBurn.xlsx"))
 ```
 
 # PROTOCOL - TREES
 
 ### Trees Header
 
-[Problem:]{.underline} Incorrect header information entered for FMH plots.
+[Problem:]{.underline} Incorrect header information entered for RAP plots.
 
 [Procedure:]{.underline}
 
@@ -2006,7 +2209,7 @@ errors_Trees_LifeForm <- qaqc(data, query, query_message, values_check)
 
 ### Trees Non-Post Severity
 
-[Problem]{.underline}: Scorch height, scorch %, and/or char height are entered in sample events other than immediate post for FMH plots. These values should only be collected at immediate post reads.
+[Problem]{.underline}: Scorch height, scorch %, and/or char height are entered in sample events other than immediate post for RAP plots. These values should only be collected at immediate post reads.
 
 [Procedure:]{.underline}
 
@@ -2070,7 +2273,7 @@ remove(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_Scorc
 
 #### Trees Post Char
 
-[Problem]{.underline}: Char height missing or excessively large for standing trees during the immediate post-fire sample events in FMH plots. Char height entered for trees that are no longer standing.
+[Problem]{.underline}: Char height missing or excessively large for standing trees during the immediate post-fire sample events in RAP plots. Char height entered for trees that are no longer standing.
 
 [Note]{.underline}: Post-burn measurements were not collected on pole-sized trees 1990-2002.
 
@@ -2139,7 +2342,7 @@ errors_Trees_Post_Char_Max <- qaqc(data, query, query_message, values_check)
 
 #### Trees Post ScorchHt
 
-[Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in FMH plots. Scorch height entered for trees that are no longer standing or are broken.
+[Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in RAP plots. Scorch height entered for trees that are no longer standing or are broken.
 
 [Note]{.underline}: Post-burn measurements were not collected on pole-sized trees 1990-2002.
 
@@ -2209,7 +2412,7 @@ errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
 
 #### Trees Post Scorch%
 
-[Problem]{.underline}: Scorch % missing or excessively large for live trees during the immediate post-fire sample events in FMH plots. Scorch % entered incorrectly for trees that are no longer standing.
+[Problem]{.underline}: Scorch % missing or excessively large for live trees during the immediate post-fire sample events in RAP plots. Scorch % entered incorrectly for trees that are no longer standing.
 
 [Note]{.underline}: Post-burn measurements were not collected on pole-sized trees 1990-2002.
 
@@ -2376,8 +2579,8 @@ remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Tree
 
 # Save as CSV or XLSX
 path_errors
-#write.csv(errors_Trees, paste0(path_errors, "errors_GRCA_FMH_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
-#write_xlsx(errors_Trees, paste0(path_errors, "errors_GRCA_FMH_Trees.xlsx"))
+#write.csv(errors_Trees, paste0(path_errors, "errors_GRCA_RAP_Trees.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Trees, paste0(path_errors, "errors_GRCA_RAP_Trees.xlsx"))
 ```
 
 # CROSS PROTOCOL CHECKS
@@ -2462,15 +2665,15 @@ errors_all_cf <- cbind(errors_all, data_temp) %>%
 errors_all <- condformat(errors_all_cf[1:(nrow(errors_all_cf)), 1:8]) %>%
   rule_fill_discrete(columns = 1:7,
                      expression = (errors_all_cf$Post == "FALSE"),
-                     colours = c("TRUE"="#C6E0B4",
+                     colours = c("TRUE"="#8EA9DB",
                                  "FALSE"="#FFC000"),
                      na.value = "#FFFFFF") %>%
   select(!c("Post"))
 
 # Save as CSV or XLSX 
 path_errors
-# write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
-#write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
-# condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
-#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+# write.csv(errors_all, paste0(path_errors, "errors_GRCA_RAP.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_RAP.xlsx"))
+# condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), overwrite_wb = TRUE)
+#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
