@@ -53,7 +53,7 @@ getwd()
 
 # Load in data. Change file path based on user name!
 path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
+path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
 path_errors_name <- "2024 GRCA FMH QAQC Errors"
 ```
 
@@ -396,6 +396,15 @@ values_check <- values_data == values_valid
 errors_Fuels1000_TranLen_S <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Header Errors
+
+```{r}
+# Combine
+errors_Fuels1000_Header <- unique(rbind(errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S))
+
+remove(errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S)
+```
+
 ### Fuel 1000 DecayClass
 
 [Problem:]{.underline} Logs have an entry for decay class that we don’t use.
@@ -444,22 +453,20 @@ errors_Fuels1000_FuelConst <- qaqc(data, query, query_message, values_check)
 
 [Procedure:]{.underline}
 
--   Check for duplication (TRUE/FALSE) and store results in new column
-
--   Check for TRUE values
+-   Check for duplicate logs across Date, MacroPlot.Name, Transect, LogNum, Dia [and]{.underline} DecayCl.
 
 ```{r}
-# Remove Index. Check for duplication (TRUE/FALSE) and store results in new column
+# Check for log duplication and store results in new column
 data_temp <- Fuels1000_data %>%
-  select(!"Index")
+  get_dupes(Date, MacroPlot.Name, Transect, LogNum, Dia, DecayCl)
 
 # Set parameters 
-data <- data_temp %>%
-  mutate("Duplicate" = duplicated(data_temp))
+data <- merge(Fuels1000_data, data_temp, all.x = T)
+data$dupe_count[is.na(data$dupe_count)] <- 0
 query <- "Fuel 1000 LogNo" 
-query_message <- paste0("Log ", data$LogNum, ". ", "Duplicate")
-values_data <- data$Duplicate
-values_valid <- FALSE
+query_message <- paste0("Log ", data$LogNum, ". ", "Transect ", data$Transect, ". ",  "Dia ", data$Dia, ". ",  "DecayCl ", data$DecayCl, ". ", "Duplicates")
+values_data <- data$dupe_count
+values_valid <- 0
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -495,7 +502,7 @@ data <- Fuels1000_data
 query <- "Fuel 1000 Values Slope"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Slope")
 values_data <- data$Slope
-values_valid <- seq(0, 90, by = 1)
+values_valid <- seq(0, 40, by = 1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
@@ -524,25 +531,24 @@ values_check <- values_data %in% values_valid
 errors_Fuels1000_Dia <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Values Errors
+
+```{r}
+# Combine
+errors_Fuels1000_Values <- unique(rbind(errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
+
+remove(errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
+```
+
 ### Fuel 1000 Errors
 
 ```{r}
 # Save to master error list
-# errors_Fuels1000_DecayCl <- unique(errors_Fuels1000_DecayCl)
-# errors_errors_Fuels1000_FuelConst <- unique(errors_Fuels1000_FuelConst)
-# errors_Fuels1000_NumTran <- unique(errors_Fuels1000_NumTran)
-# errors_Fuels1000_TranLen_N <- unique(errors_Fuels1000_TranLen_N)
-# errors_Fuels1000_TranLen_S <- unique(errors_Fuels1000_TranLen_S)
-# errors_Fuels1000_LogNo <- unique(errors_Fuels1000_LogNo)
-# errors_Fuels1000_TransNum <- unique(errors_Fuels1000_TransNum)
-# errors_Fuels1000_Slope <- unique(errors_Fuels1000_Slope)
-# errors_Fuels1000_Dia <- unique(errors_Fuels1000_Dia)
+# errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_LogNo, errors_Fuels1000_Values))
 
-# errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst,errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo,errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia))
+errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_blank, errors_Fuels1000_FuelConst, errors_blank, errors_Fuels1000_Header, errors_blank, errors_Fuels1000_LogNo, errors_blank, errors_Fuels1000_Values)
 
-errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_blank, errors_Fuels1000_FuelConst, errors_blank, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_blank, errors_Fuels1000_LogNo, errors_blank, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
-
-remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_NumTran, errors_Fuels1000_TranLen_N, errors_Fuels1000_TranLen_S, errors_Fuels1000_LogNo, errors_Fuels1000_TransNum, errors_Fuels1000_Slope, errors_Fuels1000_Dia)
+remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_LogNo, errors_Fuels1000_Values)
 ```
 
 ```{r}
@@ -579,7 +585,7 @@ values_valid <- 4
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
+errors_FuelsDuffLitt_Header <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Fuel DL FuelConst
@@ -616,14 +622,14 @@ errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
 data_temp1 <- FuelsDuffLitt_data %>%
   filter(!is.na(LittDep)) %>%
   filter(!is.na(DuffDep)) %>% 
-  group_by(MacroPlot.Name) %>% 
+  group_by(MacroPlot.Name, Date) %>% 
   dplyr::summarise("sum_hits" = n())
 
 data_temp2 <- FuelsDuffLitt_header %>% 
-  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
-  select(MacroPlot.Name, Date)
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
 
-data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
 data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
 remove(data_temp1, data_temp2)
 
@@ -641,9 +647,24 @@ errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
 
 ### Fuel DL Values
 
-[Problem:]{.underline}  Values for litter and duff depth are missing or unreasonable.
+[Problem:]{.underline}  Values for transect, litter, and duff depth are missing or unreasonable.
 
 [Procedure:]{.underline}
+
+-   Check that Transect = 1, 2, 3, or 4
+
+```{r}
+# Set parameters
+data <- FuelsDuffLitt_data
+query <- "Fuel DL Values TransNum"
+query_message <- "Transect Number"
+values_data <- data$Transect
+values_valid <- c(1, 2, 3, 4)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_TransNum <- qaqc(data, query, query_message, values_check)
+```
 
 -   Sort by LittDep. Check that litter depth values are reasonable.
 
@@ -689,15 +710,24 @@ values_check <- values_data <= values_valid
 errors_FuelsDuffLitt_DuffDep <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Values Errors
+
+```{r}
+# Combine
+errors_FuelsDuffLitt_Values <- unique(rbind(errors_FuelsDuffLitt_TransNum, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep))
+
+remove(errors_FuelsDuffLitt_TransNum, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
+```
+
 ### Fuel DL Errors
 
 ```{r}
 # Save to master error list 
-# errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep))
+# errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_Values))
 
-errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_FuelConst, errors_blank,  errors_FuelsDuffLitt_NumTran, errors_blank, errors_FuelsDuffLitt_Hits, errors_blank,  errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
+errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_FuelConst, errors_blank,  errors_FuelsDuffLitt_Header, errors_blank, errors_FuelsDuffLitt_Hits, errors_blank, errors_FuelsDuffLitt_Values)
 
-remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
+remove(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_Values)
 ```
 
 ```{r}
@@ -782,6 +812,15 @@ values_check <- values_data == values_valid
 errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Header Errors
+
+```{r}
+# Combine
+errors_FuelsFine_Header <- unique(rbind(errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen))
+
+remove(errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen)
+```
+
 ### Fuel Fine FuelConst
 
 [Problem:]{.underline} Incorrect fine woody debris fuel constant entered for PIAB or PIED or PIEN or PIPN or PIPO. Fuel constant name should correspond to the MacroPlot Purpose.
@@ -814,14 +853,14 @@ errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Filter NA values. Add number of hits and store in new column
 data_temp1 <- FuelsFine_data %>%
-  group_by(MacroPlot.Name) %>% 
+  group_by(MacroPlot.Name, Date) %>% 
   dplyr::summarize("sum_hits" = n())
 
 data_temp2 <- FuelsFine_header %>% 
-  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
-  select(MacroPlot.Name, Date)
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
 
-data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
 data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
 remove(data_temp1, data_temp2)
 
@@ -881,7 +920,7 @@ data <- FuelsFine_data
 query <- "Fuel Fine Values Slope"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Slope")
 values_data <- data$Slope
-values_valid <- seq(0, 90, by = 1)
+values_valid <- seq(0, 40, by = 1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
@@ -954,15 +993,24 @@ values_check <- values_data %in% values_valid
 errors_FuelsFine_HunHr <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Values Errors
+
+```{r}
+# Combine
+errors_FuelsFine_Values <- unique(rbind(errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr))
+
+remove(errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+```
+
 ### Fuel Fine Errors
 
 ```{r}
 # Save to master error list 
-# errors_FuelsFine <- unique(rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr))
+# errors_FuelsFine <- unique(rbind(errors_FuelsFine_FuelConst, errors_FuelsFine_Header, errors_FuelsFine_Hits, errors_FuelsFine_Values))
 
-errors_FuelsFine <- rbind(errors_FuelsFine_FuelConst, errors_blank,  errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_blank, errors_FuelsFine_Hits, errors_blank,  errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+errors_FuelsFine <- rbind(errors_FuelsFine_FuelConst, errors_blank,  errors_FuelsFine_Header, errors_blank, errors_FuelsFine_Hits, errors_blank,  errors_FuelsFine_Values)
 
-remove(errors_FuelsFine_FuelConst, errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_Hits, errors_FuelsFine_TransNum, errors_FuelsFine_Azimuth, errors_FuelsFine_Slope, errors_FuelsFine_OneHr, errors_FuelsFine_TenHr, errors_FuelsFine_HunHr)
+remove(errors_FuelsFine_FuelConst, errors_FuelsFine_Header, errors_FuelsFine_Hits, errors_FuelsFine_Values)
 ```
 
 ```{r}
@@ -1032,6 +1080,15 @@ values_check <- values_data == values_valid
 errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Header Errors
+
+```{r}
+# Combine
+errors_PostBurn_Header <- unique(rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran))
+
+remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran)
+```
+
 ### PBSev Hits
 
 [Problem:]{.underline} Extra or missing data points in FMH plots. There should be 4 transects with 10 sample points per transect.
@@ -1045,14 +1102,14 @@ errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 data_temp1 <- PostBurn_data %>%
   filter(!is.na(Veg)) %>%
   filter(!is.na(Sub)) %>% 
-  group_by(MacroPlot.Name) %>% 
+  group_by(MacroPlot.Name, Date) %>% 
   dplyr::summarise("sum_hits" = n())
 
 data_temp2 <- PostBurn_header %>% 
-  mutate(MacroPlot.Name = unique(MacroPlot.Name)) %>% 
-  select(MacroPlot.Name, Date)
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
 
-data_temp <- merge(data_temp1, data_temp2, by = "MacroPlot.Name", all = TRUE)
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
 data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
 remove(data_temp1, data_temp2)
 
@@ -1068,18 +1125,33 @@ values_check <- values_data == values_valid
 errors_PostBurn_Hits <- qaqc(data, query, query_message, values_check)
 ```
 
-### PBSev Substrate
+### PBSev Values
 
-[Problem:]{.underline} Incorrect values entered for substrate severity.
+[Problem:]{.underline} Incorrect values entered for transect, substrate, and vegetation.
 
 [Procedure:]{.underline}
+
+-   Check that Transect = 1, 2, 3, or 4
+
+```{r}
+# Set parameters
+data <- PostBurn_data
+query <- "PBSev Values TransNum"
+query_message <- "Transect Number"
+values_data <- data$Transect
+values_valid <- c(1, 2, 3, 4)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_PostBurn_TransNum <- qaqc(data, query, query_message, values_check)
+```
 
 -   Check that Sub = 0, 1, 2, 3, 4, or 5
 
 ```{r}
 # Set parameters
 data <- PostBurn_data
-query <- "PBSev Substrate"
+query <- "PBSev Values Substrate"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Substrate Severity")
 values_data <- data$Sub
 values_valid <- c(0, 1, 2, 3, 4, 5)
@@ -1089,18 +1161,12 @@ values_check <- values_data %in% values_valid
 errors_PostBurn_Sub <- qaqc(data, query, query_message, values_check)
 ```
 
-### PBSev Veg
-
-[Problem:]{.underline} Incorrect values entered for vegetation severity.
-
-[Procedure:]{.underline}
-
 -   Check that Veg = 0, 1, 2, 3, 4, or 5
 
 ```{r}
 # Set parameters
 data <- PostBurn_data
-query <- "PBSev Veg"
+query <- "PBSev Values Veg"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Vegetation Severity")
 values_data <- data$Veg
 values_valid <- c(0, 1, 2, 3, 4, 5)
@@ -1110,18 +1176,29 @@ values_check <- values_data %in% values_valid
 errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
 ```
 
+#### Combine Values Errors
+
+```{r}
+# Combine
+errors_PostBurn_Values <- unique(rbind(errors_PostBurn_TransNum, errors_PostBurn_Sub, errors_PostBurn_Veg))
+
+remove(errors_PostBurn_TransNum, errors_PostBurn_Sub, errors_PostBurn_Veg)
+```
+
 ### PBSev Errors
 
 ```{r}
 # Save to master error list
-# errors_PostBurn <- unique(rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg))
+# errors_PostBurn <- unique(rbind(errors_PostBurn_Header, errors_PostBurn_Hits, errors_PostBurn_Values))
 
-errors_PostBurn <- rbind(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_blank, errors_PostBurn_Hits, errors_blank, errors_PostBurn_Sub, errors_blank, errors_PostBurn_Veg)
+errors_PostBurn <- rbind(errors_PostBurn_Header, errors_blank, errors_PostBurn_Hits, errors_blank, errors_PostBurn_Values)
 
-remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_Hits, errors_PostBurn_Sub, errors_PostBurn_Veg)
+remove(errors_PostBurn_Header, errors_PostBurn_Hits, errors_PostBurn_Values)
+```
 
+```{r}
 # Table of results for quick check
-kable(errors_PostBurn, "pipe")
+#kable(errors_PostBurn, "pipe")
 
 # Save as CSV or XLSX
 path_errors
@@ -1841,12 +1918,12 @@ remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
 
 [Procedure:]{.underline}
 
--   Check for duplicate tree tags across Year, MacroPlot.Name, SubFrac [and]{.underline} TagNo.
+-   Check for duplicate tree tags across Date, MacroPlot.Name, SubFrac [and]{.underline} TagNo.
 
 ```{r}
 # Check for tag duplication and store results in new column
 data_temp <- Trees_data %>% 
-  get_dupes(Year, MacroPlot.Name, SubFrac, TagNo)
+  get_dupes(Date, MacroPlot.Name, SubFrac, TagNo)
 
 # Set parameters 
 data <- merge(Trees_data, data_temp, all.x = T)

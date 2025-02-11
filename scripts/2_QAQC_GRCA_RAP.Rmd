@@ -58,7 +58,7 @@ path_data_N <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/North Rim/2025-
 # South Rim
 path_data_S <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/South Rim/2025-02-10/"
 # Errors
-path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/2024/"
+path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
 path_errors_name <- "GRCA RAP QAQC Errors"
 ```
 
@@ -487,22 +487,20 @@ remove(errors_Fuels1000_FuelConst_MixCon, errors_Fuels1000_FuelConst_PIPO, error
 
 [Procedure:]{.underline}
 
--   Check for duplication (TRUE/FALSE) and store results in new column
-
--   Check for TRUE values
+-   Check for duplicate logs across Date, MacroPlot.Name, Transect, LogNum, Dia [and]{.underline} DecayCl.
 
 ```{r}
-# Remove Index. Check for duplication (TRUE/FALSE) and store results in new column
+# Check for log duplication and store results in new column
 data_temp <- Fuels1000_data %>%
-  select(!"Index")
+  get_dupes(Date, MacroPlot.Name, Transect, LogNum, Dia, DecayCl)
 
 # Set parameters 
-data <- data_temp %>%
-  mutate("Duplicate" = duplicated(data_temp))
+data <- merge(Fuels1000_data, data_temp, all.x = T)
+data$dupe_count[is.na(data$dupe_count)] <- 0
 query <- "Fuel 1000 LogNo" 
-query_message <- paste0("Log ", data$LogNum, ". ", "Duplicate")
-values_data <- data$Duplicate
-values_valid <- FALSE
+query_message <- paste0("Log ", data$LogNum, ". ", "Transect ", data$Transect, ". ",  "Dia ", data$Dia, ". ",  "DecayCl ", data$DecayCl, ". ", "Duplicates")
+values_data <- data$dupe_count
+values_valid <- 0
 values_check <- values_data == values_valid
 
 # Identify errors
@@ -555,7 +553,7 @@ data <- Fuels1000_data
 query <- "Fuel 1000 Values Slope"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Slope")
 values_data <- data$Slope
-values_valid <- seq(0, 90, by = 1)
+values_valid <- seq(0, 40, by = 1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
@@ -1217,7 +1215,7 @@ data <- FuelsFine_data
 query <- "Fuel Fine Values Slope"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Slope")
 values_data <- data$Slope
-values_valid <- seq(0, 90, by = 1)
+values_valid <- seq(0, 40, by = 1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
@@ -1484,7 +1482,7 @@ remove(errors_PostBurn_Hits_10, errors_PostBurn_Hits_20)
 
 ### PBSev Values
 
-[Problem:]{.underline}  Incorrect values entered for transect, substrate, and vegetation.
+[Problem:]{.underline} Incorrect values entered for transect, substrate, and vegetation.
 
 [Procedure:]{.underline}
 
@@ -1572,7 +1570,7 @@ remove(errors_PostBurn_Header, errors_PostBurn_Hits, errors_PostBurn_Values)
 
 ```{r}
 # Table of results for quick check
-kable(errors_PostBurn, "pipe")
+#kable(errors_PostBurn, "pipe")
 
 # Save as CSV or XLSX
 path_errors
@@ -2292,7 +2290,7 @@ remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
 
 [Procedure:]{.underline}
 
--   Check for duplicate tree tags across Year, MacroPlot.Name, SubFrac [and]{.underline} TagNo.
+-   Check for duplicate tree tags across Date, MacroPlot.Name, SubFrac [and]{.underline} TagNo.
 
 ```{r}
 # Check for tag duplication and store results in new column
