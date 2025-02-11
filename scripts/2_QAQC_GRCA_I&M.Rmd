@@ -67,6 +67,7 @@ path_errors_name <- "2021-2023 GRCA I&M QAQC Errors"
 ```{r}
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
+  
   # Check if there is data to QAQC
   if(nrow(data) == 0) {
   # If there is no data, default to "No Error" data frame
@@ -74,6 +75,7 @@ qaqc <- function(data, query, query_message, values_check) {
       mutate(SavedQuery = query)
   # If there is data, perform error check
 } else {
+  
   # Use relevant dataset to look for errors
   errors <- data %>%  
     # Add columns relevant to error checking
@@ -92,6 +94,16 @@ qaqc <- function(data, query, query_message, values_check) {
     filter(!(values_check %>% replace_na(FALSE))) %>%   
     # Select relevant columns to view errors
     select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+  
+  # Next, check if there are duplicate errors
+  errors_temp <- errors %>% 
+    get_dupes(SavedQuery,MacroPlot.Name, Date, Error)
+  # Merge duplicate errors
+  errors <- unique(merge(errors, errors_temp, all = T))
+  # If duplicate errors exist, add number of duplicates to error message
+  errors <- errors %>% 
+    mutate(Error = ifelse(is.na(dupe_count), Error, paste0("(x", dupe_count, ") ", Error))) %>% 
+    select(!"dupe_count")
 }
   
   # Check if there are no errors
@@ -373,7 +385,7 @@ values_valid <- data$MonitoringType
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Fuels1000_FuelConst <- unique(qaqc(data, query, query_message, values_check))
+errors_Fuels1000_FuelConst <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Fuel 1000 LogNo
@@ -528,7 +540,7 @@ values_valid <- data$MonitoringType
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_FuelConst <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Fuel DL Hits
@@ -564,7 +576,7 @@ values_valid <- 30
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_Hits <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_Hits <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Fuel DL Values
@@ -728,7 +740,7 @@ values_valid <- data$MonitoringType
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_FuelConst <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsFine_FuelConst <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Fuel Fine Hits
@@ -762,7 +774,7 @@ values_valid <- 3
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_Hits <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsFine_Hits <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Fuel Fine Values
@@ -993,7 +1005,7 @@ values_valid <- 30
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_PostBurn_Hits <- unique(qaqc(data, query, query_message, values_check))
+errors_PostBurn_Hits <- qaqc(data, query, query_message, values_check)
 ```
 
 ### PBSev Substrate
