@@ -67,6 +67,7 @@ path_errors_name <- "GRCA RAP QAQC Errors"
 ```{r}
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
+  
   # Check if there is data to QAQC
   if(nrow(data) == 0) {
   # If there is no data, default to "No Error" data frame
@@ -74,6 +75,7 @@ qaqc <- function(data, query, query_message, values_check) {
       mutate(SavedQuery = query)
   # If there is data, perform error check
 } else {
+  
   # Use relevant dataset to look for errors
   errors <- data %>%  
     # Add columns relevant to error checking
@@ -92,6 +94,16 @@ qaqc <- function(data, query, query_message, values_check) {
     filter(!(values_check %>% replace_na(FALSE))) %>%   
     # Select relevant columns to view errors
     select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+  
+  # Next, check if there are duplicate errors
+  errors_temp <- errors %>% 
+    get_dupes(SavedQuery,MacroPlot.Name, Date, Error)
+  # Merge duplicate errors
+  errors <- unique(merge(errors, errors_temp, all = T))
+  # If duplicate errors exist, add number of duplicates to error message
+  errors <- errors %>% 
+    mutate(Error = ifelse(is.na(dupe_count), Error, paste0("(x", dupe_count, ") ", Error))) %>% 
+    select(!"dupe_count")
 }
   
   # Check if there are no errors
@@ -425,7 +437,7 @@ values_valid <- "Mixed Conifer"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Fuels1000_FuelConst_MixCon <- unique(qaqc(data, query, query_message, values_check))
+errors_Fuels1000_FuelConst_MixCon <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that CWDFuConSt = PIPO for the appropriate project units: Burnt Corral, Moqui, Picnic, Quarry
@@ -441,7 +453,7 @@ values_valid <- "PIPO"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Fuels1000_FuelConst_PIPO <- unique(qaqc(data, query, query_message, values_check))
+errors_Fuels1000_FuelConst_PIPO <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that CWDFuConSt = PIED for the appropriate project units: Tusayan Pueblo (Thinning)
@@ -457,7 +469,7 @@ values_valid <- "PIED"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Fuels1000_FuelConst_PIED <- unique(qaqc(data, query, query_message, values_check))
+errors_Fuels1000_FuelConst_PIED <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine FuelConst Errors
@@ -673,7 +685,7 @@ values_valid <- "Mixed Conifer"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_FuelConst_MixCon <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_FuelConst_MixCon <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that DLFuConSt = PIPO for the appropriate project units: Burnt Corral, Moqui, Picnic, Quarry
@@ -689,7 +701,7 @@ values_valid <- "PIPO"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_FuelConst_PIPO <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_FuelConst_PIPO <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that DLFuConSt = PIED for the appropriate project units: Tusayan Pueblo (Thinning)
@@ -705,7 +717,7 @@ values_valid <- "PIED"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_FuelConst_PIED <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_FuelConst_PIED <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine FuelConst Errors
@@ -752,7 +764,7 @@ values_valid <- 10
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_Hits_10 <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_Hits_10 <- qaqc(data, query, query_message, values_check)
 ```
 
 -   2 transect project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
@@ -784,7 +796,7 @@ values_valid <- 20
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsDuffLitt_Hits_20 <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsDuffLitt_Hits_20 <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine Hits Errors
@@ -1025,7 +1037,7 @@ values_valid <- "Mixed Conifer"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_FuelConst_MixCon <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsFine_FuelConst_MixCon <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that FWDFuConSt = PIPO for the appropriate project units: Burnt Corral, Moqui, Picnic, Quarry
@@ -1041,7 +1053,7 @@ values_valid <- "PIPO"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_FuelConst_PIPO <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsFine_FuelConst_PIPO <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that CWDFuConSt = PIED for the appropriate project units: Tusayan Pueblo (Thinning)
@@ -1057,7 +1069,7 @@ values_valid <- "PIED"
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_FuelConst_PIED <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsFine_FuelConst_PIED <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine FuelConst Errors
@@ -1102,7 +1114,7 @@ values_valid <- 1
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_Hits_1 <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsFine_Hits_1 <- qaqc(data, query, query_message, values_check)
 ```
 
 -   2 transect project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
@@ -1132,7 +1144,7 @@ values_valid <- 2
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_FuelsFine_Hits_2 <- unique(qaqc(data, query, query_message, values_check))
+errors_FuelsFine_Hits_2 <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine Hits Errors
@@ -1426,7 +1438,7 @@ values_valid <- 10
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_PostBurn_Hits_10 <- unique(qaqc(data, query, query_message, values_check))
+errors_PostBurn_Hits_10 <- qaqc(data, query, query_message, values_check)
 ```
 
 -   2 transect project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
@@ -1458,7 +1470,7 @@ values_valid <- 20
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_PostBurn_Hits_20 <- unique(qaqc(data, query, query_message, values_check))
+errors_PostBurn_Hits_20 <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine Hits Errors
@@ -1646,7 +1658,7 @@ data <- Trees_data %>%
   filter(Status == "L", DBH > 15.0)
 data$LiCrBHt[is.na(data$LiCrBHt)] <- ""
 query <- "Trees CBH Live" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. DBH = overstory. Live Crown Base Height")
+query_message <- paste0("Status = L. DBH = overstory. Live Crown Base Height")
 values_data <- data$LiCrBHt
 values_valid <- ""
 values_check <- values_data != values_valid
@@ -2297,7 +2309,7 @@ values_valid <- 0
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_Trees_Duplicate <- unique(qaqc(data, query, query_message, values_check))
+errors_Trees_Duplicate <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Trees Frac
@@ -2365,7 +2377,7 @@ data <- Trees_data %>%
    filter(!CrwnCl %in% c("DD", "BBD", "CUS"))
 data$Ht[is.na(data$Ht)] <- ""
 query <- "Trees Height Standing" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Standing tree. Height")
+query_message <- paste0("Standing tree. Height")
 values_data <- data$Ht
 values_valid <- ""
 values_check <- values_data != values_valid
@@ -2394,7 +2406,7 @@ max_Ht <- ifelse(length(outliers) == 0, max(data_temp$Ht), min(outliers) - 1)
 data <- Trees_data %>% 
    filter(DBH > 15.0)
 query <- "Trees Height Overstory" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "DBH = overstory. Height")
+query_message <- paste0("DBH = overstory. Height")
 values_data <- data$Ht
 values_valid <- max_Ht
 values_check <- values_data <= values_valid
@@ -2923,5 +2935,5 @@ path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_RAP.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_RAP.xlsx"))
 # condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), overwrite_wb = TRUE)
-#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
