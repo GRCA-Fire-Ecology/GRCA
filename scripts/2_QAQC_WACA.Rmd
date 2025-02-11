@@ -2278,7 +2278,7 @@ errors_all_cf <- cbind(errors_all, data_temp) %>%
 errors_all <- condformat(errors_all_cf[1:(nrow(errors_all_cf)), 1:8]) %>%
   rule_fill_discrete(columns = 1:7,
                      expression = (errors_all_cf$Post == "FALSE"),
-                     colours = c("TRUE"="#C6E0B4",
+                     colours = c("TRUE"="#FCD5B4",
                                  "FALSE"="#FFC000"),
                      na.value = "#FFFFFF") %>%
   select(!c("Post"))
