@@ -127,8 +127,8 @@ errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","
 Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
 FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
 FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
 PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
 ```
 
 ### Clean & Filter Data
@@ -199,28 +199,6 @@ FuelsFine_header <- FuelsFine_all %>%
   filter(!is.na(Visited), Year %in% c(2020))
 ```
 
-Trees
-
-```{r}
-# Clean up data frame
-Trees_all <- Trees_all %>%
-  # Separate Date column into Date and Time columns
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time"))
-
-# Ensure blanks in Visited column are NA
-Trees_all$Visited[Trees_all$Visited==""] <- NA
-  
-# Filter for only data, by year
-Trees_data <- Trees_all %>%
-  filter(is.na(Visited), Year %in% c(2020))
-
-# Filter for only headers, by year
-Trees_header <- Trees_all %>%
-  filter(!is.na(Visited), Year %in% c(2020))
-```
-
 PostBurn
 
 ```{r}
@@ -240,6 +218,28 @@ PostBurn_data <- PostBurn_all %>%
 
 # Filter for only headers, by year
 PostBurn_header <- PostBurn_all %>%
+  filter(!is.na(Visited), Year %in% c(2020))
+```
+
+Trees
+
+```{r}
+# Clean up data frame
+Trees_all <- Trees_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day", "Time"))
+
+# Ensure blanks in Visited column are NA
+Trees_all$Visited[Trees_all$Visited==""] <- NA
+  
+# Filter for only data, by year
+Trees_data <- Trees_all %>%
+  filter(is.na(Visited), Year %in% c(2020))
+
+# Filter for only headers, by year
+Trees_header <- Trees_all %>%
   filter(!is.na(Visited), Year %in% c(2020))
 ```
 

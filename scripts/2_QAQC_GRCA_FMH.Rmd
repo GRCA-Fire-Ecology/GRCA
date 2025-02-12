@@ -127,12 +127,12 @@ errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","
 Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
 FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"), quote = "")
 FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"), quote = "")
-# HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"), quote = "")
-# HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"), quote = "")
-# Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"), quote = "")
-# Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"), quote = "")
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
 PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"), quote = "")
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+# Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"), quote = "")
+# HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"), quote = "")
+# HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"), quote = "")
+# Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"), quote = "")
 ```
 
 ### Clean & Filter Data
@@ -203,25 +203,69 @@ FuelsFine_header <- FuelsFine_all %>%
   filter(!is.na(Visited), Year %in% c(2024))
 ```
 
-HerbsPoints
+PostBurn
+
+```{r}
+# Clean up data frame
+PostBurn_all <- PostBurn_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day", "Time"))
+
+# Ensure blanks in Visited column are NA
+PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
+
+# Filter for only data
+PostBurn_data <- PostBurn_all %>%
+  filter(is.na(Visited), Year %in% c(2024))
+
+# Filter for only headers
+PostBurn_header <- PostBurn_all %>%
+  filter(!is.na(Visited), Year %in% c(2024))
+```
+
+Trees
+
+```{r}
+# Clean up data frame 
+Trees_all <- Trees_all %>%
+  # Separate Date column into Date and Time columns   
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day", "Time"))
+
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA  
+
+# Filter for only data 
+Trees_data <- Trees_all %>%   
+  filter(is.na(Visited), Year %in% c(2024))  
+
+# Filter for only headers 
+Trees_header <- Trees_all %>%   
+  filter(!is.na(Visited), Year %in% c(2024))
+```
+
+Seedlings
 
 ```{r}
 # # Clean up data frame 
-# HerbsPoints_all <- HerbsPoints_all %>%  
+# Seedlings_all <- Seedlings_all %>%
 #   # Separate Date column into Date and Time columns   
 #   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
 #   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
 #   select(!c("Month", "Day", "Time"))
 # 
 # # Ensure blanks in Visited column are NA 
-# HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
+# Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA 
 # 
 # # Filter for only data 
-# HerbsPoints_data <- HerbsPoints_all %>%   
+# Seedlings_data <- Seedlings_all %>%   
 #   filter(is.na(Visited), Year %in% c(2024))  
 # 
 # # Filter for only headers 
-# HerbsPoints_header <- HerbsPoints_all %>%   
+# Seedlings_header <- Seedlings_all %>%   
 #   filter(!is.na(Visited), Year %in% c(2024))
 ```
 
@@ -247,6 +291,28 @@ HerbsObs
 #   filter(!is.na(Visited), Year %in% c(2024))
 ```
 
+HerbsPoints
+
+```{r}
+# # Clean up data frame 
+# HerbsPoints_all <- HerbsPoints_all %>%  
+#   # Separate Date column into Date and Time columns   
+#   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
+#   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+#   select(!c("Month", "Day", "Time"))
+# 
+# # Ensure blanks in Visited column are NA 
+# HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
+# 
+# # Filter for only data 
+# HerbsPoints_data <- HerbsPoints_all %>%   
+#   filter(is.na(Visited), Year %in% c(2024))  
+# 
+# # Filter for only headers 
+# HerbsPoints_header <- HerbsPoints_all %>%   
+#   filter(!is.na(Visited), Year %in% c(2024))
+```
+
 Shrubs
 
 ```{r}
@@ -267,72 +333,6 @@ Shrubs
 # # Filter for only headers 
 # Shrubs_header <- Shrubs_all %>%   
 #   filter(!is.na(Visited), Year %in% c(2024))
-```
-
-Seedlings
-
-```{r}
-# # Clean up data frame 
-# Seedlings_all <- Seedlings_all %>%
-#   # Separate Date column into Date and Time columns   
-#   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-#   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-#   select(!c("Month", "Day", "Time"))
-# 
-# # Ensure blanks in Visited column are NA 
-# Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA 
-# 
-# # Filter for only data 
-# Seedlings_data <- Seedlings_all %>%   
-#   filter(is.na(Visited), Year %in% c(2024))  
-# 
-# # Filter for only headers 
-# Seedlings_header <- Seedlings_all %>%   
-#   filter(!is.na(Visited), Year %in% c(2024))
-```
-
-Trees
-
-```{r}
-# Clean up data frame 
-Trees_all <- Trees_all %>%
-  # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time"))
-
-# Ensure blanks in Visited column are NA 
-Trees_all$Visited[Trees_all$Visited==""] <- NA  
-
-# Filter for only data 
-Trees_data <- Trees_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
-
-# Filter for only headers 
-Trees_header <- Trees_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
-```
-
-PostBurn
-
-```{r}
-# Clean up data frame
-PostBurn_all <- PostBurn_all %>%
-  # Separate Date column into Date and Time columns
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time"))
-
-# Ensure blanks in Visited column are NA
-PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
-
-# Filter for only data
-PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
-
-# Filter for only headers
-PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 # PROTOCOL - SURFACE FUELS
