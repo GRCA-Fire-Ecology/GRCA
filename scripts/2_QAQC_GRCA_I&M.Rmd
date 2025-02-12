@@ -2107,14 +2107,15 @@ values_check <- values_data == values_valid
 errors_Trees_Post_Scorch_DD <- qaqc(data, query, query_message, values_check)
 ```
 
--   Standing Dead Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter to exclude DD crown classes (DD, BBD, and CUS). Filter for Status = D. Check that ScorchHt = blank.
+-   Standing Dead Trees. Filter to include all POST reads (01Post, 02Post, etc). Filter to exclude DD crown classes (DD, BBD, and CUS). Filter for Status = D. Check that ScorchHt = blank. If ScorchHt is not blank, check that ScorchHt = Ht (100% scorch)
 
 ```{r}
 # Set parameters 
 data <- Trees_data %>% 
   filter(Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"),
          !CrwnCl %in% c("DD", "BBD", "CUS"),
-         Status == "D")
+         Status == "D",
+         ScorchHt != Ht)
 data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Post Scorch Dead"
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = D. Standing tree. Scorch Height")
