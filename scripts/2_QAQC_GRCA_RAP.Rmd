@@ -329,11 +329,11 @@ PostBurn_header <- PostBurn_all %>%
 
 # PROTOCOL - SURFACE FUELS
 
-## 1000HR CWD
+## 1000HR (CWD)
 
-This code conducts quality control checks on surface fuels data within the surface fuels coarse woody debris (1000-hr) data set.
+This code conducts quality control checks on coarse woody debris (CWD) surface fuels data within the "Surface Fuels - 1000Hr" data set.
 
-It checks for: header info (number of transects, length of transects), decay class values, fuel constants, duplicate values, transect numbers, reasonable slope numbers, reasonable diameter values.
+It checks for errors in: headers, decay class values, fuel constants, duplicates, transect numbers, slope, and diameter.
 
 ### Fuel 1000 Header
 
@@ -611,11 +611,11 @@ path_errors
 #write_xlsx(errors_Fuels1000, paste0(path_errors, "errors_GRCA_RAP_Fuels1000.xlsx"))
 ```
 
-## DUFF LITTER
+## DUFF LITTER (DL)
 
-This code conducts quality control checks on surface fuels data within the surface fuels duff litter data set.
+This code conducts quality control checks on duff litter (DL) surface fuels data within the "Surface Fuels - Duff_Litter" data set.
 
-It checks for: number of transects, fuel constants, number of points sampled, reasonable litter values, reasonable duff values.
+It checks for errors in: headers, fuel constants, number of points sampled, litter values, and duff values.
 
 ### Fuel DL Header
 
@@ -918,11 +918,11 @@ path_errors
 #write_xlsx(errors_FuelsDuffLitt, paste0(path_errors, "errors_GRCA_RAP_FuelsDuffLitt.xlsx"))
 ```
 
-## FINE FUELS
+## FINE FUELS (FWD)
 
-This code conducts quality control checks on surface fuels data within the surface fuels fine (FWD) data set.
+This code conducts quality control checks on fine woody debris (FWD) surface fuels data within the "Surface Fuels - Fine" data set.
 
-It checks for: header info (number of transects, length of transects for One/Ten/Hundred Hour), fuel constants, transect numbers, reasonable azimuth numbers, reasonable slope numbers, reasonable One/Ten/Hundred Hour count values.
+It checks for errors in: headers, fuel constants, transect numbers, azimuth, slope, and One/Ten/Hundred Hour count values.
 
 ### Fuel Fine Header
 
@@ -1318,11 +1318,23 @@ path_errors
 #write_xlsx(errors_FuelsFine, paste0(path_errors, "errors_GRCA_RAP_FuelsFine.xlsx"))
 ```
 
+# PROTOCOL - HERBS OBSERVED
+
+This code conducts quality control checks on observed herbaceous data within the "Cover - Species Composition (metric)" data set.
+
+It checks for errors in: cover values and status.
+
+# PROTOCOL - SEEDLINGS
+
+This code conducts quality control checks on seedling data within the "Density - Quadrats (metric)" data set.
+
+It checks for errors in: headers, sub plot fractions, seedling counts, heights, status, and life form.
+
 # PROTOCOL - POST BURN
 
-This code conducts quality control checks on post burn data within the post burn severity data set.
+This code conducts quality control checks on post burn data within the "Post Burn Severity" data set.
 
-It checks for: header info (number of transects, length of transects, number of points per transect), substrate and vegetation values.
+It checks for errors in: headers, substrate, and vegetation values.
 
 ### PBSev Header
 
@@ -1579,6 +1591,10 @@ path_errors
 ```
 
 # PROTOCOL - TREES
+
+This code conducts quality control checks on tree data within the "Trees - Individuals (metric)" data set.
+
+It checks for errors in: headers, crown base height, crown class, damage codes, DBH, dead and down, duplicates, subplot fractions, height, life form, non-post severity, post severity, status, and user variables.
 
 ### Trees Header
 
