@@ -2857,6 +2857,159 @@ This code conducts quality control checks on observed herbaceous data within the
 
 It checks for errors in: cover values and status.
 
+## HerbsObs Cover
+
+[Problem:]{.underline} Species do not have an entry for cover or have an entry that we don’t use in RAP plots.
+
+[Procedure:]{.underline}
+
+-   Filter for the appropriate project units (Tusayan Pueblo (Thinning) excluded).
+
+-   Check that Cover = 2.5, 15, 37.5, 62.5, 85, or 97.5
+
+```{r}
+# Set parameters
+data <- HerbsObs_data %>% 
+  filter(MacroPlot.Purpose != "Tusayan Pueblo (Thinning)")
+query <- "Cvr SpComp Cvr"
+query_message <- paste0("Cover")
+values_data <- data$Cover
+values_valid <- c(2.5, 15, 37.5, 62.5, 85, 97.5)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsObs_Cover_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Filter for the appropriate project units (Tusayan Pueblo (Thinning) only).
+
+-   Check that Cover = 0, 2.5, 15, 37.5, 62.5, 85, or 97.5
+
+```{r}
+# Set parameters
+data <- HerbsObs_data %>% 
+  filter(MacroPlot.Purpose == "Tusayan Pueblo (Thinning)")
+query <- "Cvr SpComp Cvr"
+query_message <- paste0("Cover")
+values_data <- data$Cover
+values_valid <- c(0, 2.5, 15, 37.5, 62.5, 85, 97.5)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsObs_Cover_2 <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Cover Errors
+
+```{r}
+# Combine
+errors_HerbsObs_Cover <- unique(rbind(errors_HerbsObs_Cover_1, errors_HerbsObs_Cover_2))
+
+remove(errors_HerbsObs_Cover_1, errors_HerbsObs_Cover_2)
+```
+
+## HerbsObs Species
+
+[Problem:]{.underline} Species entered in RAP plots that shouldn’t be documented.
+
+[Procedure:]{.underline}
+
+-   Filter for the appropriate project units (Tusayan Pueblo (Thinning) excluded). Filter to exclude generic species codes (e.g. GXXX, BRXX), HERBS, and SHRUBS.
+
+-   Check that Native Species = False
+
+```{r}
+data_temp <- as.data.frame(grepl("XX", HerbsObs_data$Species.Symbol, fixed = TRUE))
+names(data_temp)[1] <- "GenericSpecies"
+
+# Set parameters
+data <- cbind(HerbsObs_data, data_temp) %>% 
+  filter(MacroPlot.Purpose != "Tusayan Pueblo (Thinning)",
+         GenericSpecies != TRUE,
+         !Species.Symbol %in% c("HERBS", "SHRUBS"))
+query <- "Cvr SpComp Species"
+query_message <- paste0("Native Species")
+values_data <- data$Native.Species
+values_valid <- "False"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsObs_Species_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   [Note:]{.underline} Multiple native species were intentionally assessed for the Tusayan Pueblo (Thinning) project.
+
+-   Filter for the appropriate project units (Tusayan Pueblo (Thinning) only). Filter to exclude generic species codes (e.g. GXXX, BRXX), HERBS, and SHRUBS. Filter to exclue native species which were intentionally assessed: ARTR, CELE, PUST, and QUGA.
+
+-   Check that Native Species = False
+
+```{r}
+data_temp <- as.data.frame(grepl("XX", HerbsObs_data$Species.Symbol, fixed = TRUE))
+names(data_temp)[1] <- "GenericSpecies"
+
+# Set parameters
+data <- cbind(HerbsObs_data, data_temp) %>% 
+  filter(MacroPlot.Purpose == "Tusayan Pueblo (Thinning)",
+         GenericSpecies != TRUE,
+         !Species.Symbol %in% c("HERBS", "SHRUBS", "ARTR", "CELE", "PUST", "QUGA"))
+query <- "Cvr SpComp Species"
+query_message <- paste0("Native Species")
+values_data <- data$Native.Species
+values_valid <- "False"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsObs_Species_2 <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Species Errors
+
+```{r}
+# Combine
+errors_HerbsObs_Species <- unique(rbind(errors_HerbsObs_Species_1, errors_HerbsObs_Species_2))
+
+remove(errors_HerbsObs_Species_1, errors_HerbsObs_Species_2)
+```
+
+## HerbsObs Status
+
+[Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. Check that Status = L
+
+```{r}
+# Set parameters 
+data <- HerbsObs_data
+query <- "Cvr SpComp Status" 
+query_message <- paste0("Species ", data$Species.Symbol, ". ", "Status")
+values_data <- data$Status
+values_valid <- c("L")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsObs_Status <- qaqc(data, query, query_message, values_check)
+```
+
+## HerbsObs Errors
+
+```{r}
+errors_HerbsObs <- rbind(errors_HerbsObs_Cover, errors_blank, errors_HerbsObs_Species, errors_blank, errors_HerbsObs_Status)
+
+remove(errors_HerbsObs_Cover, errors_HerbsObs_Species, errors_HerbsObs_Status)
+```
+
+```{r}
+# Table of results for quick check
+#kable(errors_HerbsObs, "pipe")
+
+# Save as CSV or XLSX
+path_errors
+#write.csv(errors_HerbsObs, paste0(path_errors, "errors_GRCA_RAP_HerbsObs.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_HerbsObs, paste0(path_errors, "errors_GRCA_RAP_HerbsObs.xlsx"))
+```
+
 # CROSS PROTOCOL CHECKS
 
 ## 1000HR VS FINE SLOPE
