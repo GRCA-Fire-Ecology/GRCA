@@ -2776,17 +2776,17 @@ errors_Trees_Status <- qaqc(data, query, query_message, values_check)
 -   Check that UV(1, 2, [or]{.underline} 3) is blank for all plots
 
 ```{r}
-# Set parameters 
-data <- Trees_data
-data$UV1[is.na(data$UV1)] <- ""
-query <- "Trees UV1" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "User Variable 1")
-values_data <- data$UV1
-values_valid <- ""
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_Trees_UV1 <- qaqc(data, query, query_message, values_check)
+# # Set parameters 
+# data <- Trees_data
+# data$UV1[is.na(data$UV1)] <- ""
+# query <- "Trees UV1" 
+# query_message <- paste0("Tag ", data$TagNo, ". ", "User Variable 1")
+# values_data <- data$UV1
+# values_valid <- ""
+# values_check <- values_data == values_valid
+# 
+# # Identify errors
+# errors_Trees_UV1 <- qaqc(data, query, query_message, values_check)
 ```
 
 ```{r}
@@ -2821,17 +2821,17 @@ errors_Trees_UV3 <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Combine
-errors_Trees_UV <- unique(rbind(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3))
+errors_Trees_UV <- unique(rbind(errors_Trees_UV2, errors_Trees_UV3))
 
-remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
+remove(errors_Trees_UV2, errors_Trees_UV3)
 ```
 
-## Trees Errors
+### Trees Errors
 
 ```{r}
 # errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
 
-errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank) #errors_Trees_UV)
+errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
 
 remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
 ```
@@ -2850,7 +2850,298 @@ path_errors
 
 This code conducts quality control checks on seedling data within the "Density - Quadrats (metric)" data set.
 
-It checks for errors in: headers, sub plot fractions, seedling counts, heights, status, and life form.
+It checks for errors in: headers, seedling counts, subplot fractions, heights, status, and life form.
+
+### Seedlings Header
+
+[Problem:]{.underline} Incorrect header information entered for RAP plots.
+
+[Procedure:]{.underline}
+
+-   Check that Area = 314
+
+```{r}
+# Set parameters 
+data <- Seedlings_header
+query <- "Dens Quad Header Area" 
+query_message <- paste0("Area")
+values_data <- data$Area
+values_valid <- 314
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_Area <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that QuadWid = 314
+
+```{r}
+# Set parameters 
+data <- Seedlings_header
+query <- "Dens Quad Header QuadWid" 
+query_message <- paste0("Quad Width")
+values_data <- data$QuadWid
+values_valid <- 314
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_QuadWid <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that QuadLen = 1
+
+```{r}
+# Set parameters 
+data <- Seedlings_header
+query <- "Dens Quad Header QuadLen" 
+query_message <- paste0("Quad Length")
+values_data <- data$QuadLen
+values_valid <- 1
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_QuadLen <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumTran = 1
+
+```{r}
+# Set parameters 
+data <- Seedlings_header
+query <- "Dens Quad Header NumTran" 
+query_message <- paste0("Number of Transects")
+values_data <- data$NumTran
+values_valid <- 1
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_NumTran <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumQuadTran = 1
+
+```{r}
+# Set parameters 
+data <- Seedlings_header
+query <- "Dens Quad Header NumQuadTran" 
+query_message <- paste0("Number Quad Transects")
+values_data <- data$NumQuadTran
+values_valid <- 1
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_NumQuadTran <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Header Errors
+
+```{r}
+errors_Seedlings_Header <- unique(rbind(errors_Seedlings_Area, errors_Seedlings_QuadWid, errors_Seedlings_QuadLen, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran))
+
+remove(errors_Seedlings_Area, errors_Seedlings_QuadWid, errors_Seedlings_QuadLen, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran)
+```
+
+### Seedlings Count
+
+[Problem:]{.underline} Seedling count values missing, zero, or excessively high (\>100 is possible, but should be verified).
+
+[Procedure:]{.underline}
+
+-   Check that Count is not blank or 0
+
+```{r}
+# Set parameters 
+data <- Seedlings_data
+query <- "Dens Quad Count Min" 
+query_message <- paste0("Count")
+values_data <- data$Count
+values_valid <- 1
+values_check <- values_data >= values_valid
+
+# Identify errors
+errors_Seedlings_Count_Min <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Count is not excessively high
+
+```{r}
+# Perform Rosner's Test for outliers using all values
+data_temp <- Seedlings_all %>%
+  filter(!is.na(Count))
+data_outlier <- rosnerTest(data_temp$Count)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
+max_SeedCount <- ifelse(length(outliers) == 0, max(data_temp$Count), min(outliers) - 1)
+
+# Set parameters 
+data <- Seedlings_data
+query <- "Dens Quad Count Max" 
+query_message <- paste0("Count")
+values_data <- data$Count
+values_valid <- max_SeedCount
+values_check <- values_data <= values_valid
+
+# Identify errors
+errors_Seedlings_Count_Max <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Count Errors
+
+```{r}
+errors_Seedlings_Count <- unique(rbind(errors_Seedlings_Count_Min, errors_Seedlings_Count_Max))
+
+remove(errors_Seedlings_Count_Min, errors_Seedlings_Count_Max)
+```
+
+### Seedlings Frac
+
+[Problem:]{.underline} Incorrect subplot fraction entered or subplot fraction missing for RAP plots.
+
+[Procedure:]{.underline}
+
+-   Check that SubFrac = 1 or 0.25
+
+```{r}
+# Set parameters 
+data <- Seedlings_data
+query <- "Dens Quad Frac" 
+query_message <- paste0("Subplot Fraction")
+values_data <- data$SubFrac
+values_valid <- c(0.25, 1)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Seedlings_Frac <- qaqc(data, query, query_message, values_check)
+```
+
+### Seedlings Height
+
+[Problem:]{.underline} Incorrect values entered for height or height values missing.
+
+[Note:]{.underline} Height will be blank for all species in the following RAP projects: Fawn Spring, Hwy 67, Spring Canyon, Thompson, Tipover
+
+[Note:]{.underline} Disregard entries with blank height values when “species symbol” and “height” are also blank. Trees with no height value are pole trees instead of seedlings
+
+[Procedure:]{.underline}
+
+-   Sort by Height. Check that Height = 0.15, 0.3, 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10
+
+```{r}
+# Set parameters 
+data <- Seedlings_data %>% 
+  filter(!MacroPlot.Purpose %in% c("Fawn Spring", "Hwy 67", "Spring Canyon", "Thompson", "Tipover"))
+query <- "Dens Quad Height" 
+query_message <- paste0("SubFrac = ", data$SubFrac, ". ", "Species = ", data$Species.Symbol, ". ", "Height")
+values_data <- data$Height
+values_valid <- c(0.15, 0.3, 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Seedlings_Height <- qaqc(data, query, query_message, values_check)
+```
+
+### Seedlings Status
+
+[Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
+
+[Procedure:]{.underline}
+
+-   Sort by Status. Check that Status = L
+
+```{r}
+# Set parameters 
+data <- Seedlings_data
+query <- "Dens Quad Status" 
+query_message <- paste0("Species ", data$Species.Symbol, ". ", "Status")
+values_data <- data$Status
+values_valid <- c("L")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Seedlings_Status <- qaqc(data, query, query_message, values_check)
+```
+
+### Seedlings Life Form
+
+[Problem:]{.underline} Species entered that are not trees.
+
+[Procedure:]{.underline}
+
+-   Check that Preferred Lifeform = Tree
+
+```{r}
+# Set parameters 
+data <- Seedlings_data
+query <- "Dens Quad Tree" 
+query_message <- paste0("Life Form")
+values_data <- data$Preferred_Lifeform
+values_valid <- "Tree"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_LifeForm <- qaqc(data, query, query_message, values_check)
+```
+
+### Seedlings Values
+
+[Problem:]{.underline} Incorrect values entered for transect and quadrat.
+
+[Procedure:]{.underline}
+
+-   Check that Transect = 1
+
+```{r}
+# Set parameters 
+data <- Seedlings_data
+query <- "Dens Quad Values Transect" 
+query_message <- paste0("Transect")
+values_data <- data$Transect
+values_valid <- 1
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_Transect <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Quadrat = 1
+
+```{r}
+# Set parameters 
+data <- Seedlings_data
+query <- "Dens Quad Values Quadrat" 
+query_message <- paste0("Quadrat")
+values_data <- data$Quadrat
+values_valid <- 1
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_Quadrat <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Values Errors
+
+```{r}
+errors_Seedlings_Values <- unique(rbind(errors_Seedlings_Transect, errors_Seedlings_Quadrat))
+
+remove(errors_Seedlings_Transect, errors_Seedlings_Quadrat)
+```
+
+### Seedlings Errors
+
+```{r}
+errors_Seedlings <- rbind(errors_Seedlings_Header, errors_blank, errors_Seedlings_Count, errors_blank, errors_Seedlings_Frac, errors_blank, errors_Seedlings_Height, errors_blank, errors_Seedlings_Status, errors_blank, errors_Seedlings_LifeForm, errors_blank, errors_Seedlings_Values)
+
+remove(errors_Seedlings_Header, errors_Seedlings_Count, errors_Seedlings_Frac, errors_Seedlings_Height, errors_Seedlings_Status, errors_Seedlings_LifeForm, errors_Seedlings_Values)
+```
+
+```{r}
+# Table of results for quick check
+#kable(errors_Seedlings, "pipe")
+
+# Save as CSV or XLSX
+path_errors
+#write.csv(errors_Seedlings, paste0(path_errors, "errors_GRCA_RAP_Seedlings.csv"), quote=FALSE, row.names = FALSE, na = "")
+#write_xlsx(errors_Seedlings, paste0(path_errors, "errors_GRCA_RAP_Seedlings.xlsx"))
+```
 
 # PROTOCOL - HERBS OBSERVED
 
@@ -2858,7 +3149,7 @@ This code conducts quality control checks on observed herbaceous data within the
 
 It checks for errors in: cover, species, and status.
 
-## HerbsObs Cover
+### HerbsObs Cover
 
 [Problem:]{.underline} Species do not have an entry for cover or have an entry that we don’t use in RAP plots.
 
@@ -2909,7 +3200,7 @@ errors_HerbsObs_Cover <- unique(rbind(errors_HerbsObs_Cover_1, errors_HerbsObs_C
 remove(errors_HerbsObs_Cover_1, errors_HerbsObs_Cover_2)
 ```
 
-## HerbsObs Species
+### HerbsObs Species
 
 [Problem:]{.underline} Species entered in RAP plots that shouldn’t be documented.
 
@@ -2972,7 +3263,7 @@ errors_HerbsObs_Species <- unique(rbind(errors_HerbsObs_Species_1, errors_HerbsO
 remove(errors_HerbsObs_Species_1, errors_HerbsObs_Species_2)
 ```
 
-## HerbsObs Status
+### HerbsObs Status
 
 [Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
 
@@ -2993,7 +3284,7 @@ values_check <- values_data %in% values_valid
 errors_HerbsObs_Status <- qaqc(data, query, query_message, values_check)
 ```
 
-## HerbsObs Errors
+### HerbsObs Errors
 
 ```{r}
 errors_HerbsObs <- rbind(errors_HerbsObs_Cover, errors_blank, errors_HerbsObs_Species, errors_blank, errors_HerbsObs_Status)
@@ -3072,7 +3363,7 @@ This code conducts quality control checks on slope data in the surface fuels coa
 # Save to master error list 
 # errors_all <- unique(rbind(errors_Fuels1000, errors_FuelsDuffLitt, errors_FuelsFine, errors_Trees))
 
-errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_FuelsFine, errors_blank, errors_PostBurn, errors_blank, errors_Trees)
+errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_FuelsFine, errors_blank, errors_PostBurn, errors_blank, errors_Trees, errors_blank, errors_Seedlings, errors_blank, errors_HerbsObs)
 
 # errors_CrossProtocol <- unique(rbind(errors_Fuels_slope))
 # 
