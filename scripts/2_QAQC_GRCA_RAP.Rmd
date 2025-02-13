@@ -397,6 +397,40 @@ errors_Fuels1000_Header <- unique(rbind(errors_Fuels1000_NumTran_1, errors_Fuels
 remove(errors_Fuels1000_NumTran_1, errors_Fuels1000_NumTran_2, errors_Fuels1000_TranLen)
 ```
 
+### Fuel 1000 Hits
+
+[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no course woody debris should be verified.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- Fuels1000_data %>%
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarize("sum_hits" = n())
+
+data_temp2 <- Fuels1000_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(Fuels1000_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "Fuel 1000 Hits" 
+query_message <- "CWD" 
+values_data <- data$sum_hits
+values_valid <- 0
+values_check <- values_data > values_valid
+
+# Identify errors
+errors_Fuels1000_Hits <- qaqc(data, query, query_message, values_check)
+```
+
 ### Fuel 1000 DecayClass
 
 [Problem:]{.underline} Logs have an entry for decay class that we don’t use.
@@ -594,11 +628,11 @@ remove(errors_Fuels1000_TransNum_1, errors_Fuels1000_TransNum_2, errors_Fuels100
 ### Fuel 1000 Errors
 
 ```{r}
-# errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_LogNo, errors_Fuels1000_Values))
+# errors_Fuels1000 <- unique(rbind(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_Hits, errors_Fuels1000_LogNo, errors_Fuels1000_Values))
 
-errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_blank, errors_Fuels1000_FuelConst, errors_blank, errors_Fuels1000_Header, errors_blank, errors_Fuels1000_LogNo, errors_blank, errors_Fuels1000_Values)
+errors_Fuels1000 <- rbind(errors_Fuels1000_DecayCl, errors_blank, errors_Fuels1000_FuelConst, errors_blank, errors_Fuels1000_Header, errors_blank, errors_Fuels1000_Hits, errors_blank, errors_Fuels1000_LogNo, errors_blank, errors_Fuels1000_Values)
 
-remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_LogNo, errors_Fuels1000_Values)
+remove(errors_Fuels1000_DecayCl, errors_Fuels1000_FuelConst, errors_Fuels1000_Header, errors_Fuels1000_Hits, errors_Fuels1000_LogNo, errors_Fuels1000_Values)
 ```
 
 ```{r}
@@ -901,7 +935,7 @@ remove(errors_FuelsDuffLitt_TransNum_1, errors_FuelsDuffLitt_TransNum_2, errors_
 
 ```{r}
 # Save to master error list 
-# errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_Values))
+# errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_Hits, errors_FuelsDuffLitt_Values))
 
 errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_FuelConst, errors_blank,  errors_FuelsDuffLitt_Header, errors_blank, errors_FuelsDuffLitt_Hits, errors_blank, errors_FuelsDuffLitt_Values)
 
@@ -1642,6 +1676,40 @@ errors_Trees_BrkPntDia <- qaqc(data, query, query_message, values_check)
 errors_Trees_Header <- unique(rbind(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia))
 
 remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia)
+```
+
+### Trees Hits
+
+[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no trees should be verified.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- Trees_data %>%
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarize("sum_hits" = n())
+
+data_temp2 <- Trees_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(Trees_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "Trees Hits" 
+query_message <- "Trees" 
+values_data <- data$sum_hits
+values_valid <- 0
+values_check <- values_data > values_valid
+
+# Identify errors
+errors_Trees_Hits <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Trees CBH
@@ -2829,11 +2897,11 @@ remove(errors_Trees_UV2, errors_Trees_UV3)
 ### Trees Errors
 
 ```{r}
-# errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
+# errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_Hits, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
 
-errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
+errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_Hits, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
 
-remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
+remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_Hits, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
 ```
 
 ```{r}
@@ -2939,6 +3007,40 @@ errors_Seedlings_NumQuadTran <- qaqc(data, query, query_message, values_check)
 errors_Seedlings_Header <- unique(rbind(errors_Seedlings_Area, errors_Seedlings_QuadWid, errors_Seedlings_QuadLen, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran))
 
 remove(errors_Seedlings_Area, errors_Seedlings_QuadWid, errors_Seedlings_QuadLen, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran)
+```
+
+### Seedlings Hits
+
+[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no seedlings should be verified.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- Seedlings_data %>%
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarize("sum_hits" = n())
+
+data_temp2 <- Seedlings_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(Seedlings_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "Seedlings Hits" 
+query_message <- "Seedlings" 
+values_data <- data$sum_hits
+values_valid <- 0
+values_check <- values_data > values_valid
+
+# Identify errors
+errors_Seedlings_Hits <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Seedlings Count
@@ -3128,9 +3230,9 @@ remove(errors_Seedlings_Transect, errors_Seedlings_Quadrat)
 ### Seedlings Errors
 
 ```{r}
-errors_Seedlings <- rbind(errors_Seedlings_Header, errors_blank, errors_Seedlings_Count, errors_blank, errors_Seedlings_Frac, errors_blank, errors_Seedlings_Height, errors_blank, errors_Seedlings_Status, errors_blank, errors_Seedlings_LifeForm, errors_blank, errors_Seedlings_Values)
+errors_Seedlings <- rbind(errors_Seedlings_Count, errors_blank, errors_Seedlings_Frac, errors_blank, errors_Seedlings_Header, errors_blank, errors_Seedlings_Height, errors_blank, errors_Seedlings_Hits, errors_blank, errors_Seedlings_Status, errors_blank, errors_Seedlings_LifeForm, errors_blank, errors_Seedlings_Values)
 
-remove(errors_Seedlings_Header, errors_Seedlings_Count, errors_Seedlings_Frac, errors_Seedlings_Height, errors_Seedlings_Status, errors_Seedlings_LifeForm, errors_Seedlings_Values)
+remove(errors_Seedlings_Count, errors_Seedlings_Frac, errors_Seedlings_Header, errors_Seedlings_Height, errors_Seedlings_Hits, errors_Seedlings_Status, errors_Seedlings_LifeForm, errors_Seedlings_Values)
 ```
 
 ```{r}
@@ -3148,6 +3250,40 @@ path_errors
 This code conducts quality control checks on observed herbaceous data within the "Cover - Species Composition (metric)" data set.
 
 It checks for errors in: cover, species, and status.
+
+### HerbsObs Hits
+
+[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no observed herbs should be verified.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- HerbsObs_data %>%
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarize("sum_hits" = n())
+
+data_temp2 <- HerbsObs_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(HerbsObs_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "Cvr SpComp Hits" 
+query_message <- "Species" 
+values_data <- data$sum_hits
+values_valid <- 0
+values_check <- values_data > values_valid
+
+# Identify errors
+errors_HerbsObs_Hits <- qaqc(data, query, query_message, values_check)
+```
 
 ### HerbsObs Cover
 
@@ -3287,9 +3423,9 @@ errors_HerbsObs_Status <- qaqc(data, query, query_message, values_check)
 ### HerbsObs Errors
 
 ```{r}
-errors_HerbsObs <- rbind(errors_HerbsObs_Cover, errors_blank, errors_HerbsObs_Species, errors_blank, errors_HerbsObs_Status)
+errors_HerbsObs <- rbind(errors_HerbsObs_Cover, errors_blank, errors_HerbsObs_Hits, errors_blank, errors_HerbsObs_Species, errors_blank, errors_HerbsObs_Status)
 
-remove(errors_HerbsObs_Cover, errors_HerbsObs_Species, errors_HerbsObs_Status)
+remove(errors_HerbsObs_Cover, errors_HerbsObs_Hits, errors_HerbsObs_Species, errors_HerbsObs_Status)
 ```
 
 ```{r}
