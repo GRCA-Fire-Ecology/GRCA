@@ -298,7 +298,7 @@ remove(errors_Fuels1000_NumTran, errors_Fuels1000_TranLen)
 
 ### Fuel 1000 Hits
 
-[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no course woody debris should be verified.
+[Problem:]{.underline} Extra or missing data points in WACA plots. Plots with no course woody debris should be verified.
 
 [Procedure:]{.underline}
 
@@ -1199,7 +1199,7 @@ remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPn
 
 ### Trees Hits
 
-[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no trees should be verified.
+[Problem:]{.underline} Extra or missing data points in WACA plots. Plots with no trees should be verified.
 
 [Procedure:]{.underline}
 
