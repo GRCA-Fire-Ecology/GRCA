@@ -1439,7 +1439,7 @@ Trees_data$DamCd5[is.na(Trees_data$DamCd5)] <- ""
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "L")
-query <- "Trees Damage Live" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. Damage Code 1") 
 values_data <- data$DamCd1
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1455,7 +1455,7 @@ errors_Trees_DamCd_L_1 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "L")
-query <- "Trees Damage Live" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. Damage Code 2")
 values_data <- data$DamCd2
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1471,7 +1471,7 @@ errors_Trees_DamCd_L_2 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "L")
-query <- "Trees Damage Live" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. Damage Code 3")
 values_data <- data$DamCd3
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1487,7 +1487,7 @@ errors_Trees_DamCd_L_3 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "L")
-query <- "Trees Damage Live" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. Damage Code 4")
 values_data <- data$DamCd4
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1503,7 +1503,7 @@ errors_Trees_DamCd_L_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "L")
-query <- "Trees Damage Live" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = L. Damage Code 5")
 values_data <- data$DamCd5
 values_valid <- c("", "ABGR", "BIRD", "BLIG", "BROK", "BROM", "BURL", "CONK", "CROK", "DTOP", "EPIC", "EPIP", "FIRE", "FORK", "FRST", "GALL", "HOLW", "INSE", "LEAN", "LICH", "LIGT", "MAMM", "MISL", "MOSS", "OZON", "ROOT", "ROTT", "SPAR", "SPRT", "TWIN", "UMAN", "WOND")
@@ -1525,7 +1525,7 @@ errors_Trees_DamCd_L_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = D. Damage Code 1")
 values_data <- data$DamCd1
 values_valid <- ""
@@ -1539,7 +1539,7 @@ errors_Trees_DamCd_D_1 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = D. Damage Code 2") 
 values_data <- data$DamCd2
 values_valid <- ""
@@ -1553,7 +1553,7 @@ errors_Trees_DamCd_D_2 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = D. Damage Code 3")
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1567,7 +1567,7 @@ errors_Trees_DamCd_D_3 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = D. Damage Code 4")
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1581,7 +1581,7 @@ errors_Trees_DamCd_D_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(Status == "D")
-query <- "Trees Damage Dead" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = D. Damage Code 5")
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1603,7 +1603,7 @@ errors_Trees_DamCd_D_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 1 = Blank, Damage Code 2")
 values_data <- data$DamCd2
 values_valid <- ""
@@ -1617,7 +1617,7 @@ errors_Trees_DamCd_1_Blank_2 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 1 = Blank, Damage Code 3")
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1631,7 +1631,7 @@ errors_Trees_DamCd_1_Blank_3 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 1 = Blank, Damage Code 4")
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1645,7 +1645,7 @@ errors_Trees_DamCd_1_Blank_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd1 == "")
-query <- "Trees Damage 1 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 1 = Blank, Damage Code 5")
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1661,7 +1661,7 @@ errors_Trees_DamCd_1_Blank_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage 2 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 2 = Blank, Damage Code 3")
 values_data <- data$DamCd3
 values_valid <- ""
@@ -1675,7 +1675,7 @@ errors_Trees_DamCd_2_Blank_3 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage 2 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 2 = Blank, Damage Code 4")
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1689,7 +1689,7 @@ errors_Trees_DamCd_2_Blank_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd2 == "")
-query <- "Trees Damage 2 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 2 = Blank, Damage Code 5")
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1705,7 +1705,7 @@ errors_Trees_DamCd_2_Blank_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd3 == "")
-query <- "Trees Damage 3 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 3 = Blank, Damage Code 4")
 values_data <- data$DamCd4
 values_valid <- ""
@@ -1719,7 +1719,7 @@ errors_Trees_DamCd_3_Blank_4 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd3 == "")
-query <- "Trees Damage 3 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 3 = Blank, Damage Code 5")
 values_data <- data$DamCd5
 values_valid <- ""
@@ -1735,7 +1735,7 @@ errors_Trees_DamCd_3_Blank_5 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Trees_data %>% 
   filter(DamCd4 == "")
-query <- "Trees Damage 4 Blank" 
+query <- "Trees Damage" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Damage Code 4 = Blank, Damage Code 5")
 values_data <- data$DamCd5
 values_valid <- ""
