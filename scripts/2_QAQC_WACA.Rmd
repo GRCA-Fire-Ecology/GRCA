@@ -817,22 +817,42 @@ errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 -   Check that FieldTeam is [not]{.underline} blank
 
 ```{r}
+# Set parameters  
+data <- FuelsFine_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Fuel Fine Header FieldTeam" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
 
+# Identify errors
+errors_FuelsFine_FieldTeam <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that EntryTeam is [not]{.underline} blank
 
 ```{r}
+# Set parameters  
+data <- FuelsFine_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Fuel Fine Header EntryTeam" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
 
+# Identify errors
+errors_FuelsFine_EntryTeam <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine Header Errors
 
 ```{r}
 # Combine
-errors_FuelsFine_Header <- unique(rbind(errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen))
+errors_FuelsFine_Header <- unique(rbind(errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_FieldTeam, errors_FuelsFine_EntryTeam))
 
-remove(errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen)
+remove(errors_FuelsFine_NumTran, errors_FuelsFine_OneHrTranLen, errors_FuelsFine_TenHrTranLen, errors_FuelsFine_HunHrTranLen, errors_FuelsFine_FieldTeam, errors_FuelsFine_EntryTeam)
 ```
 
 ### Fuel Fine Azimuth
