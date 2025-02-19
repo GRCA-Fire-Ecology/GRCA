@@ -1180,6 +1180,40 @@ This code conducts quality control checks on tree data within the "Trees - Indiv
 
 It checks for errors in: headers, crown base height, crown class, damage codes, DBH, dead and down, duplicates, subplot fractions, height, life form, non-post severity, post severity, status, and user variables.
 
+### Trees Complete
+
+[Problem:]{.underline} Extra or missing data points in WACA plots. Plots with no trees should be verified.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- Trees_data %>%
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarize("sum_hits" = n())
+
+data_temp2 <- Trees_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(Trees_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "Trees Complete" 
+query_message <- "Trees" 
+values_data <- data$sum_hits
+values_valid <- 0
+values_check <- values_data > values_valid
+
+# Identify errors
+errors_Trees_Complete <- qaqc(data, query, query_message, values_check)
+```
+
 ### Trees Header
 
 [Problem:]{.underline} Incorrect header information entered for WACA plots.
@@ -1231,47 +1265,45 @@ values_check <- values_data %in% values_valid
 errors_Trees_BrkPntDia <- qaqc(data, query, query_message, values_check)
 ```
 
+-   Check that FieldTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- Trees_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Trees Header FieldTeam" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Trees_FieldTeam <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- Trees_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Trees Header EntryTeam" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Trees_EntryTeam <- qaqc(data, query, query_message, values_check)
+```
+
 #### Combine Header Errors
 
 ```{r}
 # Save to master error list 
-errors_Trees_Header <- unique(rbind(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia))
+errors_Trees_Header <- unique(rbind(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia, errors_Trees_FieldTeam, errors_Trees_EntryTeam))
 
-remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia)
-```
-
-### Trees Complete
-
-[Problem:]{.underline} Extra or missing data points in WACA plots. Plots with no trees should be verified.
-
-[Procedure:]{.underline}
-
--   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
-
-```{r}
-# Filter NA values. Add number of hits and store in new column
-data_temp1 <- Trees_data %>%
-  group_by(MacroPlot.Name, Date) %>% 
-  dplyr::summarize("sum_hits" = n())
-
-data_temp2 <- Trees_header %>% 
-  group_by(MacroPlot.Name, Date) %>% 
-  dplyr::summarise()
-
-data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
-data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
-remove(data_temp1, data_temp2)
-
-# Set parameters 
-data <- merge(Trees_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
-query <- "Trees Complete" 
-query_message <- "Trees" 
-values_data <- data$sum_hits
-values_valid <- 0
-values_check <- values_data > values_valid
-
-# Identify errors
-errors_Trees_Complete <- qaqc(data, query, query_message, values_check)
+remove(errors_Trees_MacroPlotSize, errors_Trees_SnagPlotSize, errors_Trees_BrkPntDia, errors_Trees_FieldTeam, errors_Trees_EntryTeam)
 ```
 
 ### Trees CBH
@@ -1944,53 +1976,6 @@ values_check <- values_data == values_valid
 errors_Trees_Duplicate <- qaqc(data, query, query_message, values_check)
 ```
 
-### Trees Frac
-
-[Problem:]{.underline} Incorrect subplot fraction entered for trees.
-
-[Procedure:]{.underline}
-
--   If DBH = overstory, then check that SubFrac = 1
-
-```{r}
-# Set parameters 
-data <- Trees_data %>% 
-   filter(DBH > 15.0)
-query <- "Trees Frac Overstory" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "DBH = overstory. Subplot Fraction")
-values_data <- data$SubFrac
-values_valid <- 1
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_Trees_Frac_Overstory <- qaqc(data, query, query_message, values_check)
-```
-
--   If DBH = pole, then check that SubFrac = 0.5
-
-```{r}
-# Set parameters 
-data <- Trees_data %>% 
-  filter(DBH <= 15.0)
-query <- "Trees Frac Pole" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "DBH = pole. Subplot Fraction")
-values_data <- data$SubFrac
-values_valid <- 0.25
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_Trees_Frac_Pole <- qaqc(data, query, query_message, values_check)
-```
-
-#### Combine Frac Errors
-
-```{r}
-# Combine
-errors_Trees_Frac <- unique(rbind(errors_Trees_Frac_Overstory, errors_Trees_Frac_Pole))
-
-remove(errors_Trees_Frac_Overstory, errors_Trees_Frac_Pole)
-```
-
 ### Trees Height
 
 #### Trees Height Standing
@@ -2076,7 +2061,7 @@ errors_Trees_Height <- unique(rbind(errors_Trees_Height_Standing, errors_Trees_H
 remove(errors_Trees_Height_Standing, errors_Trees_Height_Overstory, errors_Trees_Height_Pole)
 ```
 
-### Trees Life Form
+### Trees LifeForm
 
 [Problem:]{.underline} Species entered that are not trees.
 
@@ -2087,7 +2072,7 @@ remove(errors_Trees_Height_Standing, errors_Trees_Height_Overstory, errors_Trees
 ```{r}
 # Set parameters 
 data <- Trees_data
-query <- "Trees Life Form" 
+query <- "Trees LifeForm" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Life Form")
 values_data <- data$Preferred_Lifeform
 values_valid <- "Tree"
@@ -2418,6 +2403,52 @@ errors_Trees_Post_ScorchPct <- unique(rbind(errors_Trees_Post_ScorchPct_DD, erro
 remove(errors_Trees_Post_ScorchPct_DD, errors_Trees_Post_ScorchPct_Dead, errors_Trees_Post_ScorchPct_Live)
 ```
 
+### Trees Quarter
+
+[Problem:]{.underline} Incorrect values entered for quarter.
+
+[Procedure:]{.underline}
+
+-   Filter for Overstory Trees. Check that QTR = 1, 2, 3, or 4.
+
+```{r}
+# Set parameters 
+data <- Trees_data %>% 
+   filter(DBH > 15.0)
+query <- "Trees Quarter Overstory" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Quarter")
+values_data <- data$QTR
+values_valid <- c(1, 2, 3, 4)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Trees_Quarter_Overstory <- qaqc(data, query, query_message, values_check)
+```
+
+-   Filter for Pole trees. Check that QTR = 1 or 2.
+
+```{r}
+data <- Trees_data %>% 
+  filter(DBH <= 15.0)
+query <- "Trees Quarter Pole" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Quarter")
+values_data <- data$QTR
+values_valid <- c(1, 2)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Trees_Quarter_Pole <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Quarter Errors
+
+```{r}
+# Combine
+errors_Trees_Quarter <- unique(rbind(errors_Trees_Quarter_Overstory, errors_Trees_Quarter_Pole))
+
+remove(errors_Trees_Quarter_Overstory, errors_Trees_Quarter_Pole)
+```
+
 ### Trees Status
 
 [Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
@@ -2437,6 +2468,53 @@ values_check <- values_data %in% values_valid
 
 # Identify errors
 errors_Trees_Status <- qaqc(data, query, query_message, values_check)
+```
+
+### Trees SubFrac
+
+[Problem:]{.underline} Incorrect subplot fraction entered for trees.
+
+[Procedure:]{.underline}
+
+-   If DBH = overstory, then check that SubFrac = 1
+
+```{r}
+# Set parameters 
+data <- Trees_data %>% 
+   filter(DBH > 15.0)
+query <- "Trees SubFrac Overstory" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "DBH = overstory. Subplot Fraction")
+values_data <- data$SubFrac
+values_valid <- 1
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_SubFrac_Overstory <- qaqc(data, query, query_message, values_check)
+```
+
+-   If DBH = pole, then check that SubFrac = 0.5
+
+```{r}
+# Set parameters 
+data <- Trees_data %>% 
+  filter(DBH <= 15.0)
+query <- "Trees SubFrac Pole" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "DBH = pole. Subplot Fraction")
+values_data <- data$SubFrac
+values_valid <- 0.25
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_SubFrac_Pole <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine SubFrac Errors
+
+```{r}
+# Combine
+errors_Trees_SubFrac <- unique(rbind(errors_Trees_SubFrac_Overstory, errors_Trees_SubFrac_Pole))
+
+remove(errors_Trees_SubFrac_Overstory, errors_Trees_SubFrac_Pole)
 ```
 
 ### Trees UV
@@ -2501,11 +2579,11 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 ## Trees Errors
 
 ```{r}
-# errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_Complete, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
+# errors_Trees <- unique(rbind(errors_Trees_Complete, errors_Trees_Header, errors_Trees_CBH, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Height, errors_Trees_LifeForm, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Quarter, errors_Trees_Status, errors_Trees_SubFrac, errors_Trees_UV))
 
-errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_Complete, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Char, errors_blank, errors_Trees_Post_ScorchHt, errors_blank, errors_Trees_Post_ScorchPct, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
+errors_Trees <- rbind(errors_Trees_Complete, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Char, errors_blank, errors_Trees_Post_ScorchHt, errors_blank, errors_Trees_Post_ScorchPct, errors_blank, errors_Trees_Quarter, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_SubFrac, errors_blank, errors_Trees_UV)
 
-remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_Complete, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
+remove(errors_Trees_Complete, errors_Trees_Header, errors_Trees_CBH, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Height, errors_Trees_LifeForm, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Quarter, errors_Trees_Status, errors_Trees_SubFrac, errors_Trees_UV)
 ```
 
 ```{r}
@@ -2552,4 +2630,3 @@ path_errors
 #write_xlsx(errors_all, paste0(path_errors, "errors_WACA.xlsx"))
 condformat2excel(errors_all, paste0(path_errors, "errors_WACA_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
-
