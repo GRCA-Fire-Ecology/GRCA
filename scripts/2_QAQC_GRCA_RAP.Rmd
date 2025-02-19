@@ -2603,9 +2603,7 @@ errors_Trees_NonPost_Severity <- unique(rbind(errors_Trees_NonPost_Severity_Char
 remove(errors_Trees_NonPost_Severity_CharHt, errors_Trees_NonPost_Severity_ScorchHt, errors_Trees_NonPost_Severity_CrScPct)
 ```
 
-### Trees Post
-
-#### Trees Post Char
+### Trees Post Char
 
 [Problem]{.underline}: Char height missing or excessively large for standing trees during the immediate post-fire sample events in RAP plots. Char height entered for trees that are no longer standing.
 
@@ -2674,7 +2672,33 @@ values_check <- values_data <= values_valid
 errors_Trees_Post_Char_Max <- qaqc(data, query, query_message, values_check)
 ```
 
-#### Trees Post ScorchHt
+-   Char vs Ht. Filter to include all POST reads (01Post, 02Post, etc). Check that CharHt \<= Ht.
+
+```{r}
+# Set parameters 
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
+         !is.na(CharHt))
+query <- "Trees Post Char vs Ht" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Height shorter than Char. Char Height")
+values_data <- data$CharHt
+values_valid <- data$Ht
+values_check <- values_data <= values_valid
+
+# Identify errors
+errors_Trees_Post_Char_Ht <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Post Char Errors
+
+```{r}
+# Combine
+errors_Trees_Post_Char <- unique(rbind(errors_Trees_Post_Char_DD, errors_Trees_Post_Char_Standing, errors_Trees_Post_Char_Max, errors_Trees_Post_Char_Ht))
+
+remove(errors_Trees_Post_Char_DD, errors_Trees_Post_Char_Standing, errors_Trees_Post_Char_Max, errors_Trees_Post_Char_Ht)
+```
+
+### Trees Post ScorchHt
 
 [Problem]{.underline}: Scorch height missing or excessively large for live trees during the immediate post-fire sample events in RAP plots. Scorch height entered for trees that are no longer standing or are broken.
 
@@ -2745,7 +2769,33 @@ values_check <- values_data <= values_valid
 errors_Trees_Post_Scorch_Live <- qaqc(data, query, query_message, values_check)
 ```
 
-#### Trees Post Scorch%
+-   Scorch vs Ht. Filter to include all POST reads (01Post, 02Post, etc). Check that ScorchHt \<= Ht.
+
+```{r}
+# Set parameters 
+data <- Trees_data %>% 
+  filter(Monitoring.Status %in% c("01Post", "01PostB", "02Post", "02PostB", "03Post", "04Post"),
+         !is.na(ScorchHt))
+query <- "Trees Post Scorch vs Ht" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Height shorter than Scorch. Scorch Height")
+values_data <- data$ScorchHt
+values_valid <- data$Ht
+values_check <- values_data <= values_valid
+
+# Identify errors
+errors_Trees_Post_Scorch_Ht <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Post ScorchHt Errors
+
+```{r}
+# Combine
+errors_Trees_Post_ScorchHt <- unique(rbind(errors_Trees_Post_Scorch_DD, errors_Trees_Post_Scorch_Dead, errors_Trees_Post_Scorch_Live, errors_Trees_Post_Scorch_Ht))
+
+remove(errors_Trees_Post_Scorch_DD, errors_Trees_Post_Scorch_Dead, errors_Trees_Post_Scorch_Live, errors_Trees_Post_Scorch_Ht)
+```
+
+### Trees Post ScorchPct
 
 [Problem]{.underline}: Scorch % missing or excessively large for live trees during the immediate post-fire sample events in RAP plots. Scorch % entered incorrectly for trees that are no longer standing.
 
@@ -2809,13 +2859,13 @@ values_check <- values_data <= values_valid
 errors_Trees_Post_ScorchPct_Live <- qaqc(data, query, query_message, values_check)
 ```
 
-#### Combine Post Severity Errors
+#### Combine Post ScorchPct Errors
 
 ```{r}
 # Combine
-errors_Trees_Post_Severity <- unique(rbind(errors_Trees_Post_Char_DD, errors_Trees_Post_Char_Standing, errors_Trees_Post_Char_Max, errors_Trees_Post_Scorch_DD, errors_Trees_Post_Scorch_Dead, errors_Trees_Post_Scorch_Live, errors_Trees_Post_ScorchPct_DD, errors_Trees_Post_ScorchPct_Dead, errors_Trees_Post_ScorchPct_Live))
+errors_Trees_Post_ScorchPct <- unique(rbind(errors_Trees_Post_ScorchPct_DD, errors_Trees_Post_ScorchPct_Dead, errors_Trees_Post_ScorchPct_Live))
 
-remove(errors_Trees_Post_Char_DD, errors_Trees_Post_Char_Standing, errors_Trees_Post_Char_Max, errors_Trees_Post_Scorch_DD, errors_Trees_Post_Scorch_Dead, errors_Trees_Post_Scorch_Live, errors_Trees_Post_ScorchPct_DD, errors_Trees_Post_ScorchPct_Dead, errors_Trees_Post_ScorchPct_Live)
+remove(errors_Trees_Post_ScorchPct_DD, errors_Trees_Post_ScorchPct_Dead, errors_Trees_Post_ScorchPct_Live)
 ```
 
 ### Trees Status
@@ -2904,11 +2954,11 @@ remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 ### Trees Errors
 
 ```{r}
-# errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_Hits, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
+# errors_Trees <- unique(rbind(errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_CBH, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Header, errors_Trees_Height, errors_Trees_Hits, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV))
 
-errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_Hits, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Severity, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
+errors_Trees <- rbind(errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Frac, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_Hits, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Char, errors_blank, errors_Trees_Post_ScorchHt, errors_blank, errors_Trees_Post_ScorchPct, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_UV)
 
-remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_Hits, errors_Trees_NonPost_Severity, errors_Trees_Post_Severity, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
+remove(errors_Trees_Header, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_CBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Frac, errors_Trees_Height, errors_Trees_Hits, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Status, errors_Trees_LifeForm, errors_Trees_UV)
 ```
 
 ```{r}
