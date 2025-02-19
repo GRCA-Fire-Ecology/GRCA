@@ -424,6 +424,18 @@ values_check <-values_data == values_valid
 errors_Fuels1000_TranLen <- qaqc(data, query, query_message, values_check)
 ```
 
+-   Check that FieldTeam is [not]{.underline} blank
+
+```{r}
+
+```
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+
+```
+
 #### Combine Header Errors
 
 ```{r}
@@ -780,6 +792,18 @@ values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_NumTran_2 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that FieldTeam is [not]{.underline} blank
+
+```{r}
+
+```
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+
 ```
 
 #### Combine Header Errors
@@ -1143,6 +1167,18 @@ values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that FieldTeam is [not]{.underline} blank
+
+```{r}
+
+```
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+
 ```
 
 #### Combine Header Errors
@@ -1561,13 +1597,118 @@ values_check <- values_data == values_valid
 errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 ```
 
+-   Check that PlotType = Forest
+
+```{r}
+# Set parameters
+data <- PostBurn_header
+query <- "PBSev Header PlotType"
+query_message <- "Plot Type"
+values_data <- data$PlotType
+values_valid <- "Forest"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_PlotType <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that PtArea is blank
+
+```{r}
+# Set parameters
+data <- PostBurn_header
+data$PtArea[is.na(data$PtArea)] <- ""
+query <- "PBSev Header PtArea"
+query_message <- "Point Area"
+values_data <- data$PtArea
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_PtArea <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that FieldTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- PostBurn_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "PBSev Header FieldTeam" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_PostBurn_FieldTeam <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- PostBurn_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "PBSev Header EntryTeam" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_PostBurn_EntryTeam <- qaqc(data, query, query_message, values_check)
+```
+
 #### Combine Header Errors
 
 ```{r}
 # Combine
-errors_PostBurn_Header <- unique(rbind(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran))
+errors_PostBurn_Header <- unique(rbind(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_PlotType, errors_PostBurn_PtArea, errors_PostBurn_FieldTeam, errors_PostBurn_EntryTeam))
 
-remove(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran)
+remove(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran, errors_PostBurn_PlotType, errors_PostBurn_PtArea, errors_PostBurn_FieldTeam, errors_PostBurn_EntryTeam)
+```
+
+### PBSev Point
+
+[Problem:]{.underline} Incorrect values entered for point.
+
+[Procedure:]{.underline}
+
+-   Check that Point = 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10
+
+```{r}
+# Set parameters
+data <- PostBurn_data
+query <- "PBSev Point"
+query_message <- "Point"
+values_data <- data$Point
+values_valid <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_PostBurn_Point <- qaqc(data, query, query_message, values_check)
+```
+
+### PBSev TapeDist
+
+[Problem:]{.underline} Incorrect values entered for tape distance.
+
+[Procedure:]{.underline}
+
+-   Check that TapeDist = 1, 5, 10, 15, 20, 25, 30, 35, 40, or 45
+
+```{r}
+# Set parameters
+data <- PostBurn_data
+query <- "PBSev TapeDist"
+query_message <- "Tape Distance"
+values_data <- data$TapeDist
+values_valid <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_PostBurn_TapeDist <- qaqc(data, query, query_message, values_check)
 ```
 
 ### PBSev Transect
@@ -1666,11 +1807,11 @@ remove(errors_PostBurn_Sub, errors_PostBurn_Veg)
 
 ```{r}
 # Save to master error list
-# errors_PostBurn <- unique(rbind(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Transect, errors_PostBurn_Values))
+# errors_PostBurn <- unique(rbind(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Point, errors_PostBurn_TapeDist, errors_PostBurn_Transect, errors_PostBurn_Values))
 
-errors_PostBurn <- rbind(errors_PostBurn_Complete, errors_blank, errors_PostBurn_Header, errors_blank, errors_PostBurn_Transect, errors_blank, errors_PostBurn_Values)
+errors_PostBurn <- rbind(errors_PostBurn_Complete, errors_blank, errors_PostBurn_Header, errors_blank, errors_PostBurn_Point, errors_blank, errors_PostBurn_TapeDist, errors_blank, errors_PostBurn_Transect, errors_blank, errors_PostBurn_Values)
 
-remove(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Transect, errors_PostBurn_Values)
+remove(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Point, errors_PostBurn_TapeDist, errors_PostBurn_Transect, errors_PostBurn_Values)
 ```
 
 ```{r}
