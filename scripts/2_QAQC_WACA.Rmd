@@ -1,7 +1,6 @@
 ---
 title: "Walnut Canyon QAQC for FMH Data"
 author: "Alexandra Lalor"
-date: "2024-02-05"
 output:
   html_document:
     theme: readable
@@ -31,16 +30,21 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 ```{r}
 # Load packages
+
+# tidyverse and dplyr have lots of useful functions for data cleaning
 library(tidyverse)
-library(writexl)
 library(dplyr)
-library(janitor)
 library(plyr)
-library(knitr)
+# janitor has functions to find duplicates
+library(janitor)
 # EnvStats is needed for the rosnerTest() function
 library(EnvStats)
+# writexl is used to create excel output files
+library(writexl)
 # condformat is used to format excel output files
 library(condformat)
+# knitr is used to create output files from R Markdown
+library(knitr)
 ```
 
 ### Adjust File Paths
@@ -66,8 +70,9 @@ qaqc <- function(data, query, query_message, values_check) {
   # Check if there is data to QAQC
   if(nrow(data) == 0) {
   # If there is no data, default to "No Error" data frame
-  errors <- errors_blank_NoError %>%     
-      mutate(SavedQuery = query)
+  errors <- errors_blank %>%
+    mutate(SavedQuery = query,
+           Error = "No Error")
   # If there is data, perform error check
 } else {
   
@@ -104,8 +109,9 @@ qaqc <- function(data, query, query_message, values_check) {
   # Check if there are no errors
   if (nrow(errors) == 0) {  
     # If there are no errors, default to "No Error" data frame
-    errors <- errors_blank_NoError %>%     
-      mutate(SavedQuery = query) 
+    errors <- errors_blank %>%
+      mutate(SavedQuery = query,
+             Error = "No Error")
     # If there are errors, keep error log you just created
   } else {   
     errors <- errors
@@ -114,8 +120,6 @@ qaqc <- function(data, query, query_message, values_check) {
 ```
 
 ```{r}
-# Blank data frame for no errors
-errors_blank_NoError <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "No Error", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 # Blank data frame
 errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 ```
