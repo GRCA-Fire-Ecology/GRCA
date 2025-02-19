@@ -64,6 +64,9 @@ path_errors_name <- "2020 WACA QAQC Errors"
 ### Create Function
 
 ```{r}
+# Blank data frame
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
   
@@ -117,11 +120,6 @@ qaqc <- function(data, query, query_message, values_check) {
     errors <- errors
   }
 }
-```
-
-```{r}
-# Blank data frame
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 ```
 
 ### Load Data
@@ -453,7 +451,7 @@ errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
 
 ### Fuel 1000 Transect
 
-[Problem:]{.underline}  Values for transect are missing or unreasonable.
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -587,7 +585,7 @@ errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
 
 ### Fuel DL Transect
 
-[Problem:]{.underline}  Values for transect are missing or unreasonable.
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -866,7 +864,7 @@ errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
 
 ### Fuel Fine Transect
 
-[Problem:]{.underline}  Values for transect are missing or unreasonable.
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -991,7 +989,43 @@ remove(errors_FuelsFine_Complete, errors_FuelsFine_Header, errors_FuelsFine_Azim
 
 This code conducts quality control checks on post burn data within the "Post Burn Severity" data set.
 
-It checks for errors in: headers, substrate, and vegetation values.
+It checks for errors in: headers, points, tape distance, transect, substrate, and vegetation values.
+
+### PBSev Complete
+
+[Problem:]{.underline} Extra or missing data points in WACA plots. There should be 4 transects with 10 sample points per transect.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits = 40
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- PostBurn_data %>%
+  filter(!is.na(Veg)) %>%
+  filter(!is.na(Sub)) %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise("sum_hits" = n())
+
+data_temp2 <- PostBurn_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(PostBurn_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "PBSev Complete" 
+query_message <- "Complete Sample Locations"
+values_data <- data$sum_hits
+values_valid <- 40
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_Complete <- qaqc(data, query, query_message, values_check)
+```
 
 ### PBSev Header
 
@@ -1053,45 +1087,9 @@ errors_PostBurn_Header <- unique(rbind(errors_PostBurn_NumTran, errors_PostBurn_
 remove(errors_PostBurn_NumTran, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran)
 ```
 
-### PBSev Complete
+### PBSev Transect
 
-[Problem:]{.underline} Extra or missing data points in WACA plots. There should be 4 transects with 10 sample points per transect.
-
-[Procedure:]{.underline}
-
--   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits = 40
-
-```{r}
-# Filter NA values. Add number of hits and store in new column
-data_temp1 <- PostBurn_data %>%
-  filter(!is.na(Veg)) %>%
-  filter(!is.na(Sub)) %>% 
-  group_by(MacroPlot.Name, Date) %>% 
-  dplyr::summarise("sum_hits" = n())
-
-data_temp2 <- PostBurn_header %>% 
-  group_by(MacroPlot.Name, Date) %>% 
-  dplyr::summarise()
-
-data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
-data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
-remove(data_temp1, data_temp2)
-
-# Set parameters 
-data <- merge(PostBurn_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
-query <- "PBSev Complete" 
-query_message <- "Complete Sample Locations"
-values_data <- data$sum_hits
-values_valid <- 40
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_PostBurn_Complete <- qaqc(data, query, query_message, values_check)
-```
-
-### PBSev Values
-
-[Problem:]{.underline} Incorrect values entered for transect, substrate, and vegetation.
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -1100,22 +1098,28 @@ errors_PostBurn_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_data
-query <- "PBSev Values TransNum"
+query <- "PBSev Transect"
 query_message <- "Transect Number"
 values_data <- data$Transect
 values_valid <- c(1, 2, 3, 4)
 values_check <- values_data %in% values_valid
 
 # Identify errors
-errors_PostBurn_TransNum <- qaqc(data, query, query_message, values_check)
+errors_PostBurn_Transect <- qaqc(data, query, query_message, values_check)
 ```
+
+### PBSev Values
+
+[Problem:]{.underline} Incorrect values entered for substrate and vegetation.
+
+[Procedure:]{.underline}
 
 -   Check that Sub = 0, 1, 2, 3, 4, or 5
 
 ```{r}
 # Set parameters
 data <- PostBurn_data
-query <- "PBSev Values Substrate"
+query <- "PBSev Values Sub"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Substrate Severity")
 values_data <- data$Sub
 values_valid <- c(0, 1, 2, 3, 4, 5)
@@ -1144,20 +1148,20 @@ errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Combine
-errors_PostBurn_Values <- unique(rbind(errors_PostBurn_TransNum, errors_PostBurn_Sub, errors_PostBurn_Veg))
+errors_PostBurn_Values <- unique(rbind(errors_PostBurn_Sub, errors_PostBurn_Veg))
 
-remove(errors_PostBurn_TransNum, errors_PostBurn_Sub, errors_PostBurn_Veg)
+remove(errors_PostBurn_Sub, errors_PostBurn_Veg)
 ```
 
 ### PBSev Errors
 
 ```{r}
 # Save to master error list
-# errors_PostBurn <- unique(rbind(errors_PostBurn_Header, errors_PostBurn_Complete, errors_PostBurn_Values))
+# errors_PostBurn <- unique(rbind(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Transect, errors_PostBurn_Values))
 
-errors_PostBurn <- rbind(errors_PostBurn_Header, errors_blank, errors_PostBurn_Complete, errors_blank, errors_PostBurn_Values)
+errors_PostBurn <- rbind(errors_PostBurn_Complete, errors_blank, errors_PostBurn_Header, errors_blank, errors_PostBurn_Transect, errors_blank, errors_PostBurn_Values)
 
-remove(errors_PostBurn_Header, errors_PostBurn_Complete, errors_PostBurn_Values)
+remove(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Transect, errors_PostBurn_Values)
 ```
 
 ```{r}
@@ -2548,3 +2552,4 @@ path_errors
 #write_xlsx(errors_all, paste0(path_errors, "errors_WACA.xlsx"))
 condformat2excel(errors_all, paste0(path_errors, "errors_WACA_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
+

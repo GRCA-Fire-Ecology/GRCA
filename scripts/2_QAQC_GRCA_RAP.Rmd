@@ -69,6 +69,9 @@ path_errors_name <- "GRCA RAP QAQC Errors"
 ### Create Function
 
 ```{r}
+# Blank data frame
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
   
@@ -122,11 +125,6 @@ qaqc <- function(data, query, query_message, values_check) {
     errors <- errors
   }
 }
-```
-
-```{r}
-# Blank data frame
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 ```
 
 ### Load Data
@@ -596,7 +594,7 @@ errors_Fuels1000_Slope <- qaqc(data, query, query_message, values_check)
 
 ### Fuel 1000 Transect
 
-[Problem:]{.underline}  Values for transect are missing or unreasonable.
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -858,7 +856,7 @@ remove(errors_FuelsDuffLitt_FuelConst_MixCon, errors_FuelsDuffLitt_FuelConst_PIP
 
 ### Fuel DL Transect
 
-[Problem:]{.underline}  Values for transect are missing or unreasonable.
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -1263,7 +1261,7 @@ errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
 
 ### Fuel Fine Transect
 
-[Problem:]{.underline}  Values for transect are missing or unreasonable.
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -1414,84 +1412,7 @@ path_errors
 
 This code conducts quality control checks on post burn data within the "Post Burn Severity" data set.
 
-It checks for errors in: headers, substrate, and vegetation values.
-
-### PBSev Header
-
-[Problem:]{.underline} Incorrect header information entered for RAP plots.
-
-[Procedure:]{.underline}
-
--   Check that NumTran = 1 for the appropriate project units: Moqui, Picnic, Quarry
-
-```{r}
-# Set parameters  
-data <- PostBurn_header %>% 
-  filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
-query <- "PBSev Header NumTran" 
-query_message <- "Number of Transects"  
-values_data <- data$NumTran  
-values_valid <- 1   
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_PostBurn_NumTran_1 <- qaqc(data, query, query_message, values_check)
-```
-
--   Check that NumTran = 2 for the appropriate project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
-
-```{r}
-# Set parameters
-data <- PostBurn_header %>% 
-  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
-query <- "PBSev Header NumTran"
-query_message <- "Number of Transects"
-values_data <- data$NumTran
-values_valid <- 2
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_PostBurn_NumTran_2 <- qaqc(data, query, query_message, values_check)
-```
-
--   Check that TranLen = 50
-
-```{r}
-# Set parameters
-data <- PostBurn_header
-query <- "PBSev Header TranLen"
-query_message <- "Transect Length"
-values_data <- data$TranLen
-values_valid <- 50
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
-```
-
--   Check that NumPtsTran = 10
-
-```{r}
-# Set parameters
-data <- PostBurn_header
-query <- "PBSev Header NumPtsTran"
-query_message <- "Number of Points"
-values_data <- data$NumPtsTran
-values_valid <- 10
-values_check <- values_data == values_valid
-
-# Identify errors
-errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
-```
-
-#### Combine Header Errors
-
-```{r}
-# Combine
-errors_PostBurn_Header <- unique(rbind(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran))
-
-remove(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran)
-```
+It checks for errors in: headers, points, tape distance, transect, substrate, and vegetation values.
 
 ### PBSev Complete
 
@@ -1572,9 +1493,86 @@ errors_PostBurn_Complete <- unique(rbind(errors_PostBurn_Complete_10, errors_Pos
 remove(errors_PostBurn_Complete_10, errors_PostBurn_Complete_20)
 ```
 
-### PBSev Values
+### PBSev Header
 
-[Problem:]{.underline} Incorrect values entered for transect, substrate, and vegetation.
+[Problem:]{.underline} Incorrect header information entered for RAP plots.
+
+[Procedure:]{.underline}
+
+-   Check that NumTran = 1 for the appropriate project units: Moqui, Picnic, Quarry
+
+```{r}
+# Set parameters  
+data <- PostBurn_header %>% 
+  filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
+query <- "PBSev Header NumTran" 
+query_message <- "Number of Transects"  
+values_data <- data$NumTran  
+values_valid <- 1   
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_NumTran_1 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumTran = 2 for the appropriate project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
+
+```{r}
+# Set parameters
+data <- PostBurn_header %>% 
+  filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
+query <- "PBSev Header NumTran"
+query_message <- "Number of Transects"
+values_data <- data$NumTran
+values_valid <- 2
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_NumTran_2 <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that TranLen = 50
+
+```{r}
+# Set parameters
+data <- PostBurn_header
+query <- "PBSev Header TranLen"
+query_message <- "Transect Length"
+values_data <- data$TranLen
+values_valid <- 50
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumPtsTran = 10
+
+```{r}
+# Set parameters
+data <- PostBurn_header
+query <- "PBSev Header NumPtsTran"
+query_message <- "Number of Points"
+values_data <- data$NumPtsTran
+values_valid <- 10
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Header Errors
+
+```{r}
+# Combine
+errors_PostBurn_Header <- unique(rbind(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran))
+
+remove(errors_PostBurn_NumTran_1, errors_PostBurn_NumTran_2, errors_PostBurn_TranLen, errors_PostBurn_NumPtsTran)
+```
+
+### PBSev Transect
+
+[Problem:]{.underline} Incorrect values entered for transect.
 
 [Procedure:]{.underline}
 
@@ -1584,14 +1582,14 @@ remove(errors_PostBurn_Complete_10, errors_PostBurn_Complete_20)
 # Set parameters
 data <- PostBurn_data %>% 
   filter(MacroPlot.Purpose %in% c("Moqui", "Picnic", "Quarry"))
-query <- "PBSev Values TransNum"
+query <- "PBSev Transect"
 query_message <- "Transect Number"
 values_data <- data$Transect
 values_valid <- c(1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
-errors_PostBurn_TransNum_1 <- qaqc(data, query, query_message, values_check)
+errors_PostBurn_Transect_1 <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that Transect = 1 or 2 for the appropriate project units: Burnt Corral, Fawn Spring, Hwy 67, Range, Spring Canyon, Thompson, Tipover, Tusayan Pueblo (Thinning)
@@ -1600,22 +1598,37 @@ errors_PostBurn_TransNum_1 <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- PostBurn_data %>% 
   filter(MacroPlot.Purpose %in% c("Burnt Corral", "Fawn Spring", "Hwy 67", "Range", "Spring Canyon", "Thompson", "Tipover", "Tusayan Pueblo (Thinning)"))
-query <- "PBSev Values TransNum"
+query <- "PBSev Transect"
 query_message <- "Transect Number"
 values_data <- data$Transect
 values_valid <- c(1, 2)
 values_check <- values_data %in% values_valid
 
 # Identify errors
-errors_PostBurn_TransNum_2 <- qaqc(data, query, query_message, values_check)
+errors_PostBurn_Transect_2 <- qaqc(data, query, query_message, values_check)
 ```
+
+#### Combine Transect Errors
+
+```{r}
+# Combine
+errors_PostBurn_Transect <- unique(rbind(errors_PostBurn_Transect_1, errors_PostBurn_Transect_2))
+
+remove(errors_PostBurn_Transect_1, errors_PostBurn_Transect_2)
+```
+
+### PBSev Values
+
+[Problem:]{.underline} Incorrect values entered for substrate and vegetation.
+
+[Procedure:]{.underline}
 
 -   Check that Sub = 0, 1, 2, 3, 4, or 5
 
 ```{r}
 # Set parameters
 data <- PostBurn_data
-query <- "PBSev Values Substrate"
+query <- "PBSev Values Sub"
 query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Substrate Severity")
 values_data <- data$Sub
 values_valid <- c(0, 1, 2, 3, 4, 5)
@@ -1644,20 +1657,20 @@ errors_PostBurn_Veg <- qaqc(data, query, query_message, values_check)
 
 ```{r}
 # Combine
-errors_PostBurn_Values <- unique(rbind(errors_PostBurn_TransNum_1, errors_PostBurn_TransNum_2, errors_PostBurn_Sub, errors_PostBurn_Veg))
+errors_PostBurn_Values <- unique(rbind(errors_PostBurn_Sub, errors_PostBurn_Veg))
 
-remove(errors_PostBurn_TransNum_1, errors_PostBurn_TransNum_2, errors_PostBurn_Sub, errors_PostBurn_Veg)
+remove(errors_PostBurn_Sub, errors_PostBurn_Veg)
 ```
 
 ### PBSev Errors
 
 ```{r}
 # Save to master error list
-# errors_PostBurn <- unique(rbind(errors_PostBurn_Header, errors_PostBurn_Complete, errors_PostBurn_Values))
+# errors_PostBurn <- unique(rbind(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Transect, errors_PostBurn_Values))
 
-errors_PostBurn <- rbind(errors_PostBurn_Header, errors_blank, errors_PostBurn_Complete, errors_blank, errors_PostBurn_Values)
+errors_PostBurn <- rbind(errors_PostBurn_Complete, errors_blank, errors_PostBurn_Header, errors_blank, errors_PostBurn_Transect, errors_blank, errors_PostBurn_Values)
 
-remove(errors_PostBurn_Header, errors_PostBurn_Complete, errors_PostBurn_Values)
+remove(errors_PostBurn_Complete, errors_PostBurn_Header, errors_PostBurn_Transect, errors_PostBurn_Values)
 ```
 
 ```{r}
