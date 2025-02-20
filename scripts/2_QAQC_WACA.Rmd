@@ -326,22 +326,42 @@ errors_Fuels1000_TranLen <- qaqc(data, query, query_message, values_check)
 -   Check that FieldTeam is [not]{.underline} blank
 
 ```{r}
+# Set parameters  
+data <- Fuels1000_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Fuel 1000 Header FieldTeam" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
 
+# Identify errors
+errors_Fuels1000_FieldTeam <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that EntryTeam is [not]{.underline} blank
 
 ```{r}
+# Set parameters  
+data <- Fuels1000_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Fuel 1000 Header EntryTeam" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
 
+# Identify errors
+errors_Fuels1000_EntryTeam <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine Header Errors
 
 ```{r}
 # Combine
-errors_Fuels1000_Header <- unique(rbind(errors_Fuels1000_NumTran, errors_Fuels1000_TranLen))
+errors_Fuels1000_Header <- unique(rbind(errors_Fuels1000_NumTran, errors_Fuels1000_TranLen, errors_Fuels1000_FieldTeam, errors_Fuels1000_EntryTeam))
 
-remove(errors_Fuels1000_NumTran, errors_Fuels1000_TranLen)
+remove(errors_Fuels1000_NumTran, errors_Fuels1000_TranLen, errors_Fuels1000_FieldTeam, errors_Fuels1000_EntryTeam)
 ```
 
 ### Fuel 1000 DecayClass
@@ -568,22 +588,42 @@ errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
 -   Check that FieldTeam is [not]{.underline} blank
 
 ```{r}
+# Set parameters  
+data <- FuelsDuffLitt_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Fuel DL Header FieldTeam" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
 
+# Identify errors
+errors_FuelsDuffLitt_FieldTeam <- qaqc(data, query, query_message, values_check)
 ```
 
 -   Check that EntryTeam is [not]{.underline} blank
 
 ```{r}
+# Set parameters  
+data <- FuelsDuffLitt_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Fuel DL Header EntryTeam" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
 
+# Identify errors
+errors_FuelsDuffLitt_EntryTeam <- qaqc(data, query, query_message, values_check)
 ```
 
 #### Combine Header Errors
 
 ```{r}
 # Combine
-errors_FuelsDuffLitt_Header <- unique(rbind(errors_FuelsDuffLitt_NumTran))
+errors_FuelsDuffLitt_Header <- unique(rbind(errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_FieldTeam, errors_FuelsDuffLitt_EntryTeam))
 
-remove(errors_FuelsDuffLitt_NumTran)
+remove(errors_FuelsDuffLitt_NumTran, errors_FuelsDuffLitt_FieldTeam, errors_FuelsDuffLitt_EntryTeam)
 ```
 
 ### Fuel DL FuelConst
@@ -605,6 +645,48 @@ values_check <- values_data == values_valid
 
 # Identify errors
 errors_FuelsDuffLitt_FuelConst <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel DL OffSet
+
+[Problem:]{.underline} Incorrect values entered for OffSet column.
+
+[Procedure:]{.underline}
+
+-   Check that OffSet = False
+
+```{r}
+# Set parameters 
+data <- FuelsDuffLitt_data
+query <- "Fuel DL OffSet" 
+query_message <- "OffSet" 
+values_data <- data$OffSet
+values_valid <- "False"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_OffSet <- qaqc(data, query, query_message, values_check)
+```
+
+### Fuel DL SampLoc
+
+[Problem:]{.underline} Incorrect values entered for sample location.
+
+[Procedure:]{.underline}
+
+-   Check that SampLoc = 1, 5, 10, 15, 20, 25, 30, 35, 40, or 45
+
+```{r}
+# Set parameters
+data <- FuelsDuffLitt_data
+query <- "Fuel DL SampLoc"
+query_message <- "Sample Location"
+values_data <- data$SampLoc
+values_valid <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_SampLoc <- qaqc(data, query, query_message, values_check)
 ```
 
 ### Fuel DL Transect
@@ -687,15 +769,37 @@ errors_FuelsDuffLitt_Values <- unique(rbind(errors_FuelsDuffLitt_LittDep, errors
 remove(errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 ```
 
+### Fuel DL Zero
+
+[Problem:]{.underline}  Values entered for columns which should be blank
+
+[Procedure:]{.underline}
+
+-   Check that FuelbedDepth = blank
+
+```{r}
+# Set parameters
+data <- FuelsDuffLitt_data
+data$FuelbedDep[is.na(data$FuelbedDep)] <- ""
+query <- "Fuel DL Zero/NA"
+query_message <- "FuelbedDepth"
+values_data <- data$FuelbedDep
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsDuffLitt_Zero <- qaqc(data, query, query_message, values_check)
+```
+
 ### Fuel DL Errors
 
 ```{r}
 # Save to master error list 
-# errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_Complete, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_Transect, errors_FuelsDuffLitt_Values))
+# errors_FuelsDuffLitt <- unique(rbind(errors_FuelsDuffLitt_Complete, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_OffSet, errors_FuelsDuffLitt_SampLoc, errors_FuelsDuffLitt_Transect, errors_FuelsDuffLitt_Values, errors_FuelsDuffLitt_Zero))
 
-errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_Complete, errors_blank, errors_FuelsDuffLitt_Header, errors_blank, errors_FuelsDuffLitt_FuelConst, errors_blank, errors_FuelsDuffLitt_Transect, errors_blank, errors_FuelsDuffLitt_Values)
+errors_FuelsDuffLitt <- rbind(errors_FuelsDuffLitt_Complete, errors_blank, errors_FuelsDuffLitt_Header, errors_blank, errors_FuelsDuffLitt_FuelConst, errors_blank, errors_FuelsDuffLitt_OffSet, errors_blank, errors_FuelsDuffLitt_SampLoc, errors_blank, errors_FuelsDuffLitt_Transect, errors_blank, errors_FuelsDuffLitt_Values, errors_blank, errors_FuelsDuffLitt_Zero)
 
-remove(errors_FuelsDuffLitt_Complete, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_Transect, errors_FuelsDuffLitt_Values)
+remove(errors_FuelsDuffLitt_Complete, errors_FuelsDuffLitt_Header, errors_FuelsDuffLitt_FuelConst, errors_FuelsDuffLitt_OffSet, errors_FuelsDuffLitt_SampLoc, errors_FuelsDuffLitt_Transect, errors_FuelsDuffLitt_Values, errors_FuelsDuffLitt_Zero)
 ```
 
 ```{r}
