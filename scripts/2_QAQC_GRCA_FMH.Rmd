@@ -390,7 +390,7 @@ errors_Fuels1000_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Fuels1000_header
-query <- "Fuel 1000 Header NumTran"
+query <- "Fuel 1000 Header"
 query_message <- "Number of Transects" 
 values_data <- data$NumTran
 values_valid <- 4
@@ -406,7 +406,7 @@ errors_Fuels1000_NumTran <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Fuels1000_header %>% 
   filter(MacroPlot.Purpose %in% c("PIAB", "PIEN", "PIPN"))
-query <- "Fuel 1000 Header TranLen NRim" 
+query <- "Fuel 1000 Header" 
 query_message <- "NRim Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 50  
@@ -422,7 +422,7 @@ errors_Fuels1000_TranLen_N <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Fuels1000_header %>% 
   filter(MacroPlot.Purpose %in% c("PIED", "PIPO"))
-query <- "Fuel 1000 Header TranLen SRim" 
+query <- "Fuel 1000 Header" 
 query_message <- "SRim Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 100 
@@ -438,7 +438,7 @@ errors_Fuels1000_TranLen_S <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Fuels1000_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel 1000 Header FieldTeam" 
+query <- "Fuel 1000 Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -454,7 +454,7 @@ errors_Fuels1000_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Fuels1000_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel 1000 Header EntryTeam" 
+query <- "Fuel 1000 Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -685,7 +685,7 @@ errors_FuelsDuffLitt_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsDuffLitt_header
-query <- "Fuel DL Header NumTran" 
+query <- "Fuel DL Header" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 4    
@@ -701,7 +701,7 @@ errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsDuffLitt_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel DL Header FieldTeam" 
+query <- "Fuel DL Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -717,7 +717,7 @@ errors_FuelsDuffLitt_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsDuffLitt_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel DL Header EntryTeam" 
+query <- "Fuel DL Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -881,7 +881,7 @@ remove(errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 
 ### Fuel DL Zero
 
-[Problem:]{.underline}  Values entered for columns which should be blank
+[Problem:]{.underline}  Values entered for columns which should be blank.
 
 [Procedure:]{.underline}
 
@@ -973,7 +973,7 @@ errors_FuelsFine_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header NumTran" 
+query <- "Fuel Fine Header" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 4    
@@ -988,7 +988,7 @@ errors_FuelsFine_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header OneHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "One Hour Transect Length"  
 values_data <- data$OneHrTranLen
 values_valid <- 6
@@ -1003,7 +1003,7 @@ errors_FuelsFine_OneHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header TenHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "Ten Hour Transect Length"  
 values_data <- data$TenHrTranLen 
 values_valid <- 6
@@ -1018,7 +1018,7 @@ errors_FuelsFine_TenHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header HunHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "Hundrend Hour Transect Length"  
 values_data <- data$HunHrTranLen 
 values_valid <- 12
@@ -1034,7 +1034,7 @@ errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsFine_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel Fine Header FieldTeam" 
+query <- "Fuel Fine Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1050,7 +1050,7 @@ errors_FuelsFine_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsFine_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel Fine Header EntryTeam" 
+query <- "Fuel Fine Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -1308,7 +1308,7 @@ errors_PostBurn_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header NumTran"
+query <- "PBSev Header"
 query_message <- "Number of Transects"
 values_data <- data$NumTran
 values_valid <- 4
@@ -1323,7 +1323,7 @@ errors_PostBurn_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header TranLen"
+query <- "PBSev Header"
 query_message <- "Transect Length"
 values_data <- data$TranLen
 values_valid <- 50
@@ -1338,7 +1338,7 @@ errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header NumPtsTran"
+query <- "PBSev Header"
 query_message <- "Number of Points"
 values_data <- data$NumPtsTran
 values_valid <- 10
@@ -1353,7 +1353,7 @@ errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header PlotType"
+query <- "PBSev Header"
 query_message <- "Plot Type"
 values_data <- data$PlotType
 values_valid <- "Forest"
@@ -1369,7 +1369,7 @@ errors_PostBurn_PlotType <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- PostBurn_header
 data$PtArea[is.na(data$PtArea)] <- ""
-query <- "PBSev Header PtArea"
+query <- "PBSev Header"
 query_message <- "Point Area"
 values_data <- data$PtArea
 values_valid <- ""
@@ -1385,7 +1385,7 @@ errors_PostBurn_PtArea <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- PostBurn_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "PBSev Header FieldTeam" 
+query <- "PBSev Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1401,7 +1401,7 @@ errors_PostBurn_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- PostBurn_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "PBSev Header EntryTeam" 
+query <- "PBSev Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -1557,7 +1557,7 @@ It checks for errors in: headers, crown base height, crown class, damage codes, 
 
 ### Trees Complete
 
-[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no trees should be verified.
+[Problem:]{.underline} Missing data points in FMH plots. Plots with no trees should be verified.
 
 [Procedure:]{.underline}
 
@@ -1600,7 +1600,7 @@ errors_Trees_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header MacroPlotSize" 
+query <- "Trees Header" 
 query_message <- "Macro Plot Size"  
 values_data <- data$MacroPlotSize  
 values_valid <- 0.1
@@ -1615,7 +1615,7 @@ errors_Trees_MacroPlotSize <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header SnagPlotSize" 
+query <- "Trees Header" 
 query_message <- "Snag Plot Size"  
 values_data <- data$SnagPlotSize
 values_valid <- 0.1    
@@ -1630,7 +1630,7 @@ errors_Trees_SnagPlotSize <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header BrkPntDia" 
+query <- "Trees Header" 
 query_message <- "Break Point Diameter"  
 values_data <- data$BrkPntDia
 values_valid <- 15
@@ -1646,7 +1646,7 @@ errors_Trees_BrkPntDia <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Trees_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Trees Header FieldTeam" 
+query <- "Trees Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1662,7 +1662,7 @@ errors_Trees_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Trees_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Trees Header EntryTeam" 
+query <- "Trees Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -2985,6 +2985,40 @@ This code conducts quality control checks on seedling data within the "Density -
 
 It checks for errors in: headers, seedling counts, subplot fractions, heights, status, and life form.
 
+### Seedlings Complete
+
+[Problem:]{.underline} Missing data points in FMH plots. Plots with no seedlings should be verified.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- Seedlings_data %>%
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarize("sum_hits" = n())
+
+data_temp2 <- Seedlings_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(Seedlings_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "Dens Quad Complete" 
+query_message <- "Seedlings" 
+values_data <- data$sum_hits
+values_valid <- 0
+values_check <- values_data > values_valid
+
+# Identify errors
+errors_Seedlings_Complete <- qaqc(data, query, query_message, values_check)
+```
+
 ### Seedlings Header
 
 [Problem:]{.underline} Incorrect header information entered for FMH plots.
@@ -3117,46 +3151,44 @@ values_check <- values_data == values_valid
 errors_Seedlings_NumQuadTran <- qaqc(data, query, query_message, values_check)
 ```
 
+-   Check that FieldTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- Seedlings_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Dens Quad Header FieldTeam" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Seedlings_FieldTeam <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- Seedlings_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Dens Quad Header EntryTeam" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Seedlings_EntryTeam <- qaqc(data, query, query_message, values_check)
+```
+
 #### Combine Header Errors
 
 ```{r}
-errors_Seedlings_Header <- unique(rbind(errors_Seedlings_Area_1, errors_Seedlings_Area_2, errors_Seedlings_QuadWid_1, errors_Seedlings_QuadWid_2, errors_Seedlings_QuadLen_1, errors_Seedlings_QuadLen_2, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran))
+errors_Seedlings_Header <- unique(rbind(errors_Seedlings_Area_1, errors_Seedlings_Area_2, errors_Seedlings_QuadWid_1, errors_Seedlings_QuadWid_2, errors_Seedlings_QuadLen_1, errors_Seedlings_QuadLen_2, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran, errors_Seedlings_FieldTeam, errors_Seedlings_EntryTeam))
 
-remove(errors_Seedlings_Area_1, errors_Seedlings_Area_2, errors_Seedlings_QuadWid_1, errors_Seedlings_QuadWid_2, errors_Seedlings_QuadLen_1, errors_Seedlings_QuadLen_2, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran)
-```
-
-### Seedlings Complete
-
-[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no seedlings should be verified.
-
-[Procedure:]{.underline}
-
--   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
-
-```{r}
-# Filter NA values. Add number of hits and store in new column
-data_temp1 <- Seedlings_data %>%
-  group_by(MacroPlot.Name, Date) %>% 
-  dplyr::summarize("sum_hits" = n())
-
-data_temp2 <- Seedlings_header %>% 
-  group_by(MacroPlot.Name, Date) %>% 
-  dplyr::summarise()
-
-data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
-data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
-remove(data_temp1, data_temp2)
-
-# Set parameters 
-data <- merge(Seedlings_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
-query <- "Dens Quad Complete" 
-query_message <- "Seedlings" 
-values_data <- data$sum_hits
-values_valid <- 0
-values_check <- values_data > values_valid
-
-# Identify errors
-errors_Seedlings_Complete <- qaqc(data, query, query_message, values_check)
+remove(errors_Seedlings_Area_1, errors_Seedlings_Area_2, errors_Seedlings_QuadWid_1, errors_Seedlings_QuadWid_2, errors_Seedlings_QuadLen_1, errors_Seedlings_QuadLen_2, errors_Seedlings_NumTran, errors_Seedlings_NumQuadTran, errors_Seedlings_FieldTeam, errors_Seedlings_EntryTeam)
 ```
 
 ### Seedlings Count
@@ -3231,7 +3263,7 @@ values_check <- values_data %in% values_valid
 errors_Seedlings_Height <- qaqc(data, query, query_message, values_check)
 ```
 
-### Seedlings Life Form
+### Seedlings LifeForm
 
 [Problem:]{.underline} Species entered that are not trees.
 
@@ -3336,12 +3368,58 @@ values_check <- values_data == values_valid
 errors_Seedlings_Transect <- qaqc(data, query, query_message, values_check)
 ```
 
+### Seedlings Zero
+
+[Problem:]{.underline}  Values entered for columns which should be blank.
+
+[Procedure:]{.underline}
+
+-   Check that AgeCl = blank
+
+```{r}
+# Set parameters
+data <- Seedlings_data
+data$AgeCl[is.na(data$AgeCl)] <- ""
+query <- "Dens Quad Zero/NA"
+query_message <- "Age Class"
+values_data <- data$AgeCl
+values_valid <- c("", "X")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Seedlings_AgeCl <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that SizeCl = blank
+
+```{r}
+# Set parameters
+data <- Seedlings_data
+data$SizeCl[is.na(data$SizeCl)] <- ""
+query <- "Dens Quad Zero/NA"
+query_message <- "Size Class"
+values_data <- data$SizeCl
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Seedlings_SizeCl <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Zero Errors
+
+```{r}
+errors_Seedlings_Zero <- unique(rbind(errors_Seedlings_AgeCl, errors_Seedlings_SizeCl))
+
+remove(errors_Seedlings_AgeCl, errors_Seedlings_SizeCl)
+```
+
 ### Seedlings Errors
 
 ```{r}
-errors_Seedlings <- rbind(errors_Seedlings_Count, errors_blank, errors_Seedlings_Header, errors_blank, errors_Seedlings_Height, errors_blank, errors_Seedlings_Complete, errors_blank, errors_Seedlings_LifeForm,  errors_blank, errors_Seedlings_Quadrat, errors_blank, errors_Seedlings_Status, errors_blank, errors_Seedlings_SubFrac, errors_blank, errors_Seedlings_Transect)
+errors_Seedlings <- rbind(errors_Seedlings_Complete, errors_blank, errors_Seedlings_Header, errors_blank, errors_Seedlings_Count, errors_blank, errors_Seedlings_Height, errors_blank, errors_Seedlings_LifeForm,  errors_blank, errors_Seedlings_Quadrat, errors_blank, errors_Seedlings_Status, errors_blank, errors_Seedlings_SubFrac, errors_blank, errors_Seedlings_Transect, errors_blank, errors_Seedlings_Zero)
 
-remove(errors_Seedlings_Count, errors_Seedlings_Header, errors_Seedlings_Height, errors_Seedlings_Complete, errors_Seedlings_LifeForm, errors_Seedlings_Quadrat, errors_Seedlings_Status, errors_Seedlings_SubFrac, errors_Seedlings_Transect)
+remove(errors_Seedlings_Complete, errors_Seedlings_Header, errors_Seedlings_Count, errors_Seedlings_Height, errors_Seedlings_LifeForm, errors_Seedlings_Quadrat, errors_Seedlings_Status, errors_Seedlings_SubFrac, errors_Seedlings_Transect, errors_Seedlings_Zero)
 ```
 
 ```{r}
@@ -3358,7 +3436,15 @@ path_errors
 
 This code conducts quality control checks on shrub data within the "Density - Belts (metric)" data set.
 
-It checks for errors in:
+It checks for errors in: heades, age class, shrub counts, life form, status, subbelt, subplot fraction, and transect.
+
+### Shrubs Complete
+
+[Problem:]{.underline} Missing data points in FMH plots. Plots with no shrubs should be verified.
+
+[Procedure:]{.underline}
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
 
 ### Shrubs Header
 
@@ -3373,6 +3459,10 @@ It checks for errors in:
 -   Check that TranWid = 2
 
 -   Check that Area = 100
+
+-   Check that FieldTeam is [not]{.underline} blank
+
+-   Check that EntryTeam is [not]{.underline} blank
 
 #### Combine Header Errors
 
@@ -3398,7 +3488,7 @@ remove()
 
 -   Check that Count is not blank or 0 or excessively high
 
-### Shrubs Life Form
+### Shrubs LifeForm
 
 [Problem:]{.underline} Species entered that are not shrubs.
 
@@ -3438,6 +3528,23 @@ remove()
 
 -   Check that Transect = 1 or 2
 
+### Shrubs Zero
+
+[Problem:]{.underline}  Values entered for columns which should be blank.
+
+[Procedure:]{.underline}
+
+-   Check that Height = blank
+-   Check that SizeCl = blank
+
+#### Combine Zero Errors
+
+```{r}
+errors_Shrubs_Zero <- unique(rbind())
+
+remove()
+```
+
 ### Shrubs Errors
 
 ```{r}
@@ -3456,7 +3563,7 @@ path_errors
 #write_xlsx(errors_Shrubs, paste0(path_errors, "errors_GRCA_FMH_Shrubs.xlsx"))
 ```
 
-# PROTOCOL - HERBS OBSERVED
+# PROTOCOL - HERBS OBS
 
 This code conducts quality control checks on observed herbaceous data within the "Cover - Species Composition (metric)" data set.
 
@@ -3464,7 +3571,7 @@ It checks for errors in: cover, species, and status.
 
 ### HerbsObs Complete
 
-[Problem:]{.underline} Extra or missing data points in FMH plots. Plots with no observed herbs should be verified.
+[Problem:]{.underline} Missing data points in FMH plots. Plots with no observed herbs should be verified.
 
 [Procedure:]{.underline}
 
@@ -3494,6 +3601,84 @@ values_check <- values_data > values_valid
 
 # Identify errors
 errors_HerbsObs_Complete <- qaqc(data, query, query_message, values_check)
+```
+
+### HerbsObs Header
+
+[Problem:]{.underline} Incorrect header information entered.
+
+[Procedure:]{.underline}
+
+-   Check that MinCovLevel is blank
+
+```{r}
+# Set parameters  
+data <- HerbsObs_header
+data$MinCovLevel[is.na(data$MinCovLevel)] <- ""
+query <- "Cvr SpComp Header MinCovLevel" 
+query_message <- "Min Cover Level"  
+values_data <- data$MinCovLevel
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsObs_MinCovLevel <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Area is blank
+
+```{r}
+# Set parameters  
+data <- HerbsObs_header
+data$Area[is.na(data$Area)] <- ""
+query <- "Cvr SpComp Header Area" 
+query_message <- "Area"  
+values_data <- data$Area
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsObs_Area <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that FieldTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- HerbsObs_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Cvr SpComp Header FieldTeam" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_HerbsObs_FieldTeam <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- HerbsObs_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Cvr SpComp Header EntryTeam" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_HerbsObs_EntryTeam <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Header Errors
+
+```{r}
+errors_HerbsObs_Header <- unique(rbind(errors_HerbsObs_MinCovLevel, errors_HerbsObs_Area, errors_HerbsObs_FieldTeam, errors_HerbsObs_EntryTeam))
+
+remove(errors_HerbsObs_MinCovLevel, errors_HerbsObs_Area, errors_HerbsObs_FieldTeam, errors_HerbsObs_EntryTeam)
 ```
 
 ### HerbsObs Cover
@@ -3539,12 +3724,74 @@ values_check <- values_data %in% values_valid
 errors_HerbsObs_Status <- qaqc(data, query, query_message, values_check)
 ```
 
+### HerbsObs Zero
+
+[Problem:]{.underline}  Values entered for columns which should be blank.
+
+[Procedure:]{.underline}
+
+-   Check that AgeCl = blank
+
+```{r}
+# Set parameters
+data <- HerbsObs_data
+data$AgeCl[is.na(data$AgeCl)] <- ""
+query <- "Cvr SpComp Zero/NA"
+query_message <- "Age Class"
+values_data <- data$AgeCl
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsObs_AgeCl <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Height = blank
+
+```{r}
+# Set parameters
+data <- HerbsObs_data
+data$Height[is.na(data$Height)] <- ""
+query <- "Cvr SpComp Zero/NA"
+query_message <- "Height"
+values_data <- data$Height
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsObs_Height <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that SizeCl = blank
+
+```{r}
+# Set parameters
+data <- HerbsObs_data
+data$SizeCl[is.na(data$SizeCl)] <- ""
+query <- "Cvr SpComp Zero/NA"
+query_message <- "Size Class"
+values_data <- data$SizeCl
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsObs_SizeCl <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Zero Errors
+
+```{r}
+errors_HerbsObs_Zero <- unique(rbind(errors_HerbsObs_AgeCl, errors_HerbsObs_Height, errors_HerbsObs_SizeCl))
+
+remove(errors_HerbsObs_AgeCl, errors_HerbsObs_Height, errors_HerbsObs_SizeCl)
+```
+
 ### HerbsObs Errors
 
 ```{r}
-errors_HerbsObs <- rbind(errors_HerbsObs_Cover, errors_blank, errors_HerbsObs_Complete, errors_blank, errors_HerbsObs_Status)
+errors_HerbsObs <- rbind(errors_HerbsObs_Complete, errors_blank, errors_HerbsObs_Header, errors_blank, errors_HerbsObs_Cover, errors_blank,  errors_HerbsObs_Status, errors_blank, errors_HerbsObs_Zero)
 
-remove(errors_HerbsObs_Cover, errors_HerbsObs_Complete, errors_HerbsObs_Status)
+remove(errors_HerbsObs_Complete, errors_HerbsObs_Header, errors_HerbsObs_Cover,  errors_HerbsObs_Status, errors_HerbsObs_Zero)
 ```
 
 ```{r}
@@ -3608,6 +3855,10 @@ This code conducts quality control checks on slope data in the surface fuels coa
 
 # CROSS YEAR CHECKS
 
+## Trees Completeness
+
+(tree info not updated, old data exists)
+
 ## Trees CBH Decrease
 
 ## Trees DBH Decrease
@@ -3655,5 +3906,5 @@ path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
 # condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
-condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```

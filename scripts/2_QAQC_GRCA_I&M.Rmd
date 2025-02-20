@@ -63,7 +63,7 @@ path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-01-23/"
 path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
 # Errors
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
-path_errors_name <- "2021-2023 GRCA I&M QAQC Errors"
+path_errors_name <- "2019 GRCA I&M QAQC Errors"
 ```
 
 ### Create Function
@@ -133,22 +133,22 @@ Mixed Conifer
 
 ```{r}
 # Load in data
-Fuels1000_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Fine_XPT.csv"))
-PostBurn_all_M <- read.csv(paste0(path_data_M, "Post Burn Severity_XPT.csv"))
-Trees_all_M <- read.csv(paste0(path_data_M, "Trees - Individuals (metric)_XPT.csv"))
+Fuels1000_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+FuelsDuffLitt_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Duff_Litter_XPT.csv"), quote = "")
+FuelsFine_all_M <- read.csv(paste0(path_data_M, "Surface Fuels - Fine_XPT.csv"), quote = "")
+PostBurn_all_M <- read.csv(paste0(path_data_M, "Post Burn Severity_XPT.csv"), quote = "")
+Trees_all_M <- read.csv(paste0(path_data_M, "Trees - Individuals (metric)_XPT.csv"), quote = "")
 ```
 
 Pinyon Juniper
 
 ```{r}
 # Load in data
-Fuels1000_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Fine_XPT.csv"))
-PostBurn_all_P <- read.csv(paste0(path_data_P, "Post Burn Severity_XPT.csv"))
-Trees_all_P <- read.csv(paste0(path_data_P, "Trees - Individuals (metric)_XPT.csv"))
+Fuels1000_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+FuelsDuffLitt_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Duff_Litter_XPT.csv"), quote = "")
+FuelsFine_all_P <- read.csv(paste0(path_data_P, "Surface Fuels - Fine_XPT.csv"), quote = "")
+PostBurn_all_P <- read.csv(paste0(path_data_P, "Post Burn Severity_XPT.csv"), quote = "")
+Trees_all_P <- read.csv(paste0(path_data_P, "Trees - Individuals (metric)_XPT.csv"), quote = "")
 ```
 
 ### Merge Data
@@ -357,7 +357,7 @@ errors_Fuels1000_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Fuels1000_header
-query <- "Fuel 1000 Header NumTran"
+query <- "Fuel 1000 Header"
 query_message <- "Number of Transects" 
 values_data <- data$NumTran
 values_valid <- 3
@@ -372,7 +372,7 @@ errors_Fuels1000_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Fuels1000_header
-query <- "Fuel 1000 Header TranLen" 
+query <- "Fuel 1000 Header" 
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 50  
@@ -388,7 +388,7 @@ errors_Fuels1000_TranLen <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Fuels1000_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel 1000 Header FieldTeam" 
+query <- "Fuel 1000 Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -404,7 +404,7 @@ errors_Fuels1000_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Fuels1000_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel 1000 Header EntryTeam" 
+query <- "Fuel 1000 Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -635,7 +635,7 @@ errors_FuelsDuffLitt_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsDuffLitt_header
-query <- "Fuel DL Header NumTran" 
+query <- "Fuel DL Header" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 3    
@@ -651,7 +651,7 @@ errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsDuffLitt_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel DL Header FieldTeam" 
+query <- "Fuel DL Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -667,7 +667,7 @@ errors_FuelsDuffLitt_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsDuffLitt_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel DL Header EntryTeam" 
+query <- "Fuel DL Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -831,7 +831,7 @@ remove(errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 
 ### Fuel DL Zero
 
-[Problem:]{.underline}  Values entered for columns which should be blank
+[Problem:]{.underline}  Values entered for columns which should be blank.
 
 [Procedure:]{.underline}
 
@@ -923,7 +923,7 @@ errors_FuelsFine_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header NumTran" 
+query <- "Fuel Fine Header" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 3    
@@ -938,7 +938,7 @@ errors_FuelsFine_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header OneHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "One Hour Transect Length"  
 values_data <- data$OneHrTranLen
 values_valid <- 6
@@ -953,7 +953,7 @@ errors_FuelsFine_OneHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header TenHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "Ten Hour Transect Length"  
 values_data <- data$TenHrTranLen 
 values_valid <- 6
@@ -968,7 +968,7 @@ errors_FuelsFine_TenHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header HunHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "Hundrend Hour Transect Length"  
 values_data <- data$HunHrTranLen 
 values_valid <- 12
@@ -984,7 +984,7 @@ errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsFine_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel Fine Header FieldTeam" 
+query <- "Fuel Fine Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1000,7 +1000,7 @@ errors_FuelsFine_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsFine_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel Fine Header EntryTeam" 
+query <- "Fuel Fine Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -1258,7 +1258,7 @@ errors_PostBurn_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header NumTran"
+query <- "PBSev Header"
 query_message <- "Number of Transects"
 values_data <- data$NumTran
 values_valid <- 3
@@ -1273,7 +1273,7 @@ errors_PostBurn_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header TranLen"
+query <- "PBSev Header"
 query_message <- "Transect Length"
 values_data <- data$TranLen
 values_valid <- 50
@@ -1288,7 +1288,7 @@ errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header NumPtsTran"
+query <- "PBSev Header"
 query_message <- "Number of Points"
 values_data <- data$NumPtsTran
 values_valid <- 10
@@ -1303,7 +1303,7 @@ errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header PlotType"
+query <- "PBSev Header"
 query_message <- "Plot Type"
 values_data <- data$PlotType
 values_valid <- "Forest"
@@ -1319,7 +1319,7 @@ errors_PostBurn_PlotType <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- PostBurn_header
 data$PtArea[is.na(data$PtArea)] <- ""
-query <- "PBSev Header PtArea"
+query <- "PBSev Header"
 query_message <- "Point Area"
 values_data <- data$PtArea
 values_valid <- ""
@@ -1335,7 +1335,7 @@ errors_PostBurn_PtArea <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- PostBurn_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "PBSev Header FieldTeam" 
+query <- "PBSev Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1351,7 +1351,7 @@ errors_PostBurn_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- PostBurn_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "PBSev Header EntryTeam" 
+query <- "PBSev Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -1507,7 +1507,7 @@ It checks for errors in: headers, crown base height, crown class, damage codes, 
 
 ### Trees Complete
 
-[Problem:]{.underline} Extra or missing data points in I&M plots. Plots with no trees should be verified.
+[Problem:]{.underline} Missing data points in I&M plots. Plots with no trees should be verified.
 
 [Procedure:]{.underline}
 
@@ -1550,7 +1550,7 @@ errors_Trees_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header MacroPlotSize" 
+query <- "Trees Header" 
 query_message <- "Macro Plot Size"  
 values_data <- data$MacroPlotSize  
 values_valid <- 0.1    
@@ -1565,7 +1565,7 @@ errors_Trees_MacroPlotSize <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header SnagPlotSize" 
+query <- "Trees Header" 
 query_message <- "Snag Plot Size"  
 values_data <- data$SnagPlotSize
 values_valid <- 0.1    
@@ -1580,7 +1580,7 @@ errors_Trees_SnagPlotSize <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header BrkPntDia" 
+query <- "Trees Header" 
 query_message <- "Break Point Diameter"  
 values_data <- data$BrkPntDia
 values_valid <- c(15, 10)
@@ -1596,7 +1596,7 @@ errors_Trees_BrkPntDia <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Trees_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Trees Header FieldTeam" 
+query <- "Trees Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1612,7 +1612,7 @@ errors_Trees_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Trees_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Trees Header EntryTeam" 
+query <- "Trees Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -2238,6 +2238,8 @@ remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
 ```{r}
 # Check for tag duplication and store results in new column
 data_temp <- Trees_data %>% 
+  # tag 0 can be duplicate
+  filter(!TagNo == 0) %>% 
   get_dupes(Date, MacroPlot.Name, SubFrac, TagNo)
 
 # Set parameters 
@@ -2269,7 +2271,7 @@ data <- Trees_data %>%
    filter(!CrwnCl %in% c("DD", "BBD", "CUS"))
 data$Ht[is.na(data$Ht)] <- ""
 query <- "Trees Height Standing" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Standing tree. Height")
+query_message <- paste0("Standing tree. Height")
 values_data <- data$Ht
 values_valid <- ""
 values_check <- values_data != values_valid
@@ -2351,7 +2353,7 @@ data <- Trees_data %>%
   filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
 data$CharHt[is.na(data$CharHt)] <- ""
 query <- "Trees Non-Post Severity CharHt" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Non-post read. Char Height")
+query_message <- paste0("Non-post read. Char Height")
 values_data <- data$CharHt
 values_valid <- ""
 values_check <- values_data == values_valid
@@ -2366,7 +2368,7 @@ data <- Trees_data %>%
   filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
 data$ScorchHt[is.na(data$ScorchHt)] <- ""
 query <- "Trees Non-Post Severity ScorchHt" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Non-post read. Scorch Height")
+query_message <- paste0("Non-post read. Scorch Height")
 values_data <- data$ScorchHt
 values_valid <- ""
 values_check <- values_data == values_valid
@@ -2381,7 +2383,7 @@ data <- Trees_data %>%
   filter(!Monitoring.Status %in% c("01Post", "02Post", "03Post", "04Post"))
 data$CrScPct[is.na(data$CrScPct)] <- ""
 query <- "Trees Non-Post Severity CrScPct" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Non-post read. Crown Scorch Percent")
+query_message <- paste0("Non-post read. Crown Scorch Percent")
 values_data <- data$CrScPct
 values_valid <- ""
 values_check <- values_data == values_valid

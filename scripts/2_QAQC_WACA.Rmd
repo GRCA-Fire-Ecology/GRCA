@@ -126,11 +126,11 @@ qaqc <- function(data, query, query_message, values_check) {
 
 ```{r}
 # Load in data
-Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"))
-FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"))
-FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"))
-PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"))
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"))
+Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+FuelsDuffLitt_all <- read.csv(paste0(path_data, "Surface Fuels - Duff_Litter_XPT.csv"), quote = "")
+FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"), quote = "")
+PostBurn_all <- read.csv(paste0(path_data, "Post Burn Severity_XPT.csv"), quote = "")
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
 ```
 
 ### Clean & Filter Data
@@ -298,7 +298,7 @@ errors_Fuels1000_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Fuels1000_header
-query <- "Fuel 1000 Header NumTran"
+query <- "Fuel 1000 Header"
 query_message <- "Number of Transects" 
 values_data <- data$NumTran
 values_valid <- 4
@@ -313,7 +313,7 @@ errors_Fuels1000_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Fuels1000_header
-query <- "Fuel 1000 Header TranLen" 
+query <- "Fuel 1000 Header" 
 query_message <- "Transect Length" 
 values_data <- data$TranLen 
 values_valid <- 50  
@@ -329,7 +329,7 @@ errors_Fuels1000_TranLen <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Fuels1000_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel 1000 Header FieldTeam" 
+query <- "Fuel 1000 Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -345,7 +345,7 @@ errors_Fuels1000_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Fuels1000_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel 1000 Header EntryTeam" 
+query <- "Fuel 1000 Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -575,7 +575,7 @@ errors_FuelsDuffLitt_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsDuffLitt_header
-query <- "Fuel DL Header NumTran" 
+query <- "Fuel DL Header" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 4   
@@ -591,7 +591,7 @@ errors_FuelsDuffLitt_NumTran <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsDuffLitt_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel DL Header FieldTeam" 
+query <- "Fuel DL Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -607,7 +607,7 @@ errors_FuelsDuffLitt_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsDuffLitt_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel DL Header EntryTeam" 
+query <- "Fuel DL Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -771,7 +771,7 @@ remove(errors_FuelsDuffLitt_LittDep, errors_FuelsDuffLitt_DuffDep)
 
 ### Fuel DL Zero
 
-[Problem:]{.underline}  Values entered for columns which should be blank
+[Problem:]{.underline}  Values entered for columns which should be blank.
 
 [Procedure:]{.underline}
 
@@ -863,7 +863,7 @@ errors_FuelsFine_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header NumTran" 
+query <- "Fuel Fine Header" 
 query_message <- "Number of Transects"  
 values_data <- data$NumTran  
 values_valid <- 4   
@@ -878,7 +878,7 @@ errors_FuelsFine_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header OneHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "One Hour Transect Length"  
 values_data <- data$OneHrTranLen
 values_valid <- 6
@@ -893,7 +893,7 @@ errors_FuelsFine_OneHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header TenHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "Ten Hour Transect Length"  
 values_data <- data$TenHrTranLen 
 values_valid <- 6
@@ -908,7 +908,7 @@ errors_FuelsFine_TenHrTranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- FuelsFine_header
-query <- "Fuel Fine Header HunHrTranLen" 
+query <- "Fuel Fine Header" 
 query_message <- "Hundrend Hour Transect Length"  
 values_data <- data$HunHrTranLen 
 values_valid <- 12
@@ -924,7 +924,7 @@ errors_FuelsFine_HunHrTranLen <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsFine_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Fuel Fine Header FieldTeam" 
+query <- "Fuel Fine Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -940,7 +940,7 @@ errors_FuelsFine_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- FuelsFine_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Fuel Fine Header EntryTeam" 
+query <- "Fuel Fine Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -1198,7 +1198,7 @@ errors_PostBurn_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header NumTran"
+query <- "PBSev Header"
 query_message <- "Number of Transects"
 values_data <- data$NumTran
 values_valid <- 4
@@ -1213,7 +1213,7 @@ errors_PostBurn_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header TranLen"
+query <- "PBSev Header"
 query_message <- "Transect Length"
 values_data <- data$TranLen
 values_valid <- 50
@@ -1228,7 +1228,7 @@ errors_PostBurn_TranLen <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header NumPtsTran"
+query <- "PBSev Header"
 query_message <- "Number of Points"
 values_data <- data$NumPtsTran
 values_valid <- 10
@@ -1244,7 +1244,7 @@ errors_PostBurn_NumPtsTran <- qaqc(data, query, query_message, values_check)
 # Set parameters
 data <- PostBurn_header
 data$PlotType[is.na(data$PlotType)] <- ""
-query <- "PBSev Header PlotType"
+query <- "PBSev Header"
 query_message <- "Plot Type"
 values_data <- data$PlotType
 values_valid <- ""
@@ -1259,7 +1259,7 @@ errors_PostBurn_PlotType <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters
 data <- PostBurn_header
-query <- "PBSev Header PtArea"
+query <- "PBSev Header"
 query_message <- "Point Area"
 values_data <- data$PtArea
 values_valid <- 0
@@ -1275,7 +1275,7 @@ errors_PostBurn_PtArea <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- PostBurn_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "PBSev Header FieldTeam" 
+query <- "PBSev Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1291,7 +1291,7 @@ errors_PostBurn_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- PostBurn_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "PBSev Header EntryTeam" 
+query <- "PBSev Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -1447,7 +1447,7 @@ It checks for errors in: headers, crown base height, crown class, damage codes, 
 
 ### Trees Complete
 
-[Problem:]{.underline} Extra or missing data points in WACA plots. Plots with no trees should be verified.
+[Problem:]{.underline} Missing data points in WACA plots. Plots with no trees should be verified.
 
 [Procedure:]{.underline}
 
@@ -1490,7 +1490,7 @@ errors_Trees_Complete <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header MacroPlotSize" 
+query <- "Trees Header" 
 query_message <- "Macro Plot Size"  
 values_data <- data$MacroPlotSize  
 values_valid <- 0.1    
@@ -1505,7 +1505,7 @@ errors_Trees_MacroPlotSize <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header SnagPlotSize" 
+query <- "Trees Header" 
 query_message <- "Snag Plot Size"  
 values_data <- data$SnagPlotSize
 values_valid <- 0.1    
@@ -1520,7 +1520,7 @@ errors_Trees_SnagPlotSize <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters  
 data <- Trees_header
-query <- "Trees Header BrkPntDia" 
+query <- "Trees Header" 
 query_message <- "Break Point Diameter"  
 values_data <- data$BrkPntDia
 values_valid <- c(15.1)
@@ -1536,7 +1536,7 @@ errors_Trees_BrkPntDia <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Trees_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Trees Header FieldTeam" 
+query <- "Trees Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -1552,7 +1552,7 @@ errors_Trees_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Trees_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Trees Header EntryTeam" 
+query <- "Trees Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
