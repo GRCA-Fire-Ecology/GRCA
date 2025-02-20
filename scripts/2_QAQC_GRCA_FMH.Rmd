@@ -134,7 +134,7 @@ Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"),
 Seedlings_all <- read.csv(paste0(path_data, "Density - Quadrats (metric)_XPT.csv"), quote = "")
 Shrubs_all <- read.csv(paste0(path_data, "Density - Belts (metric)_XPT.csv"), quote = "")
 HerbsObs_all <- read.csv(paste0(path_data, "Cover - Species Composition (metric)_XPT.csv"), quote = "")
-# HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"), quote = "")
+HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv"), quote = "")
 ```
 
 ### Clean & Filter Data
@@ -318,23 +318,23 @@ HerbsObs_header <- HerbsObs_all %>%
 HerbsPoints
 
 ```{r}
-# # Clean up data frame 
-# HerbsPoints_all <- HerbsPoints_all %>%  
-#   # Separate Date column into Date and Time columns   
-#   separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-#   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-#   select(!c("Month", "Day", "Time"))
-# 
-# # Ensure blanks in Visited column are NA 
-# HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA  
-# 
-# # Filter for only data 
-# HerbsPoints_data <- HerbsPoints_all %>%   
-#   filter(is.na(Visited), Year %in% c(2024))  
-# 
-# # Filter for only headers 
-# HerbsPoints_header <- HerbsPoints_all %>%   
-#   filter(!is.na(Visited), Year %in% c(2024))
+# Clean up data frame
+HerbsPoints_all <- HerbsPoints_all %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  select(!c("Month", "Day", "Time"))
+
+# Ensure blanks in Visited column are NA
+HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA
+
+# Filter for only data
+HerbsPoints_data <- HerbsPoints_all %>%
+  filter(is.na(Visited), Year %in% c(2024))
+
+# Filter for only headers
+HerbsPoints_header <- HerbsPoints_all %>%
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 # PROTOCOL - SURFACE FUELS
@@ -3835,7 +3835,16 @@ remove()
 
 [Procedure:]{.underline}
 
--   Check that Count is not blank or 0 or excessively high
+-   Check that Count is not blank or 0
+-   Check that Count is not excessively high
+
+#### Combine Count Errors
+
+```{r}
+errors_Shrubs_Count <- unique(rbind(errors_Shrubs_Count_Min, errors_Shrubs_Count_Max))
+
+remove(errors_Shrubs_Count_Min, errors_Shrubs_Count_Max)
+```
 
 ### Shrubs LifeForm
 
@@ -4158,6 +4167,134 @@ path_errors
 This code conducts quality control checks on point line intercept herbaceous data within the "Cover - Points (metric)" data set.
 
 It checks for errors in:
+
+### HerbsPts Complete
+
+[Problem:]{.underline} Extra of missing data points in FMH plots. There should be 166 rows with Order = 1 for each transect.
+
+[Note:]{.underline} Ignore all other order numbers (blank or \>1)
+
+[Procedure:]{.underline}
+
+-   Sort by Order. Check that every Order = 1 row has a RowCount = 166
+
+<!-- -->
+
+-   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+
+### HerbsPts Header
+
+[Problem:]{.underline} Incorrect header information entered.
+
+[Procedure:]{.underline}
+
+-   Check that NumTran = 2
+
+-   Check that TranLen = 49.8 or 50
+
+-   Check that NumPtsTran = 166
+
+-   Check that Offset = 0
+
+-   Check that FieldTeam is [not]{.underline} blank
+
+-   Check that EntryTeam is [not]{.underline} blank
+
+#### Combine Header Errors
+
+```{r}
+errors_HerbsPts_Header <- unique(rbind())
+
+remove()
+```
+
+Ø  Query: Cvr_Pts_Height
+
+[Problem:]{.underline} Height taller than 2 meters entered.
+
+[Procedure:]{.underline}
+
+o   Sort by Height. Check that Height ≤ 2
+
+Ø  Query: Cvr_Pts_hits_repeat
+
+[Problem:]{.underline} Repeated herb line measurements.
+
+[Procedure:]{.underline}
+
+o   Sort by RowCount. Check that RowCount = 1
+
+Ø  Query: Cvr_Pts_OrderHt
+
+[Problem:]{.underline} Height entered for species that is not the tallest species at a point. The tallest species should have Order = 1. All shorter species should have Order \> 1 and no height.
+
+[Procedure:]{.underline}
+
+o   Sort by Order. Check that all Order \>1 rows have Height = blank
+
+[Note:]{.underline} There will be one row with Order = 1 and Height = blank
+
+Ø  Query: Cvr_Pts_Order_repeat
+
+[Problem:]{.underline} Repeated records for a particular order at a single point.
+
+[Procedure:]{.underline}
+
+o   Sort by RowCount. Check that RowCount = 1
+
+Ø  Query: Cvr_Pts_Status
+
+[Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
+
+[Procedure:]{.underline}
+
+o   Sort by Status.
+
+o   Check that Status = L or D.
+
+o   On the Filter tab, under Species, click on Biological Not Filtered until it changes to Biological Only. Apply Selections, Sort by Status, check for annual herbaceous species with Status = D (entirely new query?).
+
+Ø  Query: Cvr_Pts_SubHt
+
+[Problem:]{.underline} Height entered for a substrate.
+
+[Procedure:]{.underline}
+
+o   Check that Height = blank (i.e. no records should appear in the query)
+
+Ø  Query: Cvr_Pts_SubOrder
+
+[Problem:]{.underline} Substrates recorded beneath plants or multiple substrates recorded at a point.
+
+[Procedure:]{.underline}
+
+o   Check that Order = 1
+
+Ø  Query: Cvr_Pts_SubStat
+
+[Problem:]{.underline} Substrates entered as living rather than dead.
+
+[Procedure:]{.underline}
+
+o   Check that Status = D
+
+Ø  Query: Cvr_Pts_Tran
+
+[Problem:]{.underline} Incorrect transect numbers entered or transect number missing.
+
+[Procedure:]{.underline}
+
+o   Sort by Transect.
+
+o   Check that Transect = 1 or 2
+
+### HerbsPts Errors
+
+```{r}
+errors_HerbsPts <- rbind(errors_HerbsPts_Complete, errors_blank, errors_HerbsPts_Header, errors_blank, )
+
+remove()
+```
 
 # CROSS PROTOCOL CHECKS
 
