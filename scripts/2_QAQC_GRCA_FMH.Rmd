@@ -2959,14 +2959,363 @@ errors_Trees_UV <- unique(rbind(errors_Trees_UV1, errors_Trees_UV2, errors_Trees
 remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
 ```
 
+## Trees Zero
+
+[Problem:]{.underline}  Values entered for columns which should be blank.
+
+[Procedure:]{.underline}
+
+-   Check that Age = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$Age[is.na(data$Age)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Age"
+values_data <- data$Age
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_Age <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that CKR = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$CKR[is.na(data$CKR)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "CKR (Cambium Kill Rating)"
+values_data <- data$CKR
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_CKR <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that CrFuBHt = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$CrFuBHt[is.na(data$CrFuBHt)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Crown Fuel Base Height"
+values_data <- data$CrFuBHt
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_CrFuBHt <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that CrwnRad = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$CrwnRad[is.na(data$CrwnRad)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Crown Radius"
+values_data <- data$CrwnRad
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_CrwnRad <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that CrwnRto = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$CrwnRto[is.na(data$CrwnRto)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Crown Ratio"
+values_data <- data$CrwnRto
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_CrwnRto <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that DamSev (1-5) = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$DamSev1[is.na(data$DamSev1)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Damage Severity 1"
+values_data <- data$DamSev1
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_DamSev1 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$DamSev2[is.na(data$DamSev2)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Damage Severity 2"
+values_data <- data$DamSev2
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_DamSev2 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$DamSev3[is.na(data$DamSev3)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Damage Severity 3"
+values_data <- data$DamSev3
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_DamSev3 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$DamSev4[is.na(data$DamSev4)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Damage Severity 4"
+values_data <- data$DamSev4
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_DamSev4 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$DamSev5[is.na(data$DamSev5)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Damage Severity 5"
+values_data <- data$DamSev5
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_DamSev5 <- qaqc(data, query, query_message, values_check)
+```
+
+```{r}
+# Combine DamSev Errors
+errors_Trees_DamSev <- unique(rbind(errors_Trees_DamSev1, errors_Trees_DamSev2, errors_Trees_DamSev3, errors_Trees_DamSev4, errors_Trees_DamSev5))
+
+remove(errors_Trees_DamSev1, errors_Trees_DamSev2, errors_Trees_DamSev3, errors_Trees_DamSev4, errors_Trees_DamSev5)
+```
+
+-   Check that DecayCl = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$DecayCl[is.na(data$DecayCl)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Decay Class"
+values_data <- data$DecayCl
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_DecayCl <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that DRC = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$DRC[is.na(data$DRC)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "DRC (Diameter at Root Collar)"
+values_data <- data$DRC
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_DRC <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that EqDia = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$EqDia[is.na(data$EqDia)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Eq Diameter"
+values_data <- data$EqDia
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_EqDia <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that GrwthRt = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$GrwthRt[is.na(data$GrwthRt)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Growth Rate"
+values_data <- data$GrwthRt
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_GrwthRt <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that LaddBaseHt = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$LaddBaseHt[is.na(data$LaddBaseHt)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Ladder Base Height"
+values_data <- data$LaddBaseHt
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_LaddBaseHt <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that LaddMaxHt = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$LaddMaxHt[is.na(data$LaddMaxHt)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Ladder Max Height"
+values_data <- data$LaddMaxHt
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_LaddMaxHt <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Mort = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$Mort[is.na(data$Mort)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Mortality"
+values_data <- data$Mort
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_Mort <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NuDeStems = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$NuDeStems[is.na(data$NuDeStems)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Number of Dead Stems"
+values_data <- data$NuDeStems
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_NuDeStems <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NuLiStems = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$NuLiStems[is.na(data$NuLiStems)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Number of Live Stems"
+values_data <- data$NuLiStems
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_NuLiStems <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that XCoord = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$XCoord[is.na(data$XCoord)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "X Coordinate"
+values_data <- data$XCoord
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_XCoord <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that Ycoord = blank
+
+```{r}
+# Set parameters
+data <- Trees_data
+data$YCoord[is.na(data$YCoord)] <- ""
+query <- "Trees Zero/NA"
+query_message <- "Y Coordinate"
+values_data <- data$YCoord
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Trees_YCoord <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Zero Errors
+
+```{r}
+errors_Trees_Zero <- unique(rbind(errors_Trees_Age, errors_Trees_CKR, errors_Trees_CrFuBHt, errors_Trees_CrwnRad, errors_Trees_CrwnRto, errors_Trees_DamSev, errors_Trees_DecayCl, errors_Trees_DRC, errors_Trees_EqDia, errors_Trees_GrwthRt, errors_Trees_LaddBaseHt, errors_Trees_LaddMaxHt, errors_Trees_Mort, errors_Trees_NuDeStems, errors_Trees_NuLiStems, errors_Trees_XCoord, errors_Trees_YCoord))
+
+remove(errors_Trees_Age, errors_Trees_CKR, errors_Trees_CrFuBHt, errors_Trees_CrwnRad, errors_Trees_CrwnRto, errors_Trees_DamSev, errors_Trees_DecayCl, errors_Trees_DRC, errors_Trees_EqDia, errors_Trees_GrwthRt, errors_Trees_LaddBaseHt, errors_Trees_LaddMaxHt, errors_Trees_Mort, errors_Trees_NuDeStems, errors_Trees_NuLiStems, errors_Trees_XCoord, errors_Trees_YCoord)
+```
+
 ## Trees Errors
 
 ```{r}
 # errors_Trees <- unique(rbind(errors_Trees_Complete, errors_Trees_Header, errors_Trees_CBH, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Height, errors_Trees_LifeForm, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Quarter, errors_Trees_Status, errors_Trees_SubFrac, errors_Trees_UV))
 
-errors_Trees <- rbind(errors_Trees_Complete, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Char, errors_blank, errors_Trees_Post_ScorchHt, errors_blank, errors_Trees_Post_ScorchPct, errors_blank, errors_Trees_Quarter, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_SubFrac, errors_blank, errors_Trees_UV)
+errors_Trees <- rbind(errors_Trees_Complete, errors_blank, errors_Trees_Header, errors_blank, errors_Trees_CBH, errors_blank, errors_Trees_CrwnCl, errors_blank, errors_Trees_DamCd, errors_blank, errors_Trees_DBH, errors_blank, errors_Trees_DD, errors_blank, errors_Trees_Duplicate, errors_blank, errors_Trees_Height, errors_blank, errors_Trees_LifeForm, errors_blank, errors_Trees_NonPost_Severity, errors_blank, errors_Trees_Post_Char, errors_blank, errors_Trees_Post_ScorchHt, errors_blank, errors_Trees_Post_ScorchPct, errors_blank, errors_Trees_Quarter, errors_blank, errors_Trees_Status, errors_blank, errors_Trees_SubFrac, errors_blank, errors_Trees_UV, errors_blank, errors_Trees_Zero)
 
-remove(errors_Trees_Complete, errors_Trees_Header, errors_Trees_CBH, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Height, errors_Trees_LifeForm, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Quarter, errors_Trees_Status, errors_Trees_SubFrac, errors_Trees_UV)
+remove(errors_Trees_Complete, errors_Trees_Header, errors_Trees_CBH, errors_Trees_CrwnCl, errors_Trees_DamCd, errors_Trees_DBH, errors_Trees_DD, errors_Trees_Duplicate, errors_Trees_Height, errors_Trees_LifeForm, errors_Trees_NonPost_Severity, errors_Trees_Post_Char, errors_Trees_Post_ScorchHt, errors_Trees_Post_ScorchPct, errors_Trees_Quarter, errors_Trees_Status, errors_Trees_SubFrac, errors_Trees_UV, errors_Trees_Zero)
 ```
 
 ```{r}
@@ -3031,8 +3380,8 @@ errors_Seedlings_Complete <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Seedlings_header %>% 
   filter(MacroPlot.Purpose %in% c("PIED", "PIPO", "PIPN"))
-query <- "Dens Quad Header Area 250" 
-query_message <- paste0("Area")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 250. Area")
 values_data <- data$Area
 values_valid <- 250
 values_check <- values_data == values_valid
@@ -3047,8 +3396,8 @@ errors_Seedlings_Area_1 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Seedlings_header %>% 
   filter(MacroPlot.Purpose %in% c("PIEN", "PIAB"))
-query <- "Dens Quad Header Area 50" 
-query_message <- paste0("Area")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 50. Area")
 values_data <- data$Area
 values_valid <- 50
 values_check <- values_data == values_valid
@@ -3063,8 +3412,8 @@ errors_Seedlings_Area_2 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Seedlings_header %>% 
   filter(MacroPlot.Purpose %in% c("PIED", "PIPO", "PIPN"))
-query <- "Dens Quad Header QuadWid 25" 
-query_message <- paste0("Quad Width")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 25. Quad Width")
 values_data <- data$QuadWid
 values_valid <- 25
 values_check <- values_data == values_valid
@@ -3079,8 +3428,8 @@ errors_Seedlings_QuadWid_1 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Seedlings_header %>% 
   filter(MacroPlot.Purpose %in% c("PIEN", "PIAB"))
-query <- "Dens Quad Header QuadWid 10" 
-query_message <- paste0("Quad Width")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 10. Quad Width")
 values_data <- data$QuadWid
 values_valid <- 10
 values_check <- values_data == values_valid
@@ -3095,8 +3444,8 @@ errors_Seedlings_QuadWid_2 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Seedlings_header %>% 
   filter(MacroPlot.Purpose %in% c("PIED", "PIPO", "PIPN"))
-query <- "Dens Quad Header QuadLen 10" 
-query_message <- paste0("Quad Length")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 10. Quad Length")
 values_data <- data$QuadLen
 values_valid <- 10
 values_check <- values_data == values_valid
@@ -3111,8 +3460,8 @@ errors_Seedlings_QuadLen_1 <- qaqc(data, query, query_message, values_check)
 # Set parameters 
 data <- Seedlings_header %>% 
   filter(MacroPlot.Purpose %in% c("PIEN", "PIAB"))
-query <- "Dens Quad Header QuadLen 5" 
-query_message <- paste0("Quad Length")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 5. Quad Length")
 values_data <- data$QuadLen
 values_valid <- 5
 values_check <- values_data == values_valid
@@ -3126,8 +3475,8 @@ errors_Seedlings_QuadLen_2 <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Seedlings_header
-query <- "Dens Quad Header NumTran" 
-query_message <- paste0("Number of Transects")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 1. Number of Transects")
 values_data <- data$NumTran
 values_valid <- 1
 values_check <- values_data == values_valid
@@ -3141,8 +3490,8 @@ errors_Seedlings_NumTran <- qaqc(data, query, query_message, values_check)
 ```{r}
 # Set parameters 
 data <- Seedlings_header
-query <- "Dens Quad Header NumQuadTran" 
-query_message <- paste0("Number Quad Transects")
+query <- "Dens Quad Header" 
+query_message <- paste0("Correct Value = 1. Number Quad Transects")
 values_data <- data$NumQuadTran
 values_valid <- 1
 values_check <- values_data == values_valid
@@ -3157,7 +3506,7 @@ errors_Seedlings_NumQuadTran <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Seedlings_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Dens Quad Header FieldTeam" 
+query <- "Dens Quad Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -3173,7 +3522,7 @@ errors_Seedlings_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- Seedlings_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Dens Quad Header EntryTeam" 
+query <- "Dens Quad Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
@@ -3615,7 +3964,7 @@ errors_HerbsObs_Complete <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- HerbsObs_header
 data$MinCovLevel[is.na(data$MinCovLevel)] <- ""
-query <- "Cvr SpComp Header MinCovLevel" 
+query <- "Cvr SpComp Header" 
 query_message <- "Min Cover Level"  
 values_data <- data$MinCovLevel
 values_valid <- ""
@@ -3631,7 +3980,7 @@ errors_HerbsObs_MinCovLevel <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- HerbsObs_header
 data$Area[is.na(data$Area)] <- ""
-query <- "Cvr SpComp Header Area" 
+query <- "Cvr SpComp Header" 
 query_message <- "Area"  
 values_data <- data$Area
 values_valid <- ""
@@ -3647,7 +3996,7 @@ errors_HerbsObs_Area <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- HerbsObs_header
 data$FieldTeam[is.na(data$FieldTeam)] <- ""
-query <- "Cvr SpComp Header FieldTeam" 
+query <- "Cvr SpComp Header" 
 query_message <- "Collected By"  
 values_data <- data$FieldTeam
 values_valid <- ""
@@ -3663,7 +4012,7 @@ errors_HerbsObs_FieldTeam <- qaqc(data, query, query_message, values_check)
 # Set parameters  
 data <- HerbsObs_header
 data$EntryTeam[is.na(data$EntryTeam)] <- ""
-query <- "Cvr SpComp Header EntryTeam" 
+query <- "Cvr SpComp Header" 
 query_message <- "Entered/Verified By"  
 values_data <- data$EntryTeam
 values_valid <- ""
