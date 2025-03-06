@@ -4582,19 +4582,42 @@ This code conducts quality control checks on point line intercept herbaceous dat
 
 It checks for errors in:
 
-### HerbsPts Complete
+### HerbsPoints Complete
 
 [Problem:]{.underline} Extra of missing data points in FMH plots. There should be 166 rows with Order = 1 for each transect.
 
-[Note:]{.underline} Ignore all other order numbers (blank or \>1)
-
 [Procedure:]{.underline}
 
--   Sort by Order. Check that every Order = 1 row has a RowCount = 166
+-   Filter by Order = 1. Group by Macroplot, Date, and Transect. Calculate number of hits per plot. Check that sum_hits = 166
 
--   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- HerbsPoints_data %>%
+  filter(Order == 1) %>% 
+  group_by(MacroPlot.Name, Date, Transect) %>% 
+  dplyr::summarize("sum_hits" = n())
 
-### HerbsPts Header
+data_temp2 <- HerbsPoints_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(HerbsPoints_data, data_temp, by = c("MacroPlot.Name", "Date", "Transect"), all = T)
+query <- "Cvr Pts Complete" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Total Points") 
+values_data <- data$sum_hits
+values_valid <- 166
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_Complete <- qaqc(data, query, query_message, values_check)
+```
+
+### HerbsPoints Header
 
 [Problem:]{.underline} Incorrect header information entered.
 
@@ -4602,114 +4625,279 @@ It checks for errors in:
 
 -   Check that NumTran = 2
 
+```{r}
+# Set parameters 
+data <- HerbsPoints_header
+query <- "Cvr Pts Header" 
+query_message <- paste0("Number of Transects")
+values_data <- data$NumTran
+values_valid <- 2
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_NumTran <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that TranLen = 49.8 or 50
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_header
+query <- "Cvr Pts Header" 
+query_message <- paste0("Transect Length")
+values_data <- data$TranLen
+values_valid <- c(49.8, 50)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_TranLen <- qaqc(data, query, query_message, values_check)
+```
 
 -   Check that NumPtsTran = 166
 
+```{r}
+# Set parameters 
+data <- HerbsPoints_header
+query <- "Cvr Pts Header" 
+query_message <- paste0("Number of Points per Transect")
+values_data <- data$NumPtsTran
+values_valid <- 166
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_NumPtsTran <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that Offset = 0
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_header
+query <- "Cvr Pts Header" 
+query_message <- paste0("Offset")
+values_data <- data$Offset
+values_valid <- 0
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_Offset <- qaqc(data, query, query_message, values_check)
+```
 
 -   Check that FieldTeam is [not]{.underline} blank
 
+```{r}
+# Set parameters  
+data <- HerbsPoints_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Cvr Pts Header" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_HerbsPoints_FieldTeam <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- HerbsPoints_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Cvr Pts Header" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_HerbsPoints_EntryTeam <- qaqc(data, query, query_message, values_check)
+```
 
 #### Combine Header Errors
 
 ```{r}
-errors_HerbsPts_Header <- unique(rbind())
+errors_HerbsPoints_Header <- unique(rbind(errors_HerbsPoints_NumTran, errors_HerbsPoints_TranLen, errors_HerbsPoints_NumPtsTran, errors_HerbsPoints_Offset, errors_HerbsPoints_FieldTeam, errors_HerbsPoints_EntryTeam))
 
-remove()
+remove(errors_HerbsPoints_NumTran, errors_HerbsPoints_TranLen, errors_HerbsPoints_NumPtsTran, errors_HerbsPoints_Offset, errors_HerbsPoints_FieldTeam, errors_HerbsPoints_EntryTeam)
 
-if(nrow(errors_HerbsPts_Header) > 1) {
-  errors_HerbsPts_Header <- errors_HerbsPts_Header %>%
+if(nrow(errors_HerbsPoints_Header) > 1) {
+  errors_HerbsPoints_Header <- errors_HerbsPoints_Header %>%
     filter(Error != "No Error")
 } else {
-  errors_HerbsPts_Header <- errors_HerbsPts_Header}
+  errors_HerbsPoints_Header <- errors_HerbsPoints_Header}
 ```
 
-Ø  Query: Cvr_Pts_Height
+### HerbsPoints Height
 
 [Problem:]{.underline} Height taller than 2 meters entered.
-
-[Procedure:]{.underline}
-
-o   Sort by Height. Check that Height ≤ 2
-
-Ø  Query: Cvr_Pts_hits_repeat
-
-[Problem:]{.underline} Repeated herb line measurements.
-
-[Procedure:]{.underline}
-
-o   Sort by RowCount. Check that RowCount = 1
-
-Ø  Query: Cvr_Pts_OrderHt
-
-[Problem:]{.underline} Height entered for species that is not the tallest species at a point. The tallest species should have Order = 1. All shorter species should have Order \> 1 and no height.
-
-[Procedure:]{.underline}
-
-o   Sort by Order. Check that all Order \>1 rows have Height = blank
-
-[Note:]{.underline} There will be one row with Order = 1 and Height = blank
-
-Ø  Query: Cvr_Pts_Order_repeat
-
-[Problem:]{.underline} Repeated records for a particular order at a single point.
-
-[Procedure:]{.underline}
-
-o   Sort by RowCount. Check that RowCount = 1
-
-Ø  Query: Cvr_Pts_Status
-
-[Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
-
-[Procedure:]{.underline}
-
-o   Sort by Status.
-
-o   Check that Status = L or D.
-
-o   On the Filter tab, under Species, click on Biological Not Filtered until it changes to Biological Only. Apply Selections, Sort by Status, check for annual herbaceous species with Status = D (entirely new query?).
-
-Ø  Query: Cvr_Pts_SubHt
 
 [Problem:]{.underline} Height entered for a substrate.
 
 [Procedure:]{.underline}
 
-o   Check that Height = blank (i.e. no records should appear in the query)
+-   Sort by Height. Check that Height ≤ 2
 
-Ø  Query: Cvr_Pts_SubOrder
+<!-- -->
+
+-   Check that Height = blank (i.e. no records should appear in the query)
+
+### HerbsPoints Order
+
+[Problem:]{.underline} Incorrect order numbers entered or order number missing.
+
+[Problem:]{.underline} Height entered for species that is not the tallest species at a point. The tallest species should have Order = 1. All shorter species should have Order \> 1 and no height.
 
 [Problem:]{.underline} Substrates recorded beneath plants or multiple substrates recorded at a point.
 
+#### Value
+
+#### Duplicates
+
+#### Height
+
+#### Substrate
+
 [Procedure:]{.underline}
 
-o   Check that Order = 1
+-   Check that Order \> 0
+-   Check for duplicate points across Date, MacroPlot.Name, Transect, Point, [and]{.underline} Order.
 
-Ø  Query: Cvr_Pts_SubStat
+```{r}
+# Check for tag duplication and store results in new column
+data_temp <- HerbsPoints_data %>% 
+  get_dupes(Date, MacroPlot.Name, Transect, Point, Order)
 
-[Problem:]{.underline} Substrates entered as living rather than dead.
+# Set parameters 
+data <- merge(HerbsPoints_data, data_temp, all.x = T)
+data$dupe_count[is.na(data$dupe_count)] <- 0
+query <- "Cvr Pts Duplicates" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Duplicates")
+values_data <- data$dupe_count
+values_valid <- 0
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_Order_Duplicate <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by Order. Check that all Order \>1 rows have Height = blank
+-   Filter by Substrate. Check that Order = 1
+
+### HerbsPoints Point
+
+[Problem:]{.underline} Incorrect point numbers entered or point number missing.
 
 [Procedure:]{.underline}
 
-o   Check that Status = D
+-   Check that Point is between 1 and 166
 
-Ø  Query: Cvr_Pts_Tran
+```{r}
+# Set parameters 
+data <- HerbsPoints_data
+query <- "Cvr Pts Point" 
+query_message <- paste0("Point")
+values_data <- data$Point
+values_valid <- seq(1, 166, by = 1)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_Point <- qaqc(data, query, query_message, values_check)
+```
+
+### HerbsPoints Status
+
+[Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
+
+[Procedure:]{.underline}
+
+-   Sort by Status.
+
+-   Check that Status = L or D.
+
+-   On the Filter tab, under Species, click on Biological Not Filtered until it changes to Biological Only. Apply Selections, Sort by Status, check for annual herbaceous species with Status = D (entirely new query?).
+
+#### Annual
+
+-   Filter for annual herbaceous species. Check that Status = L
+
+#### Perennial
+
+-   Filter for perennial shrub/tree species. Check that Status = L or D
+
+#### Substrate
+
+-   Filter for substrates. Check that Status = D
+
+### HerbsPoints Tape
+
+[Problem:]{.underline} Incorrect tape numbers entered or tape number missing.
+
+[Procedure:]{.underline}
+
+-   Check that Tape is between 0.3 and 49.8, at 0.3 increments
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_data
+query <- "Cvr Pts Tape" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Tape")
+values_data <- data$Tape
+values_valid <- c(0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 5.4, 5.7, 6.0, 6.3, 6.6, 6.9, 7.2, 7.5, 7.8, 8.1, 8.4, 8.7, 9.0, 9.3, 9.6, 9.9, 10.2, 10.5, 10.8, 11.1, 11.4, 11.7, 12.0, 12.3, 12.6, 12.9, 13.2, 13.5, 13.8, 14.1, 14.4, 14.7, 15.0, 15.3, 15.6, 15.9, 16.2, 16.5, 16.8, 17.1, 17.4, 17.7, 18.0, 18.3, 18.6, 18.9, 19.2, 19.5, 19.8, 20.1, 20.4, 20.7, 21.0, 21.3, 21.6, 21.9, 22.2, 22.5, 22.8, 23.1, 23.4, 23.7, 24.0, 24.3, 24.6, 24.9, 25.2, 25.5, 25.8, 26.1, 26.4, 26.7, 27.0, 27.3, 27.6, 27.9, 28.2, 28.5, 28.8, 29.1, 29.4, 29.7, 30.0, 30.3, 30.6, 30.9, 31.2, 31.5, 31.8, 32.1, 32.4, 32.7, 33.0, 33.3, 33.6, 33.9, 34.2, 34.5, 34.8, 35.1, 35.4, 35.7, 36.0, 36.3, 36.6, 36.9, 37.2, 37.5, 37.8, 38.1, 38.4, 38.7, 39.0, 39.3, 39.6, 39.9, 40.2, 40.5, 40.8, 41.1, 41.4, 41.7, 42.0, 42.3, 42.6, 42.9, 43.2, 43.5, 43.8, 44.1, 44.4, 44.7, 45.0, 45.3, 45.6, 45.9, 46.2, 46.5, 46.8, 47.1, 47.4, 47.7, 48.0, 48.3, 48.6, 48.9, 49.2, 49.5, 49.8)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_Tape <- qaqc(data, query, query_message, values_check)
+```
+
+### HerbsPoints Transect
 
 [Problem:]{.underline} Incorrect transect numbers entered or transect number missing.
 
 [Procedure:]{.underline}
 
-o   Sort by Transect.
-
-o   Check that Transect = 1 or 2
-
-### HerbsPts Errors
+-   Check that Transect = 1 or 2
 
 ```{r}
-errors_HerbsPts <- rbind(errors_HerbsPts_Complete, errors_blank, errors_HerbsPts_Header, errors_blank, )
+# Set parameters 
+data <- HerbsPoints_data
+query <- "Cvr Pts Transect" 
+query_message <- paste0("Transect")
+values_data <- data$Transect
+values_valid <- c(1, 2)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_Transect <- qaqc(data, query, query_message, values_check)
+```
+
+### HerbsPoints Zero
+
+[Problem:]{.underline}  Values entered for columns which should be blank.
+
+[Procedure:]{.underline}
+
+-   Check that CanopyLayer = blank
+
+```{r}
+# Set parameters
+data <- HerbsPoints_data
+data$CanopyLayer[is.na(data$CanopyLayer)] <- ""
+query <- "Cvr Pts Zero/NA"
+query_message <- "Canopy Layer"
+values_data <- data$CanopyLayer
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_Zero <- qaqc(data, query, query_message, values_check)
+```
+
+### HerbsPoints Errors
+
+```{r}
+errors_HerbsPoints <- rbind(errors_HerbsPoints_Complete, errors_blank, errors_HerbsPoints_Header, errors_blank, )
 
 remove()
 ```
