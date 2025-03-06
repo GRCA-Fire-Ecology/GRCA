@@ -4675,7 +4675,7 @@ errors_blank_HerbsObs <- data.frame("SavedQuery" = "PROTOCOL - HERBS OBSERVED","
 
 # errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_FuelsFine, errors_blank, errors_PostBurn, errors_blank, errors_Trees, errors_blank, errors_Seedlings, errors_blank, errors_HerbsObs)
 
-errors_all <- rbind(errors_blank_Fuels1000, errors_blank, errors_Fuels1000, errors_blank, errors_blank_FuelsDuffLitt, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_blank_FuelsFine, errors_blank, errors_FuelsFine, errors_blank, errors_blank_PostBurn, errors_blank, errors_PostBurn, errors_blank, errors_blank_Trees, errors_blank, errors_Trees, errors_blank, errors_blank_Seedlngs, errors_blank, errors_Seedlings, errors_blank, errors_blank_HerbsObs, errors_blank, errors_HerbsObs)
+errors_all <- rbind(errors_blank_Fuels1000, errors_blank, errors_Fuels1000, errors_blank, errors_blank_FuelsDuffLitt, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_blank_FuelsFine, errors_blank, errors_FuelsFine, errors_blank, errors_blank_PostBurn, errors_blank, errors_PostBurn, errors_blank, errors_blank_Trees, errors_blank, errors_Trees, errors_blank, errors_blank_Seedlings, errors_blank, errors_Seedlings, errors_blank, errors_blank_HerbsObs, errors_blank, errors_HerbsObs)
 ```
 
 ```{r}

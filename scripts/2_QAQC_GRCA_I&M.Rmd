@@ -2,12 +2,6 @@
 title: "Grand Canyon QAQC for I&M Data"
 author: "Alexandra Lalor"
 output:
-  word_document:
-    toc: true
-    toc_depth: '3'
-  pdf_document:
-    toc: true
-    toc_depth: '3'
   html_document:
     theme: readable
     highlight: null
@@ -15,6 +9,12 @@ output:
     toc_depth: 3
     toc_float:
       smooth_scroll: true
+  pdf_document:
+    toc: true
+    toc_depth: '3'
+  word_document:
+    toc: true
+    toc_depth: '3'
 ---
 
 ```{r setup, include=FALSE}
