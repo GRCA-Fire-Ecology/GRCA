@@ -3916,6 +3916,32 @@ It checks for errors in: heades, age class, shrub counts, life form, status, sub
 
 -   Group by Macroplot and Date. Calculate number of hits per plot. Check that sum_hits \> 0
 
+```{r}
+# Filter NA values. Add number of hits and store in new column
+data_temp1 <- Shrubs_data %>%
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarize("sum_hits" = n())
+
+data_temp2 <- Shrubs_header %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  dplyr::summarise()
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(Shrubs_data, data_temp, by = c("MacroPlot.Name", "Date"), all = T)
+query <- "Dens Belts Complete" 
+query_message <- "Shrubs" 
+values_data <- data$sum_hits
+values_valid <- 0
+values_check <- values_data > values_valid
+
+# Identify errors
+errors_Shrubs_Complete <- qaqc(data, query, query_message, values_check)
+```
+
 ### Shrubs Header
 
 [Problem:]{.underline} Incorrect header information entered.
@@ -3924,22 +3950,118 @@ It checks for errors in: heades, age class, shrub counts, life form, status, sub
 
 -   Check that NumTran = 2
 
+```{r}
+# Set parameters 
+data <- Shrubs_header
+query <- "Dens Belts Header" 
+query_message <- paste0("Number of Transects")
+values_data <- data$NumTran
+values_valid <- 2
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Shrubs_NumTran <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that TranLen = 50
+
+```{r}
+# Set parameters 
+data <- Shrubs_header
+query <- "Dens Belts Header" 
+query_message <- paste0("Transect Length")
+values_data <- data$TranLen 
+values_valid <- 50  
+values_check <-values_data == values_valid
+
+# Identify errors
+errors_Shrubs_TranLen <- qaqc(data, query, query_message, values_check)
+```
 
 -   Check that TranWid = 2
 
+```{r}
+# Set parameters 
+data <- Shrubs_header
+query <- "Dens Belts Header" 
+query_message <- paste0("Transect Width")
+values_data <- data$TranWid
+values_valid <- 2
+values_check <-values_data == values_valid
+
+# Identify errors
+errors_Shrubs_TranWid <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that Area = 100
+
+```{r}
+# Set parameters 
+data <- Shrubs_header
+query <- "Dens Belts Header" 
+query_message <- paste0("Area")
+values_data <- data$Area
+values_valid <- 100
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Shrubs_Area <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check that NumSubBelt is blank
+
+```{r}
+# Set parameters 
+data <- Shrubs_header
+data$NumSubbelt[is.na(data$NumSubbelt)] <- ""
+query <- "Dens Belts Header" 
+query_message <- paste0("Number of SubBelts")
+values_data <- data$NumSubbelt
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Shrubs_NumSubBelt <- qaqc(data, query, query_message, values_check)
+```
 
 -   Check that FieldTeam is [not]{.underline} blank
 
+```{r}
+# Set parameters  
+data <- Shrubs_header
+data$FieldTeam[is.na(data$FieldTeam)] <- ""
+query <- "Dens Belts Header" 
+query_message <- "Collected By"  
+values_data <- data$FieldTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Shrubs_FieldTeam <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that EntryTeam is [not]{.underline} blank
+
+```{r}
+# Set parameters  
+data <- Shrubs_header
+data$EntryTeam[is.na(data$EntryTeam)] <- ""
+query <- "Dens Belts Header" 
+query_message <- "Entered/Verified By"  
+values_data <- data$EntryTeam
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Shrubs_EntryTeam <- qaqc(data, query, query_message, values_check)
+```
 
 #### Combine Header Errors
 
 ```{r}
-errors_Shrubs_Header <- unique(rbind())
+errors_Shrubs_Header <- unique(rbind(errors_Shrubs_NumTran, errors_Shrubs_TranLen, errors_Shrubs_TranWid, errors_Shrubs_Area, errors_Shrubs_NumSubBelt, errors_Shrubs_FieldTeam, errors_Shrubs_EntryTeam))
 
-remove()
+remove(errors_Shrubs_NumTran, errors_Shrubs_TranLen, errors_Shrubs_TranWid, errors_Shrubs_Area, errors_Shrubs_NumSubBelt, errors_Shrubs_FieldTeam, errors_Shrubs_EntryTeam)
 
 if(nrow(errors_Shrubs_Header) > 1) {
   errors_Shrubs_Header <- errors_Shrubs_Header %>%
@@ -3956,6 +4078,19 @@ if(nrow(errors_Shrubs_Header) > 1) {
 
 -   Check that AgeCl = I or M
 
+```{r}
+# Set parameters 
+data <- Shrubs_data
+query <- "Dens Belts AgeCl" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "SubBelt = ", data$Subbelt, ". ", "Age Class")
+values_data <- data$AgeCl
+values_valid <- c("I", "M")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Shrubs_AgeCl <- qaqc(data, query, query_message, values_check)
+```
+
 ### Shrubs Count
 
 [Problem:]{.underline} Count values missing, zero, or excessively high (\>100 is possible, but should be verified).
@@ -3963,7 +4098,41 @@ if(nrow(errors_Shrubs_Header) > 1) {
 [Procedure:]{.underline}
 
 -   Check that Count is not blank or 0
+
+```{r}
+# Set parameters 
+data <- Shrubs_data
+query <- "Dens Belts Count" 
+query_message <- paste0("Count")
+values_data <- data$Count
+values_valid <- 1
+values_check <- values_data >= values_valid
+
+# Identify errors
+errors_Shrubs_Count_Min <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that Count is not excessively high
+
+```{r}
+# Perform Rosner's Test for outliers using all values
+data_temp <- Shrubs_all %>%
+  filter(!is.na(Count))
+data_outlier <- rosnerTest(data_temp$Count)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
+max_ShrubCount <- ifelse(length(outliers) == 0, max(data_temp$Count), min(outliers) - 1)
+
+# Set parameters 
+data <- Shrubs_data
+query <- "Dens Belts Count" 
+query_message <- paste0("Possible outlier. Count")
+values_data <- data$Count
+values_valid <- max_ShrubCount
+values_check <- (values_data <= values_valid) %>% replace_na(TRUE)
+
+# Identify errors
+errors_Shrubs_Count_Max <- qaqc(data, query, query_message, values_check)
+```
 
 #### Combine Count Errors
 
@@ -3987,6 +4156,19 @@ if(nrow(errors_Shrubs_Count) > 1) {
 
 -   Check that Preferred Lifeform = Shrub or Subshrub
 
+```{r}
+# Set parameters 
+data <- Shrubs_data
+query <- "Dens Belts LifeForm" 
+query_message <- paste0("Life Form")
+values_data <- data$Preferred_Lifeform
+values_valid <- c("Shrub", "Subshrub")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Shrubs_LifeForm <- qaqc(data, query, query_message, values_check)
+```
+
 ### Shrubs Status
 
 [Problem:]{.underline} Species do not have an entry for status or have an entry that we don’t use.
@@ -3995,13 +4177,39 @@ if(nrow(errors_Shrubs_Count) > 1) {
 
 -   Check that Status = L
 
+```{r}
+# Set parameters 
+data <- Shrubs_data
+query <- "Dens Belts Status" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "SubBelt = ", data$Subbelt, ". ", "Status")
+values_data <- data$Status
+values_valid <- c("L")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Shrubs_Status <- qaqc(data, query, query_message, values_check)
+```
+
 ### Shrubs SubBelt
 
 [Problem:]{.underline} Incorrect subbelt values entered or subbelt values missing.
 
 [Procedure:]{.underline}
 
--   Check that Subbelt value is between 1 and 10
+-   Check that Subbelt = 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10
+
+```{r}
+# Set parameters
+data <- Shrubs_data
+query <- "Dens Belts SubBelt"
+query_message <- paste0("Transect = ", data$Transect, ". ", "SubBelt")
+values_data <- data$Subbelt
+values_valid <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Shrubs_SubBelt <- qaqc(data, query, query_message, values_check)
+```
 
 ### Shrubs SubFrac
 
@@ -4011,6 +4219,19 @@ if(nrow(errors_Shrubs_Count) > 1) {
 
 -   Check that SubFrac = 1
 
+```{r}
+# Set parameters 
+data <- Shrubs_data
+query <- "Dens Belts SubFrac" 
+query_message <- paste0("Subplot Fraction")
+values_data <- data$SubFrac
+values_valid <- c(1)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Shrubs_SubFrac <- qaqc(data, query, query_message, values_check)
+```
+
 ### Shrubs Transect
 
 [Problem:]{.underline} Incorrect transect numbers entered or transect number missing.
@@ -4019,6 +4240,19 @@ if(nrow(errors_Shrubs_Count) > 1) {
 
 -   Check that Transect = 1 or 2
 
+```{r}
+# Set parameters 
+data <- Shrubs_data
+query <- "Dens Belts Transect" 
+query_message <- paste0("Transect")
+values_data <- data$Transect
+values_valid <- c(1, 2)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Shrubs_Transect <- qaqc(data, query, query_message, values_check)
+```
+
 ### Shrubs Zero
 
 [Problem:]{.underline}  Values entered for columns which should be blank.
@@ -4026,14 +4260,43 @@ if(nrow(errors_Shrubs_Count) > 1) {
 [Procedure:]{.underline}
 
 -   Check that Height = blank
+
+```{r}
+# Set parameters
+data <- Shrubs_data
+data$Height[is.na(data$Height)] <- ""
+query <- "Dens Belts Zero/NA"
+query_message <- "Height"
+values_data <- data$Height
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Shrubs_Height <- qaqc(data, query, query_message, values_check)
+```
+
 -   Check that SizeCl = blank
+
+```{r}
+# Set parameters
+data <- Shrubs_data
+data$SizeCl[is.na(data$SizeCl)] <- ""
+query <- "Dens Belts Zero/NA"
+query_message <- "Size Class"
+values_data <- data$SizeCl
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Shrubs_SizeCl <- qaqc(data, query, query_message, values_check)
+```
 
 #### Combine Zero Errors
 
 ```{r}
-errors_Shrubs_Zero <- unique(rbind())
+errors_Shrubs_Zero <- unique(rbind(errors_Shrubs_Height, errors_Shrubs_SizeCl))
 
-remove()
+remove(errors_Shrubs_Height, errors_Shrubs_SizeCl)
 
 if(nrow(errors_Shrubs_Zero) > 1) {
   errors_Shrubs_Zero <- errors_Shrubs_Zero %>%
@@ -4045,9 +4308,9 @@ if(nrow(errors_Shrubs_Zero) > 1) {
 ### Shrubs Errors
 
 ```{r}
-errors_Shrubs <- rbind()
+errors_Shrubs <- rbind(errors_Shrubs_Complete, errors_blank, errors_Shrubs_Header, errors_blank, errors_Shrubs_AgeCl, errors_blank, errors_Shrubs_Count, errors_blank, errors_Shrubs_LifeForm, errors_blank, errors_Shrubs_Status, errors_blank, errors_Shrubs_SubBelt, errors_blank, errors_Shrubs_SubFrac, errors_blank, errors_Shrubs_Transect, errors_blank, errors_Shrubs_Zero)
 
-remove()
+remove(errors_Shrubs_Complete, errors_Shrubs_Header, errors_Shrubs_AgeCl, errors_Shrubs_Count, errors_Shrubs_LifeForm, errors_Shrubs_Status, errors_Shrubs_SubBelt, errors_Shrubs_SubFrac, errors_Shrubs_Transect, errors_Shrubs_Zero)
 ```
 
 ```{r}
