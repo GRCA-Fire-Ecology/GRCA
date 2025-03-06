@@ -1758,11 +1758,11 @@ if(nrow(errors_Trees_Header) > 1) {
 
 ### Trees CBH
 
-[Problem]{.underline}: Live Crown Base Height is entered incorrectly or does not make sense with other data values
+[Problem]{.underline}: Live Crown Base Height is entered incorrectly.
 
 [Procedure:]{.underline}
 
--   Sort by Status = L and DBH = Overstory. Check that LiCrBHt is [not]{.underline} blank
+-   Filter by Status = L and DBH = Overstory. Check that LiCrBHt is [not]{.underline} blank
 
 ```{r}
 # Set parameters 
@@ -1779,7 +1779,7 @@ values_check <- values_data != values_valid
 errors_Trees_CBH_Live <- qaqc(data, query, query_message, values_check)
 ```
 
--   Sort by Status = D. Check that LiCrBHt is blank
+-   Filter by Status = D. Check that LiCrBHt is blank
 
 ```{r}
 # Set parameters 
@@ -1796,7 +1796,7 @@ values_check <- values_data == values_valid
 errors_Trees_CBH_Dead <- qaqc(data, query, query_message, values_check)
 ```
 
--   Sort by Status = L. Check that LiCrBHt \< Ht
+-   Filter by Status = L. Check that LiCrBHt \< Ht
 
 ```{r}
 # Set parameters
@@ -1934,7 +1934,7 @@ if(nrow(errors_Trees_CrwnCl) > 1) {
 
 [Procedure:]{.underline}
 
--   Filter for Status = L. Check that DamCd1, DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 correspond to one of the choices on the FMH-1 overstory data sheets.
+-   Filter by Status = L. Check that DamCd1, DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 correspond to one of the choices on the FMH-1 overstory data sheets.
 
 ```{r}
 # Make sure damage codes are blank vs NA
@@ -2015,7 +2015,7 @@ values_check <- values_data %in% values_valid
 errors_Trees_DamCd_L_5 <- qaqc(data, query, query_message, values_check)
 ```
 
--   Filter for Status = D. Check that DamCd1, DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
+-   Filter by Status = D. Check that DamCd1, DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
 
 ```{r}
 # Set parameters 
@@ -2087,7 +2087,7 @@ values_check <- values_data %in% values_valid
 errors_Trees_DamCd_D_5 <- qaqc(data, query, query_message, values_check)
 ```
 
--   Filter for DamCd1 = blank. Check that DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
+-   Filter by DamCd1 = blank. Check that DamCd2, DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
 
 ```{r}
 # Set parameters 
@@ -2145,7 +2145,7 @@ values_check <- values_data %in% values_valid
 errors_Trees_DamCd_1_Blank_5 <- qaqc(data, query, query_message, values_check)
 ```
 
--   Filter for DamCd2 = blank. Check that DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
+-   Filter by DamCd2 = blank. Check that DamCd3, DamCd4, [and]{.underline} DamCd5 are blank.
 
 ```{r}
 # Set parameters 
@@ -2189,7 +2189,7 @@ values_check <- values_data %in% values_valid
 errors_Trees_DamCd_2_Blank_5 <- qaqc(data, query, query_message, values_check)
 ```
 
--   Filter for DamCd3 = blank. Check that DamCd4 [and]{.underline} DamCd5 are blank.
+-   Filter by DamCd3 = blank. Check that DamCd4 [and]{.underline} DamCd5 are blank.
 
 ```{r}
 # Set parameters 
@@ -2219,7 +2219,7 @@ values_check <- values_data %in% values_valid
 errors_Trees_DamCd_3_Blank_5 <- qaqc(data, query, query_message, values_check)
 ```
 
--   Filter for DamCd4 = blank. Check that DamCd5 is blank.
+-   Filter by DamCd4 = blank. Check that DamCd5 is blank.
 
 ```{r}
 # Set parameters 
@@ -2263,7 +2263,7 @@ if(nrow(errors_Trees_DamCd) > 1) {
     filter(Error != "No Error") %>% 
     arrange(MacroPlot.Name)
 } else {
-  errors_Trees_DamCd <- errors_Trees_DamCd}                                  
+  errors_Trees_DamCd <- errors_Trees_DamCd}
 ```
 
 ### Trees DBH
@@ -3054,12 +3054,6 @@ errors_Trees_UV3 <- qaqc(data, query, query_message, values_check)
 errors_Trees_UV <- unique(rbind(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3))
 
 remove(errors_Trees_UV1, errors_Trees_UV2, errors_Trees_UV3)
-
-if(nrow(errors_Trees_UV) > 1) {
-  errors_Trees_UV <- errors_Trees_UV %>%
-    filter(Error != "No Error")
-} else {
-  errors_Trees_UV <- errors_Trees_UV}
 ```
 
 ## Trees Zero
