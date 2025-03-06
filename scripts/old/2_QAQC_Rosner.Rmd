@@ -309,3 +309,17 @@ data_outlier <- rosnerTest(data_temp$Count)
 outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
 max_SeedCount <- ifelse(length(outliers) == 0, max(data_temp$Count), min(outliers) - 1)
 ```
+
+## PROTOCOL - SHRUBS
+
+#### Shrubs Count
+
+```{r}
+#remove NA values for outlier test
+data_temp <- Shrubs_all %>%
+  filter(!is.na(Count))
+# Perform Rosner's Test for outliers using all values
+data_outlier <- rosnerTest(data_temp$Count)
+outliers <- data_outlier$all.stats$Value[data_outlier$all.stats$Outlier]
+max_ShrubCount <- ifelse(length(outliers) == 0, max(data_temp$Count), min(outliers) - 1)
+```
