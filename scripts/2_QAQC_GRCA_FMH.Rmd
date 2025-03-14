@@ -60,8 +60,8 @@ path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
 path_errors_name <- "2024 GRCA FMH QAQC Errors"
 
-path_data <- "E:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/errors/"
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
 ```
 
 ### Create Function
@@ -4583,7 +4583,7 @@ path_errors
 
 This code conducts quality control checks on point line intercept herbaceous data within the "Cover - Points (metric)" data set.
 
-It checks for errors in:
+It checks for errors in: height, order, points, status, tape, and transect.
 
 ### HerbsPoints Complete
 
@@ -4734,26 +4734,100 @@ if(nrow(errors_HerbsPoints_Header) > 1) {
 
 ### HerbsPoints Height
 
-[Problem:]{.underline}
-
--   Height taller than 2 meters entered.
-
--   Height entered for species that is not the tallest species at a point. The tallest species should have Order = 1. All shorter species should have Order \> 1 and no height.
-
--   Height entered for a substrate.
+[Problem:]{.underline} Height measurements entered incorrectly.
 
 [Procedure:]{.underline}
 
 -   Sort by Height. Check that Height ≤ 2
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+   filter(!is.na(Height))
+query <- "Cvr Pts Height" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Height")
+values_data <- data$Height
+values_valid <- 2
+values_check <- values_data <= values_valid
+
+# Identify errors
+errors_HerbsPoints_Height_Max <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by Height. Check that Height is measured at 0.05 increments.
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+  filter(!is.na(Height))
+query <- "Cvr Pts Height" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Height")
+values_data <- data$Height
+values_valid <- c(0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00, 1.05, 1.10, 1.15, 1.20, 1.25, 1.30, 1.35, 1.40, 1.45, 1.50, 1.55, 1.60, 1.65, 1.70, 1.75, 1.80, 1.85, 1.90, 1.95, 2.00)
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_Height_Precision <- qaqc(data, query, query_message, values_check)
+```
+
+-   Sort by Order. Filter out substrates. Check that all Order = 1 have Height values.
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+  filter(Order == 1) %>% 
+  filter(Preferred_Lifeform != "Undefined")
+data$Height[is.na(data$Height)] <- ""
+query <- "Cvr Pts Height" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Height")
+values_data <- data$Height
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_HerbsPoints_Height_Order1 <- qaqc(data, query, query_message, values_check)
+```
+
 -   Sort by Order. Check that all Order \>1 rows have Height = blank
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+   filter(Order != 1)
+data$Height[is.na(data$Height)] <- ""
+query <- "Cvr Pts Height" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Height")
+values_data <- data$Height
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_Height_Order <- qaqc(data, query, query_message, values_check)
+```
+
 -   Filter by Substrate. Check that Height = blank
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+  filter(Preferred_Lifeform == "Undefined")
+data$Height[is.na(data$Height)] <- ""
+query <- "Cvr Pts Height" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Height")
+values_data <- data$Height
+values_valid <- ""
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_HerbsPoints_Height_Substrate <- qaqc(data, query, query_message, values_check)
+```
 
 #### Combine Height Errors
 
 ```{r}
-errors_HerbsPoints_Height <- unique(rbind())
+errors_HerbsPoints_Height <- unique(rbind(errors_HerbsPoints_Height_Max, errors_HerbsPoints_Height_Precision, errors_HerbsPoints_Height_Order1, errors_HerbsPoints_Height_Order, errors_HerbsPoints_Height_Substrate))
 
-remove()
+remove(errors_HerbsPoints_Height_Max, errors_HerbsPoints_Height_Precision, errors_HerbsPoints_Height_Order1, errors_HerbsPoints_Height_Order, errors_HerbsPoints_Height_Substrate)
 
 if(nrow(errors_HerbsPoints_Height) > 1) {
   errors_HerbsPoints_Height <- errors_HerbsPoints_Height %>%
@@ -4764,13 +4838,7 @@ if(nrow(errors_HerbsPoints_Height) > 1) {
 
 ### HerbsPoints Order
 
-[Problem:]{.underline}
-
--   Incorrect order numbers entered or order number missing.
-
--   Duplicate entries exist for a single order number.
-
--   Substrates recorded beneath plants or multiple substrates recorded at a point.
+[Problem:]{.underline} Order numbers entered incorretly.
 
 [Procedure:]{.underline}
 
@@ -4799,7 +4867,7 @@ data_temp <- HerbsPoints_data %>%
 # Set parameters 
 data <- merge(HerbsPoints_data, data_temp, all.x = T)
 data$dupe_count[is.na(data$dupe_count)] <- 0
-query <- "Cvr Pts Duplicates" 
+query <- "Cvr Pts Order" 
 query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Duplicates")
 values_data <- data$dupe_count
 values_valid <- 0
@@ -4816,7 +4884,7 @@ errors_HerbsPoints_Order_Duplicate <- qaqc(data, query, query_message, values_ch
 data <- HerbsPoints_data %>% 
   filter(Preferred_Lifeform == "Undefined")
 query <- "Cvr Pts Order" 
-query_message <- paste0("Order")
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Order")
 values_data <- data$Order
 values_valid <- 1
 values_check <- values_data == values_valid
@@ -4828,9 +4896,9 @@ errors_HerbsPoints_Order_Substrate <- qaqc(data, query, query_message, values_ch
 #### Combine Order Errors
 
 ```{r}
-errors_HerbsPoints_Order <- unique(rbind())
+errors_HerbsPoints_Order <- unique(rbind(errors_HerbsPoints_Order_Number, errors_HerbsPoints_Order_Duplicate, errors_HerbsPoints_Order_Substrate))
 
-remove()
+remove(errors_HerbsPoints_Order_Number, errors_HerbsPoints_Order_Duplicate, errors_HerbsPoints_Order_Substrate)
 
 if(nrow(errors_HerbsPoints_Order) > 1) {
   errors_HerbsPoints_Order <- errors_HerbsPoints_Order %>%
@@ -4933,9 +5001,9 @@ errors_HerbsPoints_Point_Missing <- qaqc(data, query, query_message, values_chec
 #### Combine Point Errors
 
 ```{r}
-errors_HerbsPoints_Point <- unique(rbind())
+errors_HerbsPoints_Point <- unique(rbind(errors_HerbsPoints_Point_Number, errors_HerbsPoints_Point_Missing))
 
-remove()
+remove(errors_HerbsPoints_Point_Number, errors_HerbsPoints_Point_Missing)
 
 if(nrow(errors_HerbsPoints_Point) > 1) {
   errors_HerbsPoints_Point <- errors_HerbsPoints_Point %>%
@@ -4950,23 +5018,67 @@ if(nrow(errors_HerbsPoints_Point) > 1) {
 
 [Procedure:]{.underline}
 
--   Sort by Status.
-
--   Check that Status = L or D.
-
--   On the Filter tab, under Species, click on Biological Not Filtered until it changes to Biological Only. Apply Selections, Sort by Status, check for annual herbaceous species with Status = D (entirely new query?).
-
-#### Annual
-
 -   Filter for annual herbaceous species. Check that Status = L
 
-#### Perennial
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+  filter(Preferred_Lifeform %in% c("Graminoid", "Grass-like", "Forb/herb", "Nonvascular", "Fern"))
+query <- "Cvr Pts Status" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Status")
+values_data <- data$Status
+values_valid <- c("L")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_Status_Annual <- qaqc(data, query, query_message, values_check)
+```
 
 -   Filter for perennial shrub/tree species. Check that Status = L or D
 
-#### Substrate
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+  filter(Preferred_Lifeform %in% c("Shrub", "Subshrub", "Tree"))
+query <- "Cvr Pts Status" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Status")
+values_data <- data$Status
+values_valid <- c("L", "D")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_Status_Perennial <- qaqc(data, query, query_message, values_check)
+```
 
 -   Filter for substrates. Check that Status = D
+
+```{r}
+# Set parameters 
+data <- HerbsPoints_data %>% 
+  filter(Preferred_Lifeform == "Undefined")
+query <- "Cvr Pts Status" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Status")
+values_data <- data$Status
+values_valid <- c("D")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_HerbsPoints_Status_Substrate <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Status Errors
+
+```{r}
+errors_HerbsPoints_Status <- unique(rbind(errors_HerbsPoints_Status_Annual, errors_HerbsPoints_Status_Perennial, errors_HerbsPoints_Status_Substrate))
+
+remove(errors_HerbsPoints_Status_Annual, errors_HerbsPoints_Status_Perennial, errors_HerbsPoints_Status_Substrate)
+
+if(nrow(errors_HerbsPoints_Status) > 1) {
+  errors_HerbsPoints_Status <- errors_HerbsPoints_Status %>%
+    filter(Error != "No Error")
+} else {
+  errors_HerbsPoints_Status <- errors_HerbsPoints_Status}
+```
 
 ### HerbsPoints Tape
 
@@ -5035,9 +5147,9 @@ errors_HerbsPoints_Zero <- qaqc(data, query, query_message, values_check)
 ### HerbsPoints Errors
 
 ```{r}
-errors_HerbsPoints <- rbind(errors_HerbsPoints_Complete, errors_blank, errors_HerbsPoints_Header, errors_blank, )
+errors_HerbsPoints <- rbind(errors_HerbsPoints_Complete, errors_blank, errors_HerbsPoints_Header, errors_blank, errors_HerbsPoints_Height, errors_blank, errors_HerbsPoints_Order, errors_blank, errors_HerbsPoints_Point, errors_blank, errors_HerbsPoints_Status, errors_blank, errors_HerbsPoints_Tape, errors_blank, errors_HerbsPoints_Transect, errors_blank, errors_HerbsPoints_Zero)
 
-remove()
+remove(errors_HerbsPoints_Complete, errors_HerbsPoints_Header, errors_HerbsPoints_Height, errors_HerbsPoints_Order, errors_HerbsPoints_Point, errors_HerbsPoints_Status, errors_HerbsPoints_Tape, errors_HerbsPoints_Transect, errors_HerbsPoints_Zero)
 ```
 
 # CROSS PROTOCOL CHECKS
@@ -5119,7 +5231,7 @@ errors_blank_Shrubs <- data.frame("SavedQuery" = "PROTOCOL - SHRUBS","MacroPlot.
 
 errors_blank_HerbsObs <- data.frame("SavedQuery" = "PROTOCOL - HERBS OBSERVED","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 
-errors_blank_HerbsPts <- data.frame("SavedQuery" = "PROTOCOL - HERBS POINTS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_HerbsPoints <- data.frame("SavedQuery" = "PROTOCOL - HERBS POINTS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 ```
 
 ```{r}
@@ -5128,7 +5240,7 @@ errors_blank_HerbsPts <- data.frame("SavedQuery" = "PROTOCOL - HERBS POINTS","Ma
 
 # errors_all <- rbind(errors_Fuels1000, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_FuelsFine, errors_blank, errors_PostBurn, errors_blank, errors_Trees, errors_blank, errors_Seedlings, errors_blank, errors_Shrubs, errors_blank, errors_HerbsObs, errors_blank, errors_HerbsPts)
 
-errors_all <- rbind(errors_blank_Fuels1000, errors_blank, errors_Fuels1000, errors_blank, errors_blank_FuelsDuffLitt, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_blank_FuelsFine, errors_blank, errors_FuelsFine, errors_blank, errors_blank_PostBurn, errors_blank, errors_PostBurn, errors_blank, errors_blank_Trees, errors_blank, errors_Trees, errors_blank, errors_blank_Seedlngs, errors_blank, errors_Seedlings, errors_blank, errors_blank_Shrubs, errors_blank, errors_Shrubs, errors_blank, errors_blank_HerbsObs, errors_blank, errors_HerbsObs, errors_blank, errors_blank_HerbsPts, errors_blank, errors_HerbsPts)
+errors_all <- rbind(errors_blank_Fuels1000, errors_blank, errors_Fuels1000, errors_blank, errors_blank_FuelsDuffLitt, errors_blank, errors_FuelsDuffLitt, errors_blank, errors_blank_FuelsFine, errors_blank, errors_FuelsFine, errors_blank, errors_blank_PostBurn, errors_blank, errors_PostBurn, errors_blank, errors_blank_Trees, errors_blank, errors_Trees, errors_blank, errors_blank_Seedlings, errors_blank, errors_Seedlings, errors_blank, errors_blank_Shrubs, errors_blank, errors_Shrubs, errors_blank, errors_blank_HerbsObs, errors_blank, errors_HerbsObs, errors_blank, errors_blank_HerbsPoints, errors_blank, errors_HerbsPoints)
 ```
 
 ```{r}
@@ -5163,5 +5275,5 @@ path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
 # condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
-#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
