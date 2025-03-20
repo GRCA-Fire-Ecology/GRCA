@@ -1145,7 +1145,58 @@ values_valid <- seq(0, 40, by = 1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
-errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
+errors_FuelsFine_Slope_Value <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check for consistency in slope values across Fuels 1000 and Fuels Fine protocols.
+
+```{r}
+data_temp1 <- Fuels1000_data %>%
+  group_by(MacroPlot.Name, Date, Transect, Slope) %>%
+  dplyr::summarise("MacroPlot.Name" = unique(MacroPlot.Name),
+            "Transect" = unique(Transect)) %>%
+  mutate(Slope_1000 = Slope) %>%
+  arrange(MacroPlot.Name, Transect) %>%
+  select(!Slope)
+
+data_temp2 <- FuelsFine_data %>%
+  group_by(MacroPlot.Name, Date, Transect, Slope) %>%
+  dplyr::summarise("MacroPlot.Name" = unique(MacroPlot.Name),
+            "Transect" = unique(Transect)) %>%
+  mutate(Slope_fine = Slope) %>%
+  arrange(MacroPlot.Name, Transect) %>%
+  select(!Slope)
+
+data_temp <- merge(data_temp1, data_temp2, all.y = T)
+data_temp <- data_temp %>% 
+  mutate(Slope_1000 = ifelse(is.na(Slope_1000), Slope_fine, Slope_1000))
+remove(data_temp1, data_temp2)
+
+# Set parameters
+data <- merge(FuelsFine_data, data_temp, by = c("MacroPlot.Name", "Date", "Transect"), all = T)
+query <- "Fuel Fine Slope"
+query_message <- paste0("Transect = ", data$Transect, ". ", "CWD slope = ", data$Slope_1000, ". ", "FWD slope")
+values_data <- data$Slope_fine
+values_valid <- data$Slope_1000
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_Slope_FineCWD <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Slope Errors
+
+```{r}
+# Combine
+errors_FuelsFine_Slope <- unique(rbind(errors_FuelsFine_Slope_Value, errors_FuelsFine_Slope_FineCWD))
+
+remove(errors_FuelsFine_Slope_Value, errors_FuelsFine_Slope_FineCWD)
+
+if(nrow(errors_FuelsFine_Slope) > 1) {
+  errors_FuelsFine_Slope <- errors_FuelsFine_Slope %>%
+    filter(Error != "No Error")
+} else {
+  errors_FuelsFine_Slope <- errors_FuelsFine_Slope}
 ```
 
 ### Fuel Fine Transect

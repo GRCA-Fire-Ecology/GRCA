@@ -60,8 +60,8 @@ path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
 path_errors_name <- "2024 GRCA FMH QAQC Errors"
 
-path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
+# path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+# path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
 ```
 
 ### Create Function
@@ -157,11 +157,11 @@ Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 
 # Filter for only data
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited))
 
 # Filter for only headers
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 FuelsDuffLitt
@@ -201,11 +201,11 @@ FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
 
 # Filter for only data 
 FuelsFine_data <- FuelsFine_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited))  
 
 # Filter for only headers 
 FuelsFine_header <- FuelsFine_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 PostBurn
@@ -333,11 +333,11 @@ HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA
 
 # Filter for only data
 HerbsPoints_data <- HerbsPoints_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited))
 
 # Filter for only headers
 HerbsPoints_header <- HerbsPoints_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited))
 ```
 
 # PROTOCOL - SURFACE FUELS
@@ -1195,7 +1195,58 @@ values_valid <- seq(0, 40, by = 1)
 values_check <- values_data %in% values_valid
 
 # Identify errors
-errors_FuelsFine_Slope <- qaqc(data, query, query_message, values_check)
+errors_FuelsFine_Slope_Value <- qaqc(data, query, query_message, values_check)
+```
+
+-   Check for consistency in slope values across Fuels 1000 and Fuels Fine protocols.
+
+```{r}
+data_temp1 <- Fuels1000_data %>%
+  group_by(MacroPlot.Name, Date, Transect, Slope) %>%
+  dplyr::summarise("MacroPlot.Name" = unique(MacroPlot.Name),
+            "Transect" = unique(Transect)) %>%
+  mutate(Slope_1000 = Slope) %>%
+  arrange(MacroPlot.Name, Transect) %>%
+  select(!Slope)
+
+data_temp2 <- FuelsFine_data %>%
+  group_by(MacroPlot.Name, Date, Transect, Slope) %>%
+  dplyr::summarise("MacroPlot.Name" = unique(MacroPlot.Name),
+            "Transect" = unique(Transect)) %>%
+  mutate(Slope_fine = Slope) %>%
+  arrange(MacroPlot.Name, Transect) %>%
+  select(!Slope)
+
+data_temp <- merge(data_temp1, data_temp2, all.y = T)
+data_temp <- data_temp %>% 
+  mutate(Slope_1000 = ifelse(is.na(Slope_1000), Slope_fine, Slope_1000))
+remove(data_temp1, data_temp2)
+
+# Set parameters
+data <- merge(FuelsFine_data, data_temp, by = c("MacroPlot.Name", "Date", "Transect"), all = T)
+query <- "Fuel Fine Slope"
+query_message <- paste0("Transect = ", data$Transect, ". ", "CWD slope = ", data$Slope_1000, ". ", "FWD slope")
+values_data <- data$Slope_fine
+values_valid <- data$Slope_1000
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_FuelsFine_Slope_FineCWD <- qaqc(data, query, query_message, values_check)
+```
+
+#### Combine Slope Errors
+
+```{r}
+# Combine
+errors_FuelsFine_Slope <- unique(rbind(errors_FuelsFine_Slope_Value, errors_FuelsFine_Slope_FineCWD))
+
+remove(errors_FuelsFine_Slope_Value, errors_FuelsFine_Slope_FineCWD)
+
+if(nrow(errors_FuelsFine_Slope) > 1) {
+  errors_FuelsFine_Slope <- errors_FuelsFine_Slope %>%
+    filter(Error != "No Error")
+} else {
+  errors_FuelsFine_Slope <- errors_FuelsFine_Slope}
 ```
 
 ### Fuel Fine Transect
@@ -5151,65 +5202,6 @@ errors_HerbsPoints <- rbind(errors_HerbsPoints_Complete, errors_blank, errors_He
 
 remove(errors_HerbsPoints_Complete, errors_HerbsPoints_Header, errors_HerbsPoints_Height, errors_HerbsPoints_Order, errors_HerbsPoints_Point, errors_HerbsPoints_Status, errors_HerbsPoints_Tape, errors_HerbsPoints_Transect, errors_HerbsPoints_Zero)
 ```
-
-# CROSS PROTOCOL CHECKS
-
-## Fuel Slope 1000 vs Fine
-
-This code conducts quality control checks on slope data in the surface fuels coarse woody debris (1000-hr) and fine woody debris datasets. It also checks for overall consistency in slope and azimuth values across years.
-
-```{r}
-# # Set parameters 
-# data_Fuels1000_slope <- Fuels1000_data %>% 
-#   group_by(MacroPlot.Name, Date, Transect, Slope) %>% 
-#   summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
-#             "Transect" = unique(Transect)) %>% 
-#   mutate(Slope_1000 = Slope) %>% 
-#   arrange(MacroPlot.Name, Transect) %>% 
-#   select(!Slope)
-# 
-# data_FuelsFine_slope <- FuelsFine_data %>% 
-#   group_by(MacroPlot.Name, Date, Transect, Comment, Slope) %>% 
-#   summarise("MacroPlot.Name" = unique(MacroPlot.Name), 
-#             "Transect" = unique(Transect)) %>% 
-#   mutate(Slope_fine = Slope) %>% 
-#   arrange(MacroPlot.Name, Transect) %>% 
-#   select(!Slope)
-# 
-# errors_Fuels_slope <- merge(data_Fuels1000_slope, data_FuelsFine_slope, all.y = T) %>% 
-#   filter(Slope_fine != Slope_1000) %>% 
-#   mutate(SavedQuery = "Fuel Slope",
-#          Error = paste("FWD slope", Slope_fine, "!=", "CWD slope", Slope_1000)) %>% 
-#   reframe("SavedQuery" = unique(query),
-#           "MacroPlot.Name" = unique(MacroPlot.Name), 
-#           "Date" = unique(Date), 
-#           "Error" = unique(Error),
-#           "Comment" = unique(Comment))
-# 
-# # If no errors, add "No Errors" to existing data frame 
-# if (nrow(errors_Fuels_slope) == 0) {   
-#     errors_Fuels_slope <- errors_blank_NoError %>%     
-#     mutate(SavedQuery = query) 
-# } else {   
-#     errors_Fuels_slope <- errors_Fuels_slope
-# }
-```
-
-# CROSS YEAR CHECKS
-
-## Trees Completeness
-
-(tree info not updated, old data exists)
-
-## Trees CBH Decrease
-
-## Trees DBH Decrease
-
-## Trees Height Decrease
-
-## Trees Status Change
-
-## Trees TagNo Change
 
 # ALL ERRORS
 
