@@ -161,11 +161,11 @@ Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 
 # Filter for only data
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited))
+  filter(is.na(Visited), Year %in% c(2024))
 
 # Filter for only headers
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 FuelsDuffLitt
@@ -213,11 +213,11 @@ FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
 
 # Filter for only data 
 FuelsFine_data <- FuelsFine_all %>%   
-  filter(is.na(Visited))  
+  filter(is.na(Visited), Year %in% c(2024))  
 
 # Filter for only headers 
 FuelsFine_header <- FuelsFine_all %>%   
-  filter(!is.na(Visited))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 PostBurn
@@ -369,11 +369,11 @@ HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA
 
 # Filter for only data
 HerbsPoints_data <- HerbsPoints_all %>%
-  filter(is.na(Visited))
+  filter(is.na(Visited), Year %in% c(2024))
 
 # Filter for only headers
 HerbsPoints_header <- HerbsPoints_all %>%
-  filter(!is.na(Visited))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 # PROTOCOL - SURFACE FUELS

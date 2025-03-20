@@ -179,13 +179,18 @@ Fuels1000
 Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
-  select(!c("Month", "Day", "Time")) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
   separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
   select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
 
 # Ensure blanks in Visited column are NA
 Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
@@ -206,7 +211,11 @@ FuelsDuffLitt
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
@@ -233,7 +242,11 @@ FuelsFine
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
@@ -260,7 +273,11 @@ PostBurn
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
@@ -287,7 +304,11 @@ Trees
 Trees_all <- Trees_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
   separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%

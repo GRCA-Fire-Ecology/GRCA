@@ -142,7 +142,11 @@ Fuels1000
 Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -164,7 +168,11 @@ FuelsDuffLitt
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -186,7 +194,11 @@ FuelsFine
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -208,7 +220,11 @@ PostBurn
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -230,7 +246,11 @@ Trees
 Trees_all <- Trees_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
