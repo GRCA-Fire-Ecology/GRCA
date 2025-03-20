@@ -149,7 +149,11 @@ Fuels1000
 Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -169,9 +173,13 @@ FuelsDuffLitt
 ```{r}
 # Clean up data frame 
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%  
-  # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>% 
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -191,9 +199,13 @@ FuelsFine
 ```{r}
 # Clean up data frame 
 FuelsFine_all <- FuelsFine_all %>%
-  # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -215,7 +227,11 @@ PostBurn
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -235,9 +251,13 @@ Trees
 ```{r}
 # Clean up data frame 
 Trees_all <- Trees_all %>%
-  # Separate Date column into Date and Time columns   
-  separate(Date, sep = " ", into = c("Date", "Time")) %>%   
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Separate Date column into Date and Time columns
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA 
@@ -259,7 +279,11 @@ Seedlings
 Seedlings_all <- Seedlings_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -281,7 +305,11 @@ Shrubs
 Shrubs_all <- Shrubs_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -303,7 +331,11 @@ HerbsObs
 HerbsObs_all <- HerbsObs_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -325,7 +357,11 @@ HerbsPoints
 HerbsPoints_all <- HerbsPoints_all %>%
   # Separate Date column into Date and Time columns
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Change classification of Date column
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  # Separate Date column into "Year", "Month", "Day"
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
 # Ensure blanks in Visited column are NA
@@ -4655,9 +4691,14 @@ data_temp2 <- HerbsPoints_header %>%
   group_by(MacroPlot.Name, Date) %>% 
   dplyr::summarise()
 
-data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date"), all = TRUE)
+data_temp_transects <- as.data.frame(1:2)
+colnames(data_temp_transects) <- "Transect"
+data_temp2 <- merge(data_temp2, data_temp_transects) %>% 
+  arrange(MacroPlot.Name, Date, Transect)
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name","Date", "Transect"), all = TRUE)
 data_temp$sum_hits[is.na(data_temp$sum_hits)] <- 0
-remove(data_temp1, data_temp2)
+remove(data_temp1, data_temp2, data_temp_transects)
 
 # Set parameters 
 data <- merge(HerbsPoints_data, data_temp, by = c("MacroPlot.Name", "Date", "Transect"), all = T)
@@ -4772,7 +4813,9 @@ errors_HerbsPoints_EntryTeam <- qaqc(data, query, query_message, values_check)
 #### Combine Header Errors
 
 ```{r}
-errors_HerbsPoints_Header <- unique(rbind(errors_HerbsPoints_NumTran, errors_HerbsPoints_TranLen, errors_HerbsPoints_NumPtsTran, errors_HerbsPoints_Offset, errors_HerbsPoints_FieldTeam, errors_HerbsPoints_EntryTeam))
+errors_HerbsPoints_Header <- unique(rbind(errors_HerbsPoints_NumTran, errors_HerbsPoints_TranLen, errors_HerbsPoints_NumPtsTran, errors_HerbsPoints_Offset))
+
+# errors_HerbsPoints_Header <- unique(rbind(errors_HerbsPoints_NumTran, errors_HerbsPoints_TranLen, errors_HerbsPoints_NumPtsTran, errors_HerbsPoints_Offset, errors_HerbsPoints_FieldTeam, errors_HerbsPoints_EntryTeam))
 
 remove(errors_HerbsPoints_NumTran, errors_HerbsPoints_TranLen, errors_HerbsPoints_NumPtsTran, errors_HerbsPoints_Offset, errors_HerbsPoints_FieldTeam, errors_HerbsPoints_EntryTeam)
 
@@ -4812,7 +4855,7 @@ errors_HerbsPoints_Height_Max <- qaqc(data, query, query_message, values_check)
 data <- HerbsPoints_data %>% 
   filter(!is.na(Height))
 query <- "Cvr Pts Height" 
-query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Height")
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Precision error. Height")
 values_data <- data$Height
 values_valid <- c(0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00, 1.05, 1.10, 1.15, 1.20, 1.25, 1.30, 1.35, 1.40, 1.45, 1.50, 1.55, 1.60, 1.65, 1.70, 1.75, 1.80, 1.85, 1.90, 1.95, 2.00)
 values_check <- values_data %in% values_valid
@@ -4899,7 +4942,7 @@ if(nrow(errors_HerbsPoints_Height) > 1) {
 # Set parameters 
 data <- HerbsPoints_data
 query <- "Cvr Pts Order" 
-query_message <- paste0("Order")
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order")
 values_data <- data$Order
 values_valid <- 0
 values_check <- values_data > values_valid
@@ -4970,7 +5013,7 @@ if(nrow(errors_HerbsPoints_Order) > 1) {
 # Set parameters 
 data <- HerbsPoints_data
 query <- "Cvr Pts Point" 
-query_message <- paste0("Point")
+query_message <- paste0("Transect = ", data$Transect, ". ", "Order = ", data$Order, ". ", "Point")
 values_data <- data$Point
 values_valid <- seq(1, 166, by = 1)
 values_check <- values_data %in% values_valid
@@ -5006,49 +5049,6 @@ values_check <- values_data == values_valid
 errors_HerbsPoints_Point_Missing <- qaqc(data, query, query_message, values_check)
 ```
 
-```{r}
-# # Consolidate actual data
-# data_temp1 <- HerbsPoints_data %>%
-#   filter(Order == 1) %>% 
-#   group_by(MacroPlot.Name, Date, Transect, Point, Order) %>% 
-#   dplyr::summarize()
-# 
-# # Consolidate ideal data
-# data_temp_macroplots <- HerbsPoints_header %>% 
-#   select(MacroPlot.Name, Date)
-# data_temp_transects <- as.data.frame(1:2)
-# colnames(data_temp_transects) <- "Transect"
-# data_temp_points <- as.data.frame(1:166)
-# colnames(data_temp_points) <- "Point"
-# data_temp_order <- as.data.frame(1)
-# colnames(data_temp_order) <- "Order"
-# data_temp_merge <- merge(data_temp_macroplots, data_temp_transects)
-# data_temp_merge <- merge(data_temp_merge, data_temp_points) 
-# data_temp_merge <- merge(data_temp_merge, data_temp_order) %>% 
-#   arrange(MacroPlot.Name, Date, Transect, Point, Order)
-# 
-# # Isolate missing data and add to main
-# data_temp2 <- anti_join(data_temp_merge, data_temp1) %>% 
-#   mutate(Missing = Point)
-# data_temp <- merge(data_temp1, data_temp2, all = TRUE)
-# data_temp$Missing[is.na(data_temp$Missing)] <- 0
-# 
-# # Remove excess data frames
-# remove(data_temp1, data_temp2, data_temp_macroplots, data_temp_points, data_temp_transects, data_temp_order, data_temp_merge)
-# 
-# 
-# # Set parameters 
-# data <- merge(HerbsPoints_data, data_temp, by = c("MacroPlot.Name", "Date", "Transect", "Point", "Order"), all = T)
-# query <- "Cvr Pts Missing" 
-# query_message <- paste0("Transect = ", data$Transect, ". ", "Order = 1. Missing Point") 
-# values_data <- data$Missing
-# values_valid <- 0
-# values_check <- (values_data == values_valid) %>% replace_na(TRUE)
-# 
-# # Identify errors
-# errors_HerbsPoints_Points_Missing <- qaqc(data, query, query_message, values_check)
-```
-
 #### Combine Point Errors
 
 ```{r}
@@ -5074,7 +5074,7 @@ if(nrow(errors_HerbsPoints_Point) > 1) {
 ```{r}
 # Set parameters 
 data <- HerbsPoints_data %>% 
-  filter(Preferred_Lifeform %in% c("Graminoid", "Grass-like", "Forb/herb", "Nonvascular", "Fern"))
+  filter(Preferred_Lifeform %in% c("Graminoid", "Grass-like", "Forb/herb", "Nonvascular", "Fern", "Vine"))
 query <- "Cvr Pts Status" 
 query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Order = ", data$Order, ". ", "Species = ", data$Species.Symbol, ". ", "Status")
 values_data <- data$Status
@@ -5143,7 +5143,7 @@ if(nrow(errors_HerbsPoints_Status) > 1) {
 # Set parameters 
 data <- HerbsPoints_data
 query <- "Cvr Pts Tape" 
-query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Tape")
+query_message <- paste0("Transect = ", data$Transect, ". ", "Point = ", data$Point, ". ", "Correct Tape Value = ", data$Point * 0.3, "; ", "Tape")
 values_data <- data$Tape
 values_valid <- c(0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 5.4, 5.7, 6.0, 6.3, 6.6, 6.9, 7.2, 7.5, 7.8, 8.1, 8.4, 8.7, 9.0, 9.3, 9.6, 9.9, 10.2, 10.5, 10.8, 11.1, 11.4, 11.7, 12.0, 12.3, 12.6, 12.9, 13.2, 13.5, 13.8, 14.1, 14.4, 14.7, 15.0, 15.3, 15.6, 15.9, 16.2, 16.5, 16.8, 17.1, 17.4, 17.7, 18.0, 18.3, 18.6, 18.9, 19.2, 19.5, 19.8, 20.1, 20.4, 20.7, 21.0, 21.3, 21.6, 21.9, 22.2, 22.5, 22.8, 23.1, 23.4, 23.7, 24.0, 24.3, 24.6, 24.9, 25.2, 25.5, 25.8, 26.1, 26.4, 26.7, 27.0, 27.3, 27.6, 27.9, 28.2, 28.5, 28.8, 29.1, 29.4, 29.7, 30.0, 30.3, 30.6, 30.9, 31.2, 31.5, 31.8, 32.1, 32.4, 32.7, 33.0, 33.3, 33.6, 33.9, 34.2, 34.5, 34.8, 35.1, 35.4, 35.7, 36.0, 36.3, 36.6, 36.9, 37.2, 37.5, 37.8, 38.1, 38.4, 38.7, 39.0, 39.3, 39.6, 39.9, 40.2, 40.5, 40.8, 41.1, 41.4, 41.7, 42.0, 42.3, 42.6, 42.9, 43.2, 43.5, 43.8, 44.1, 44.4, 44.7, 45.0, 45.3, 45.6, 45.9, 46.2, 46.5, 46.8, 47.1, 47.4, 47.7, 48.0, 48.3, 48.6, 48.9, 49.2, 49.5, 49.8)
 values_check <- values_data %in% values_valid
