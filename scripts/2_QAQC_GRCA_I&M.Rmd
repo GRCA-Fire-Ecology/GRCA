@@ -194,11 +194,11 @@ Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
   
 # Filter for only data, by year
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2019))
+  filter(is.na(Visited), Year %in% c(2024))
 
 # Filter for only headers, by year
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2019))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 FuelsDuffLitt
@@ -222,11 +222,11 @@ FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA
   
 # Filter for only data, by year
 FuelsDuffLitt_data <- FuelsDuffLitt_all %>%
-  filter(is.na(Visited), Year %in% c(2019))
+  filter(is.na(Visited), Year %in% c(2024))
 
 # Filter for only headers, by year
 FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
-  filter(!is.na(Visited), Year %in% c(2019))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 FuelsFine
@@ -250,11 +250,11 @@ FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
   
 # Filter for only data, by year
 FuelsFine_data <- FuelsFine_all %>%
-  filter(is.na(Visited), Year %in% c(2019))
+  filter(is.na(Visited), Year %in% c(2024))
 
 # Filter for only headers, by year
 FuelsFine_header <- FuelsFine_all %>%
-  filter(!is.na(Visited), Year %in% c(2019))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 PostBurn
@@ -278,11 +278,11 @@ PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
   
 # Filter for only data, by year
 PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2019))
+  filter(is.na(Visited), Year %in% c(2024))
 
 # Filter for only headers, by year
 PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2019))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 Trees
@@ -306,11 +306,11 @@ Trees_all$Visited[Trees_all$Visited==""] <- NA
   
 # Filter for only data, by year
 Trees_data <- Trees_all %>%
-  filter(is.na(Visited), Year %in% c(2019))
+  filter(is.na(Visited), Year %in% c(2024))
 
 # Filter for only headers, by year
 Trees_header <- Trees_all %>%
-  filter(!is.na(Visited), Year %in% c(2019))
+  filter(!is.na(Visited), Year %in% c(2024))
 ```
 
 # PROTOCOL - SURFACE FUELS
