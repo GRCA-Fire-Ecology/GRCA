@@ -11,34 +11,35 @@ date: "2025-03-17"
 
 ## Purpose
 
-This report summarizes plot work by the AKR Fire Ecology Program. The included tables and enclosed code allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit.
+This report summarizes plot work by the Fire Ecology Program. The included tables and enclosed code allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit.
 
 ```{r setup, include=FALSE}
-### Set up Environment
-## Load Packages
-library(stringr)
-library(tidyverse)
-library(DT)
-library(kableExtra)
-library(fs)
-library(here)
-
 ## Markdown Options
 knitr::opts_chunk$set(echo = FALSE, error = FALSE,
                       warnings = FALSE, message = FALSE)
+
+## Install packages (if needed)
+# install.packages("tidyverse")
+
+## Load Packages
+library(tidyverse)
+# library(stringr)
+# library(DT)
+# library(kableExtra)
+# library(fs)
+# library(here)
 ```
 
 ```{r import data, include=FALSE}
-### Import Data
-## Set Working Directory
-wDir <- here()
-wDir
+# Identify working directory (specifically user name)
+getwd()
+
+# Load in data. Change file path based on user name!
+path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
 
 ## Load Data
 # In FFI, in the Project Management tab, Utilities menu, select Sample Event Report to export sample event info for all projects.
-sampAK <- read.csv(path("C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/scripts/examples/AK_raw_FFI_data_sample_event_summaries/SampleEventReport.csv"),
-                   na.strings = c("","NA","N/A"), # replace blanks and text NA as actual NA
-                   fileEncoding = 'UTF-8-BOM')
+SampReport <- read.csv(paste0(path_data, "SampleEventReport.csv"), quote = "")
 ```
 
 The code summarizes records in the Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server. FFI produces a 9-column .csv with a default filename of "SampleEventReport.csv" and the following column headers:
