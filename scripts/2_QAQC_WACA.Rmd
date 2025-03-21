@@ -140,12 +140,9 @@ Fuels1000
 ```{r}
 # Clean up data frame
 Fuels1000_all <- Fuels1000_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -166,12 +163,9 @@ FuelsDuffLitt
 ```{r}
 # Clean up data frame
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -192,12 +186,9 @@ FuelsFine
 ```{r}
 # Clean up data frame
 FuelsFine_all <- FuelsFine_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -218,12 +209,9 @@ PostBurn
 ```{r}
 # Clean up data frame
 PostBurn_all <- PostBurn_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -244,12 +232,9 @@ Trees
 ```{r}
 # Clean up data frame
 Trees_all <- Trees_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -3441,4 +3426,3 @@ path_errors
 #write_xlsx(errors_all, paste0(path_errors, "errors_WACA.xlsx"))
 condformat2excel(errors_all, paste0(path_errors, "errors_WACA_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
-

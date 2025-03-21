@@ -61,12 +61,12 @@ getwd()
 # Load in data. Change file path based on user name!
 
 # Mixed Conifer
-path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-01-23/"
+path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-03-20/"
 # Pinyon Juniper
 path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
 # Errors
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
-path_errors_name <- "2019 GRCA I&M QAQC Errors"
+path_errors_name <- "2024 GRCA I&M QAQC Errors"
 ```
 
 ### Create Function
@@ -177,12 +177,9 @@ Fuels1000
 ```{r}
 # Clean up data frame
 Fuels1000_all <- Fuels1000_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
@@ -209,12 +206,9 @@ FuelsDuffLitt
 ```{r}
 # Clean up data frame
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
@@ -240,12 +234,9 @@ FuelsFine
 ```{r}
 # Clean up data frame
 FuelsFine_all <- FuelsFine_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
@@ -271,12 +262,9 @@ PostBurn
 ```{r}
 # Clean up data frame
 PostBurn_all <- PostBurn_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
@@ -302,12 +290,9 @@ Trees
 ```{r}
 # Clean up data frame
 Trees_all <- Trees_all %>%
-  # Separate Date column into Date and Time columns
+  # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  # Change classification of Date column
-  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
-  # Separate Date column into "Year", "Month", "Day"
-  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time")) %>% 
   # Add Monitoring Type
