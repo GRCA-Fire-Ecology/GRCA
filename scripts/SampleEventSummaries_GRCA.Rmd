@@ -22,34 +22,43 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE,
 # install.packages("tidyverse")
 
 ## Load Packages
+# "here" helps you easily find and reference your working directory
+library(here)
+# "tidyverse" has lots of useful functions for data cleaning
 library(tidyverse)
+# "kableExtra" is used to produce formatted tables
+library(kableExtra)
 # library(stringr)
 # library(DT)
-# library(kableExtra)
 # library(fs)
-# library(here)
+
 ```
 
 ```{r import data, include=FALSE}
-# Identify working directory (specifically user name)
-getwd()
+# Identify working directory
+here()
 
-# Load in data. Change file path based on user name!
+# Load in data.
 path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
+path_output <- paste0(here(), "/output/")
 
 ## Load Data
 # In FFI, in the Project Management tab, Utilities menu, select Sample Event Report to export sample event info for all projects.
-SampReport <- read.csv(paste0(path_data, "SampleEventReport.csv"), quote = "")
+SampleEventReport <- read.csv(paste0(path_data, "SampleEventReport.csv"))
+ProjectUnitReport <- read.csv(paste0(path_data, "ProjectUnitAssignmentReport.csv"))
+MacroplotReport <- read.csv(paste0(path_data, "MacroplotReport.csv"))
 ```
 
 The code summarizes records in the Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server. FFI produces a 9-column .csv with a default filename of "SampleEventReport.csv" and the following column headers:
 
-```{r input data format, include=TRUE}
-header_list <- c("AdministrationUnit_Name","ProjectUnit_Name","MacroPlot_Name",
-                  "Multi_PU","SampleEvent_Date","SampleEvent_LegacyMonitoringStatus",
-                  "MonitoringStatus_Name","Protocols","Visited")
-
-print(header_list)
+```{r}
+#create monitoring status guide
+MonStatus <- SampleEventReport %>% 
+  select(c("ProjectUnit_Name", "MonitoringStatus_Name")) %>% 
+  filter(ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim"),
+         MonitoringStatus_Name != "") %>% 
+  mutate(Prefix = NA, Base = NA, Suffix = NA) %>% 
+  unique()
 ```
 
 ```{r manipulate data, include=FALSE}
@@ -57,57 +66,69 @@ print(header_list)
 ## Create column for park via break down of ProjectUnit_Name
 #   return all characters to left of either "-" or "_"
 #   this won't work for all plot naming schemes but most?
-sampAK2 <- sampAK %>% 
-  filter(Visited == "Y") %>% # filter data for only visited plots
-  mutate(across(where(is.character), str_trim)) %>% # remove trailing/leading whitespace
-  mutate(Database = "ALASKA",
-         Park = gsub("\\-|_.*|-.*", "", ProjectUnit_Name)) %>%
-  separate(SampleEvent_Date, sep = " ", into = c("Date", "Time", "Period"), remove = FALSE) %>% # separate Date column into Date and Time columns
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-  select(!c("Month", "Day", "Period", "Time")) # remove unneeded columns
 
-# clean up known issues with plot naming schemes
-sampAK3 <- sampAK2 %>% 
-  mutate(Park = case_when(Park=="IN" ~ NA,
-                          Park=="NULLNULL" ~ NA,
-                          Park=="Paired" ~ substr(MacroPlot_Name, 1, 4),
-                          TRUE ~ Park))
+SampGRCA <- SampleEventReport %>% 
+  # filter data for only visited plots and unique plot types
+  filter(Visited == "Y",
+         ProjectUnit_Name %in% c("GRED", "GRIN", "PIAB", "PIED", "PIEN", "PIPN", "PIPO", "RAP_Fawn Spring", "RAP_Hwy 67", "RAP_Moqui", "RAP_Picnic", "RAP_Quarry", "RAP_Range", "RAP_Spring Canyon", "RAP_Thompson", "RAP_Tusayan Pueblo (Thinning)", "RAP_USFS-Burnt Corral", "RAP_USFS-Tipover", "RAP_Walla_Valley")) %>% 
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>% 
+  # add columns
+  mutate(PlotType_Name = ifelse(grepl("RAP", ProjectUnit_Name), "RAP", 
+                                 ifelse(grepl("GR", ProjectUnit_Name), "Meadow", "FMH"))) %>%
+  relocate(PlotType_Name, .after = AdministrationUnit_Name) %>% 
+  # separate and reformat Date column
+  separate(SampleEvent_Date, sep = " ", into = c("Date", "Time"), remove = FALSE) %>% 
+  mutate(Date = as.Date(Date, "%m/%d/%Y")) %>% 
+  separate(Date, sep = "-", into = c("Year", "Month", "Day"), remove = FALSE) %>% 
+  # remove unneeded columns
+  select(!c("Month", "Day", "Time"))
 
-## Assign parks to area programs
-# create area program park lists
-WAFM <- c("DENA", "BELA", "NOAT", "KOVA", "LACL")
-EAFM <- c("WRST", "GAAR", "YUCH")
-Coastal  <- c("KATM", "LACL", "SITK", "GLBA")
 
-# assign area program
-sampAK4 <- sampAK3 %>% 
-  mutate(AreaProgram_Name = case_when(Park %in% WAFM~"WAFM",
-                                      Park %in% EAFM~"EAFM",
-                                      Park %in% Coastal~"Coastal",
-                                      TRUE~NA))
+## Create columns for Status (i.e., pre or post), Type of disturbance (i.e., treatment or burn), Entry (i.e. 1st fire, 2nd fire, etc) and Time since disturbance (i.e., Year 1) via break down of the MonitoringStatus_Name field
+samp_test <- SampGRCA %>%
+  # fill in missing details
+  mutate(MonitoringStatus_Name = ifelse(MonitoringStatus_Name == "", "Pre", MonitoringStatus_Name)) %>% 
+  mutate(MonitoringStatus_Name = ifelse(MonitoringStatus_Name == "Pre", paste0("00", MonitoringStatus_Name), MonitoringStatus_Name)) %>% 
+  # extract info based on monitoring status names
+  extract(MonitoringStatus_Name, into = c("Entry","Type","TimeSince"),
+          regex = "([0-9]+)([A-Z][a-z]+)([0-9]+)", 
+          remove = FALSE) %>% 
+  # fix up classification of "Year" reads
+  mutate(Status = ifelse(Type == "Year", "Post", Type)) %>% 
+  relocate(Status, .after = Type) %>% 
+  # make type of disturbance = "burn" for all entries
+  mutate(Type = "burn") %>% 
+  # fix up classifications of "Pre" reads
+  mutate(Entry = ifelse(grepl("Pre", MonitoringStatus_Name), substr(MonitoringStatus_Name, start = 1, stop = 2), Entry),
+         Status = ifelse(grepl("Pre", MonitoringStatus_Name), "Pre", Status)) %>% 
+  # fix up classifications of "Post" reads
+  mutate(Entry = ifelse(grepl("Post", MonitoringStatus_Name), substr(MonitoringStatus_Name, start = 1, stop = 2), Entry),
+         Status = ifelse(grepl("Post", MonitoringStatus_Name), "Post", Status),
+         TimeSince = ifelse(grepl("Post", MonitoringStatus_Name), 0, TimeSince)) %>% 
+  # fix up classifications of "PR" reads
+  mutate(Status = ifelse(grepl("PR", MonitoringStatus_Name), "Pre", Status)) %>%
+  # make columns numeric
+  mutate(Entry = as.numeric(Entry),
+         TimeSince = as.numeric(TimeSince))
 
-## Create columns for Status (i.e., pre or post), Type of disturbance (i.e., treatment or burn), and Time since disturbance (i.e., Year 1) via break down of the MonitoringStatus_Name field
 
-# split field at capital letters, pull TimeSince with digit value
-sampAK5 <- sampAK4 %>%
-  extract(MonitoringStatus_Name, into = c("Status","Type","TimeSince"),
-          regex = "([A-Z][a-z]+)([A-Z][a-z]+)([A-Z][a-z]+)", 
-          remove = FALSE) %>% # keep original column
-  mutate(Status = factor(Status,levels = c("Pre","Post","Un")),
-         TimeSince = as.numeric(str_extract(MonitoringStatus_Name,
-                              regex("([[:digit:]]+)"))))
+############
+# Should we also change "Type" to reflect plots which have never burned?
+
+
 
 ## Basic QA/QC of sample event report data
 # Check occurrence of remaining NA values
-check_NAs <- sampAK5 %>% 
+check_NAs <- samp_test %>% 
   summarise(across(everything(), ~ sum(is.na(.x)))) %>% 
   pivot_longer(everything(), names_to = "Count")
 
 # check occurrence of unique values in newly created columns, make corrections as needed
-sampAK5$Park %>% table(exclude = NULL)
-sampAK5$Status %>% table(exclude = NULL)
-sampAK5$Type %>% table(exclude = NULL)
-sampAK5$TimeSince %>% table(exclude = NULL)
+samp_test$PlotType_Name %>% table(exclude = NULL)
+samp_test$Status %>% table(exclude = NULL)
+samp_test$Type %>% table(exclude = NULL)
+samp_test$TimeSince %>% table(exclude = NULL)
 ```
 
 ```{r set parameters, include=F}
@@ -115,12 +136,12 @@ sampAK5$TimeSince %>% table(exclude = NULL)
 # use commas to build lists of acceptable values for filters
 
 # designate target park(s)
-target_park <- c("DENA")
+target_park <- c("GRCA")
 
 # designate target project(s)
 # see all project names
-unique(sampAK5$ProjectUnit_Name)
-target_project <- c("WRST-CHAKINA-FIRE-EFFECTS")
+unique(SampGRCA$ProjectUnit_Name)
+target_project <- c("PIPN")
 
 # designate target year or years
 target_year <- c(2024)
@@ -132,10 +153,21 @@ The Alaska NPS Fire Ecology program serves all National Parks in Alaska. All dat
 
 ```{r program summary}
 ## Summarise projects and events by park
-program_summ <- sampAK5 %>%
-  filter(Park %in% c(WAFM, EAFM, Coastal)) %>% 
-  group_by(`Area Program` = AreaProgram_Name,
-           `Park` = Park) %>%
+program_summ <- samp_test %>%
+  #group_by(`Park` = Park) %>%
+  summarise(`Projects` = n_distinct(ProjectUnit_Name),
+            `Number of Plots` = n_distinct(MacroPlot_Name),
+            `Monitoring Statuses` = n_distinct(MonitoringStatus_Name),
+            `Visit Dates` = n_distinct(SampleEvent_Date),
+            `Protocols Used` = n_distinct(Protocols)) %>% 
+  ungroup()
+
+
+
+
+
+## Summarise projects and events by park
+program_summ <- samp_test %>%
   summarise(`Projects` = n_distinct(ProjectUnit_Name),
             `Number of Plots` = n_distinct(MacroPlot_Name),
             `Monitoring Statuses` = n_distinct(MonitoringStatus_Name),
@@ -176,8 +208,8 @@ The table below summarizes current and past projects in `r target_park`.
 ```{r park summ}
 ## Summarise projects by park
 # uses 'target park' variable designated above
-target_park_summ <- sampAK5 %>%
-  filter(Park == target_park) %>% 
+target_park_summ <- samp_test %>%
+  filter(AdministrationUnit_Name == target_park) %>% 
   group_by(`Project Name` = ProjectUnit_Name) %>%
   summarise(`First Visit` = min(as.numeric(Year)),
             `Latest Visit` = max(as.numeric(Year)),
@@ -216,7 +248,7 @@ The table below summarizes sample events recorded within the `r target_project` 
 ```{r project summ}
 ## Summarise project
 # uses 'target project' variable designated above
-target_project_summ <- sampAK5 %>%
+target_project_summ <- samp_test %>%
   filter(ProjectUnit_Name == target_project) %>% 
   group_by(`Monitoring Status` = MonitoringStatus_Name) %>%
   summarise(`First Visit` = as.Date(min(SampleEvent_Date), format = "%m/%d/%y"),
@@ -239,7 +271,7 @@ The table below summarizes all projects with plots sampled within the following 
 ```{r year summ}
 ## Summarise yearly plot activity
 # uses 'target year' variable designated above
-target_year_summ <- sampAK5 %>%
+target_year_summ <- samp_test %>%
   filter(Year %in% target_year) %>% 
   group_by(`Project Name` = ProjectUnit_Name) %>%
   summarise(`Start Date` = as.character(as.Date(min(SampleEvent_Date), format = "%m/%d/%y")),
@@ -273,14 +305,14 @@ The table below summarizes the frequency of use of protocols occurring in the FF
 
 ```{r protocol summ}
 ## Summarise protocol use by status
-protocol_use_summ <- sampAK5 %>%
+protocol_use_summ <- samp_test %>%
   group_by(`Protocol` = Protocols) %>%
   summarise(`First Use` = min(as.numeric(Year)),
             `Latest Use` = max(as.numeric(Year)),
             `Number of Plots` = n_distinct(MacroPlot_Name),
             `Number of Projects` = n_distinct(ProjectUnit_Name),
             `Number of Monitoring Statuses` = n_distinct(MonitoringStatus_Name),
-            `Number of Parks` = n_distinct(Park)) %>% 
+            `Number of Parks` = n_distinct(AdministrationUnit_Name)) %>% 
   arrange(desc(`Number of Plots`))
 
 protocol_use_summ %>% 
