@@ -11,17 +11,25 @@ date: "2025-03-17"
 
 ## Purpose
 
-This report summarizes plot work by the Fire Ecology Program. The included tables and enclosed code allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit.
+This report summarizes plot work by the Fire Ecology Program. The included tables and enclosed code allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit. The code summarizes records in the Macroplot Report and Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server.
+
+### Setup
 
 ```{r setup, include=FALSE}
 ## Markdown Options
-knitr::opts_chunk$set(echo = FALSE, error = FALSE,
-                      warnings = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = FALSE)
+```
 
+```{r install packages, include=FALSE}
 ## Install packages (if needed)
-# install.packages("tidyverse")
 
+# install.packages("tidyverse")
+# install.packages("kableExtra")
+```
+
+```{r load packages, include=FALSE}
 ## Load Packages
+
 # "here" helps you easily find and reference your working directory
 library(here)
 # "tidyverse" has lots of useful functions for data cleaning
@@ -31,8 +39,9 @@ library(kableExtra)
 # library(stringr)
 # library(DT)
 # library(fs)
-
 ```
+
+### Adjust File Paths
 
 ```{r import data, include=FALSE}
 # Identify working directory
@@ -41,25 +50,268 @@ here()
 # Load in data.
 path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
 path_output <- paste0(here(), "/output/")
-
-## Load Data
-# In FFI, in the Project Management tab, Utilities menu, select Sample Event Report to export sample event info for all projects.
-SampleEventReport <- read.csv(paste0(path_data, "SampleEventReport.csv"))
-ProjectUnitReport <- read.csv(paste0(path_data, "ProjectUnitAssignmentReport.csv"))
-MacroplotReport <- read.csv(paste0(path_data, "MacroplotReport.csv"))
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/"
 ```
 
-The code summarizes records in the Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server. FFI produces a 9-column .csv with a default filename of "SampleEventReport.csv" and the following column headers:
+### Load Data
+
+```{r load data, include=FALSE}
+## Load Data
+
+SampleEventReport <- read.csv(paste0(path_data, "metadata/SampleEventReport.csv"))
+MacroplotReport <- read.csv(paste0(path_data, "metadata/MacroplotReport.csv"))
+#ProjectUnitReport <- read.csv(paste0(path_data, "metadata/ProjectUnitAssignmentReport.csv"))
+```
+
+### Macroplot Report
 
 ```{r}
-#create monitoring status guide
-MonStatus <- SampleEventReport %>% 
-  select(c("ProjectUnit_Name", "MonitoringStatus_Name")) %>% 
-  filter(ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim"),
-         MonitoringStatus_Name != "") %>% 
-  mutate(Prefix = NA, Base = NA, Suffix = NA) %>% 
-  unique()
+# Ensure blanks in UV columns are NA
+MacroplotReport$UV1[MacroplotReport$UV1==""] <- NA
+MacroplotReport$UV2[MacroplotReport$UV2==""] <- NA
+MacroplotReport$UV3[MacroplotReport$UV3==""] <- NA
+MacroplotReport$UV4[MacroplotReport$UV4==""] <- NA
+MacroplotReport$UV5[MacroplotReport$UV5==""] <- NA
+MacroplotReport$UV6[MacroplotReport$UV6==""] <- NA
+MacroplotReport$UV7[MacroplotReport$UV7==""] <- NA
+MacroplotReport$UV8[MacroplotReport$UV8==""] <- NA
 ```
+
+#### Sample Events
+
+```{r}
+MacroplotReport_SampleEvents <- MacroplotReport %>% 
+  select(c("Macroplot", "SampleEventDate", "MonStatusOrd", "MonStatus")) %>% 
+  filter(!is.na(MonStatusOrd)) %>% 
+  # separate and reformat Date column
+  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "Time")) %>% 
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "Month", "Day"), remove = FALSE) %>% 
+  # remove unneeded columns
+  select(!c("Month", "Day", "Time"))
+```
+
+#### Fires
+
+```{r}
+MacroplotReport_Fires <- MacroplotReport %>% 
+  select(c("Macroplot", "Purpose", "Type", "DateIn", 
+           "UV1", "UV2", "UV3", "UV4", "UV5", "UV6", "UV7", "UV8")) %>% 
+  filter(Type != "") %>% 
+  # separate and reformat Date column
+  separate(DateIn, sep = " ", into = c("DateIn", "Time")) %>% 
+  mutate(DateIn = as.Date(DateIn, "%m/%d/%Y")) %>% 
+  separate(DateIn, sep = "-", into = c("DateIn_Year", "Month", "Day"), remove = FALSE) %>% 
+  # remove unneeded columns
+  select(!c("Month", "Day", "Time"))
+```
+
+#### 01 Fire
+
+```{r}
+# add add relevant columns
+Fire01 <- MacroplotReport_Fires %>% 
+  select(c("Macroplot", "UV2")) %>% 
+  filter(!is.na(UV2)) %>% 
+  separate(UV2, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
+  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 1) %>% 
+  select(!c("Fire_Info"))
+
+# specific edits
+Fire01 <- Fire01 %>% 
+  mutate(Fire_Name = ifelse(Macroplot == "SC03", "Tipover East", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "SC03", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "SC03", "12/22/17", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "SC03", "(POST read '18)", Fire_Severity)) %>% 
+  mutate(Fire_Name = ifelse(Macroplot == "SC16", "Tipover East", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "SC16", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "SC16", "12/22/17", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "SC16", "(POST read '18)", Fire_Severity)) %>% 
+  mutate(Fire_Name = ifelse(Macroplot == "PIAB 06", "NW 1,3,5", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIAB 06", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIAB 06", "11/9/2007", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIAB 06", "Low Severity", Fire_Severity)) %>% 
+  mutate(Fire_Name = ifelse(Macroplot == "PIAB 24", "NW 1,3,5", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIAB 24", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIAB 24", "11/10/2007", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIAB 24", "Moderate/Low Severity", Fire_Severity)) %>% 
+  mutate(Fire_Type = ifelse(Fire_Type == "Rx", "RX", Fire_Type)) %>% 
+  select(!c("UV2"))
+
+# edit date column
+Fire01 <- Fire01 %>% 
+  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Fire_Date_New, .after = Fire_Date) %>%
+  relocate(Fire_Year, .after = Fire_Date_New)
+```
+
+#### 02 Fire
+
+```{r}
+# add add relevant columns
+Fire02 <- MacroplotReport_Fires %>% 
+  select(c("Macroplot", "UV3")) %>% 
+  filter(!is.na(UV3)) %>% 
+  separate(UV3, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
+  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 2) %>% 
+  select(!c("Fire_Info"))
+
+# specific edits
+Fire02 <- Fire02 %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIAB 07", "NW 1,3,5", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIAB 07", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIAB 07", "11/10/2007", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIAB 07", "Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIAB 25", "NW 1,3,5", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIAB 25", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIAB 25", "11/10/2007", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIAB 25", "Moderate/Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIPN 01", "NW 1,3,5", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIPN 01", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIPN 01", "11/10/2007", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIPN 01", "Moderate/Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIPN 02", "NW 1,3,5", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIPN 02", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIPN 02", "11/10/2007", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIPN 02", "Moderate/Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIPO 24", "Watson 2,3,4", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIPO 24", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIPO 24", "10/14/2011", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIPO 24", "Low Severity", Fire_Severity)) %>% 
+  mutate(Fire_Type = ifelse(Fire_Type == "Rx", "RX", Fire_Type)) %>% 
+  select(!c("UV3"))
+
+# edit date column
+Fire02 <- Fire02 %>% 
+  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Fire_Date_New, .after = Fire_Date) %>%
+  relocate(Fire_Year, .after = Fire_Date_New)
+```
+
+#### 03 Fire
+
+```{r}
+# add add relevant columns
+Fire03 <- MacroplotReport_Fires %>% 
+  select(c("Macroplot", "UV4")) %>% 
+  filter(!is.na(UV4)) %>% 
+  separate(UV4, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
+  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 3) %>% 
+  select(!c("Fire_Info"))
+
+# specific edits
+Fire03 <- Fire03 %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIPO 17", "Watson 2,3,4", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIPO 17", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIPO 17", "10/14/2011", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIPO 17", "Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIPO 20", "Watson 2,3,4", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIPO 20", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIPO 20", "10/14/2011", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIPO 20", "Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIPO 21", "Watson 2,3,4", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIPO 21", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIPO 21", "10/14/2011", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIPO 21", "Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Name = ifelse(Macroplot == "PIPO 22", "Watson 2,3,4", Fire_Name),
+         Fire_Type = ifelse(Macroplot == "PIPO 22", "Rx", Fire_Type),
+         Fire_Date = ifelse(Macroplot == "PIPO 22", "10/14/2011", Fire_Date),
+         Fire_Severity = ifelse(Macroplot == "PIPO 22", "Low Severity", Fire_Severity)) %>%
+  mutate(Fire_Type = ifelse(Fire_Type == "Rx", "RX", Fire_Type)) %>% 
+  select(!c("UV4"))
+
+# edit date column
+Fire03 <- Fire03 %>% 
+  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Fire_Date_New, .after = Fire_Date) %>%
+  relocate(Fire_Year, .after = Fire_Date_New)
+```
+
+#### 04 Fire
+
+```{r}
+# add add relevant columns
+Fire04 <- MacroplotReport_Fires %>% 
+  select(c("Macroplot", "UV5")) %>% 
+  filter(!is.na(UV5)) %>% 
+  separate(UV5, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
+  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 4) %>% 
+  select(!c("Fire_Info", "UV5"))
+
+# edit date column
+Fire04 <- Fire04 %>% 
+  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Fire_Date_New, .after = Fire_Date) %>%
+  relocate(Fire_Year, .after = Fire_Date_New)
+```
+
+#### Monitoring Status
+
+```{r}
+MacroplotReport_MonStatus <- MacroplotReport %>% 
+  select(c("MonStatus")) %>% 
+  filter(MonStatus != "") %>% 
+  unique()
+
+
+MacroplotReport_MonStatus <- MacroplotReport_MonStatus %>% 
+  # fill in missing details
+  mutate(MonStatus = ifelse(MonStatus == "", "Pre", MonStatus)) %>% 
+  # extract info based on monitoring status names
+  extract(MonStatus, into = c("Entry","Type","TimeSince"),
+          regex = "([0-9]+)([A-Z][a-z]+)([0-9]+)", 
+          remove = FALSE) %>% 
+  # fix up classification of "Year" reads
+  mutate(Status = ifelse(Type == "Year", "Post", Type)) %>% 
+  relocate(Status, .after = Type) %>% 
+  select(!Type) %>% 
+  # fix up classifications of "Pre" reads
+  mutate(Entry = ifelse(grepl("Pre", MonStatus), 0, Entry),
+         Status = ifelse(grepl("Pre", MonStatus), "Pre", Status)) %>% 
+  # fix up classifications of "Post" reads
+  mutate(Entry = ifelse(grepl("Post", MonStatus), substr(MonStatus, start = 1, stop = 2), Entry),
+         Status = ifelse(grepl("Post", MonStatus), "Post", Status),
+         TimeSince = ifelse(grepl("Post", MonStatus), 0, TimeSince)) %>% 
+  # fix up classifications of "PR" reads
+  mutate(Entry = ifelse(grepl("PR", MonStatus), "0", Entry),
+         Status = ifelse(grepl("PR", MonStatus), "Pre", Status)) %>%
+  # make columns numeric
+  mutate(Entry = as.numeric(Entry),
+         TimeSince = as.numeric(TimeSince))
+```
+
+#### Merge
+
+```{r}
+test <- merge(MacroplotReport_Fires, MacroplotReport_SampleEvents, by = c("Macroplot"))
+test2 <- merge(test, MacroplotReport_MonStatus, by = c("MonStatus"), all = T) %>% 
+  relocate(MonStatus, .after = MonStatusOrd)
+
+
+Fire <- rbind(Fire01, Fire02, Fire03, Fire04)
+
+
+test3 <- merge(test2, Fire, by = c("Macroplot", "Entry"), all = T) %>% 
+  relocate(Entry, .after = MonStatus)
+```
+
+### Sample Event Report
 
 ```{r manipulate data, include=FALSE}
 #### Manipulate and add columns to data
@@ -69,8 +321,8 @@ MonStatus <- SampleEventReport %>%
 
 SampGRCA <- SampleEventReport %>% 
   # filter data for only visited plots and unique plot types
-  filter(Visited == "Y",
-         ProjectUnit_Name %in% c("GRED", "GRIN", "PIAB", "PIED", "PIEN", "PIPN", "PIPO", "RAP_Fawn Spring", "RAP_Hwy 67", "RAP_Moqui", "RAP_Picnic", "RAP_Quarry", "RAP_Range", "RAP_Spring Canyon", "RAP_Thompson", "RAP_Tusayan Pueblo (Thinning)", "RAP_USFS-Burnt Corral", "RAP_USFS-Tipover", "RAP_Walla_Valley")) %>% 
+  # filter(Visited == "Y",
+  #        ProjectUnit_Name %in% c("GRED", "GRIN", "PIAB", "PIED", "PIEN", "PIPN", "PIPO", "RAP_Fawn Spring", "RAP_Hwy 67", "RAP_Moqui", "RAP_Picnic", "RAP_Quarry", "RAP_Range", "RAP_Spring Canyon", "RAP_Thompson", "RAP_Tusayan Pueblo (Thinning)", "RAP_USFS-Burnt Corral", "RAP_USFS-Tipover", "RAP_Walla_Valley")) %>% 
   # remove trailing/leading whitespace
   mutate(across(where(is.character), str_trim)) %>% 
   # add columns
