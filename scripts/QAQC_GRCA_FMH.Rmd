@@ -9,6 +9,7 @@ output:
     toc_depth: 3
     toc_float:
       smooth_scroll: yes
+    code_download: true
   pdf_document:
     toc: yes
     toc_depth: '3'
