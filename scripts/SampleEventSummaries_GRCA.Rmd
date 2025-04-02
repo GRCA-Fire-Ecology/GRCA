@@ -58,14 +58,50 @@ path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/"
 ```{r load data, include=FALSE}
 ## Load Data
 
-SampleEventReport <- read.csv(paste0(path_data, "metadata/SampleEventReport.csv"))
-MacroplotReport <- read.csv(paste0(path_data, "metadata/MacroplotReport.csv"))
+MacroplotReport_raw <- read.csv(paste0(path_data, "metadata/MacroplotReport.csv"))
+SampleEventReport_raw <- read.csv(paste0(path_data, "metadata/SampleEventReport.csv"))
 #ProjectUnitReport <- read.csv(paste0(path_data, "metadata/ProjectUnitAssignmentReport.csv"))
 ```
 
-### Macroplot Report
+### Clean Data
 
 ```{r}
+# standardize Date columns - MacroplotReport
+MacroplotReport <- MacroplotReport_raw %>% 
+  # separate Date columns into Date and Time columns
+  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
+  separate(DateIn, sep = " ", into = c("DateIn", "DateInTime")) %>% 
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y"),
+         DateIn = as.Date(DateIn, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
+  # remove unnecessary columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
+            DateInTime, DateIn_Month, DateIn_Day))
+
+
+# standardize Date columns - SampleEventReport
+SampleEventReport <- SampleEventReport_raw %>% 
+  # separate Date columns into Date and Time columns
+  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  # remove unnecessary columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>%
+  # make column names match those in MacroplotReport
+  mutate(Macroplot = MacroPlot_Name,
+         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
+         MonStatus = MonitoringStatus_Name) %>% 
+  relocate(Macroplot, .after = ProjectUnit_Name) %>% 
+  relocate(LegacyMonitoringStatus, .after = SampleEventDate_Year) %>% 
+  relocate(MonStatus, .after = LegacyMonitoringStatus) %>%
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+
+
 # Ensure blanks in UV columns are NA
 MacroplotReport$UV1[MacroplotReport$UV1==""] <- NA
 MacroplotReport$UV2[MacroplotReport$UV2==""] <- NA
@@ -77,202 +113,93 @@ MacroplotReport$UV7[MacroplotReport$UV7==""] <- NA
 MacroplotReport$UV8[MacroplotReport$UV8==""] <- NA
 ```
 
-#### Sample Events
+## Missing Data & Errors
+
+```{r}
+MonStatus_Missing_SampleEventReport <- SampleEventReport %>% 
+  select(c(Macroplot, SampleEventDate, MonStatus)) %>%
+  filter(MonStatus == "") %>% 
+  unique()
+
+MonStatus_Missing_MacroplotReport <- MacroplotReport %>% 
+  select(c(Macroplot, SampleEventDate, MonStatus, Purpose)) %>% 
+  filter(MonStatus == "", Purpose == "") %>% 
+  select(!c(Purpose))
+
+Protocols_Missing <- SampleEventReport %>% 
+  select(c(Macroplot, SampleEventDate, MonStatus, Protocols, Visited)) %>% 
+  filter(Visited == "N") %>% 
+  unique()
+```
+
+### Add Missing Data (should be done in FFI)
+
+```{r}
+# Fill in missing data - MacroplotReport
+MonStatus_Missing_MacroplotReport_Macroplot <- MonStatus_Missing_MacroplotReport$Macroplot
+MonStatus_Missing_MacroplotReport_SampleEventDate <- MonStatus_Missing_MacroplotReport$SampleEventDate
+
+MacroplotReport <- MacroplotReport %>%
+   mutate(MonStatus = ifelse(Macroplot %in% MonStatus_Missing_MacroplotReport_Macroplot & SampleEventDate %in% MonStatus_Missing_MacroplotReport_SampleEventDate, "Pre", MonStatus))
+```
+
+```{r}
+# some MonStatus values are missing in the Sample Event Report, but present in the Macroplot Report. Find correct values from Macroplot Report and add them to the Sample Event Report
+MonStatus_Missing_SampleEventReport_new <- left_join(MacroplotReport, MonStatus_Missing_SampleEventReport, by = c("Macroplot", "SampleEventDate")) %>% 
+  filter(!is.na(SampleEventDate),
+         !is.na(MonStatus.y)) %>% 
+  mutate(MonStatus_MacroplotReport = MonStatus.x) %>% 
+  select(Macroplot, SampleEventDate, MonStatus_MacroplotReport)
+
+SampleEventReport <- left_join(SampleEventReport, MonStatus_Missing_SampleEventReport_new, by = c("Macroplot", "SampleEventDate")) %>% 
+  mutate(MonStatus = ifelse(MonStatus == "", MonStatus_MacroplotReport, MonStatus)) %>% 
+  select(!MonStatus_MacroplotReport)
+```
+
+```{r}
+# make sure there are no differences
+MonStatus_SampleEventReport <- SampleEventReport %>% 
+  select(Macroplot, SampleEventDate, MonStatus) %>% 
+  unique()
+
+MonStatus_MacroplotReport <- MacroplotReport %>% 
+  select(Macroplot, SampleEventDate, MonStatus) %>% 
+  filter(!is.na(SampleEventDate)) %>% 
+  unique()
+
+diff <- setdiff(MonStatus_SampleEventReport, MonStatus_MacroplotReport) %>% 
+  mutate(Error = TRUE)
+```
+
+### MisIsolate Errors to Fix, New Sample Event Report
+
+```{r}
+MonStatus_Errors <- left_join(SampleEventReport, diff, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>% 
+  filter(Error == TRUE) %>% 
+  select(c(ProjectUnit_Name, Macroplot, SampleEventDate, MonStatus, Error)) %>% 
+  unique()
+
+SampleEventReport <- left_join(SampleEventReport, MonStatus_Errors, by = c("ProjectUnit_Name", "Macroplot", "SampleEventDate", "MonStatus")) %>% 
+  filter(is.na(Error)) %>% 
+  select(!Error)
+```
+
+## Macroplot Report
+
+### Sample Events
 
 ```{r}
 MacroplotReport_SampleEvents <- MacroplotReport %>% 
-  select(c("Macroplot", "SampleEventDate", "MonStatusOrd", "MonStatus")) %>% 
-  filter(!is.na(MonStatusOrd)) %>% 
-  # separate and reformat Date column
-  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "Time")) %>% 
-  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
-  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "Month", "Day"), remove = FALSE) %>% 
-  # remove unneeded columns
-  select(!c("Month", "Day", "Time"))
+  select(c("Macroplot", "SampleEventDate", "SampleEventTeam", "SampleEventComment", "MonStatusOrd", "LegacyMonStatus", "MonStatus")) %>%
+  filter(!is.na(MonStatusOrd))
 ```
 
-#### Fires
+### Monitoring Status
 
 ```{r}
-MacroplotReport_Fires <- MacroplotReport %>% 
-  select(c("Macroplot", "Purpose", "Type", "DateIn", 
-           "UV1", "UV2", "UV3", "UV4", "UV5", "UV6", "UV7", "UV8")) %>% 
-  filter(Type != "") %>% 
-  # separate and reformat Date column
-  separate(DateIn, sep = " ", into = c("DateIn", "Time")) %>% 
-  mutate(DateIn = as.Date(DateIn, "%m/%d/%Y")) %>% 
-  separate(DateIn, sep = "-", into = c("DateIn_Year", "Month", "Day"), remove = FALSE) %>% 
-  # remove unneeded columns
-  select(!c("Month", "Day", "Time"))
-```
-
-#### 01 Fire
-
-```{r}
-# add add relevant columns
-Fire01 <- MacroplotReport_Fires %>% 
-  select(c("Macroplot", "UV2")) %>% 
-  filter(!is.na(UV2)) %>% 
-  separate(UV2, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
-  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
-  mutate(across(where(is.character), str_trim)) %>% 
-  mutate(Entry = 1) %>% 
-  select(!c("Fire_Info"))
-
-# specific edits
-Fire01 <- Fire01 %>% 
-  mutate(Fire_Name = ifelse(Macroplot == "SC03", "Tipover East", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "SC03", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "SC03", "12/22/17", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "SC03", "(POST read '18)", Fire_Severity)) %>% 
-  mutate(Fire_Name = ifelse(Macroplot == "SC16", "Tipover East", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "SC16", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "SC16", "12/22/17", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "SC16", "(POST read '18)", Fire_Severity)) %>% 
-  mutate(Fire_Name = ifelse(Macroplot == "PIAB 06", "NW 1,3,5", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIAB 06", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIAB 06", "11/9/2007", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIAB 06", "Low Severity", Fire_Severity)) %>% 
-  mutate(Fire_Name = ifelse(Macroplot == "PIAB 24", "NW 1,3,5", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIAB 24", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIAB 24", "11/10/2007", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIAB 24", "Moderate/Low Severity", Fire_Severity)) %>% 
-  mutate(Fire_Type = ifelse(Fire_Type == "Rx", "RX", Fire_Type)) %>% 
-  select(!c("UV2"))
-
-# edit date column
-Fire01 <- Fire01 %>% 
-  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
-  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
-  select(!c("Month", "Day")) %>% 
-  relocate(Fire_Date_New, .after = Fire_Date) %>%
-  relocate(Fire_Year, .after = Fire_Date_New)
-```
-
-#### 02 Fire
-
-```{r}
-# add add relevant columns
-Fire02 <- MacroplotReport_Fires %>% 
-  select(c("Macroplot", "UV3")) %>% 
-  filter(!is.na(UV3)) %>% 
-  separate(UV3, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
-  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
-  mutate(across(where(is.character), str_trim)) %>% 
-  mutate(Entry = 2) %>% 
-  select(!c("Fire_Info"))
-
-# specific edits
-Fire02 <- Fire02 %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIAB 07", "NW 1,3,5", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIAB 07", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIAB 07", "11/10/2007", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIAB 07", "Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIAB 25", "NW 1,3,5", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIAB 25", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIAB 25", "11/10/2007", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIAB 25", "Moderate/Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIPN 01", "NW 1,3,5", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIPN 01", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIPN 01", "11/10/2007", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIPN 01", "Moderate/Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIPN 02", "NW 1,3,5", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIPN 02", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIPN 02", "11/10/2007", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIPN 02", "Moderate/Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIPO 24", "Watson 2,3,4", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIPO 24", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIPO 24", "10/14/2011", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIPO 24", "Low Severity", Fire_Severity)) %>% 
-  mutate(Fire_Type = ifelse(Fire_Type == "Rx", "RX", Fire_Type)) %>% 
-  select(!c("UV3"))
-
-# edit date column
-Fire02 <- Fire02 %>% 
-  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
-  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
-  select(!c("Month", "Day")) %>% 
-  relocate(Fire_Date_New, .after = Fire_Date) %>%
-  relocate(Fire_Year, .after = Fire_Date_New)
-```
-
-#### 03 Fire
-
-```{r}
-# add add relevant columns
-Fire03 <- MacroplotReport_Fires %>% 
-  select(c("Macroplot", "UV4")) %>% 
-  filter(!is.na(UV4)) %>% 
-  separate(UV4, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
-  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
-  mutate(across(where(is.character), str_trim)) %>% 
-  mutate(Entry = 3) %>% 
-  select(!c("Fire_Info"))
-
-# specific edits
-Fire03 <- Fire03 %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIPO 17", "Watson 2,3,4", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIPO 17", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIPO 17", "10/14/2011", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIPO 17", "Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIPO 20", "Watson 2,3,4", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIPO 20", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIPO 20", "10/14/2011", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIPO 20", "Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIPO 21", "Watson 2,3,4", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIPO 21", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIPO 21", "10/14/2011", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIPO 21", "Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Name = ifelse(Macroplot == "PIPO 22", "Watson 2,3,4", Fire_Name),
-         Fire_Type = ifelse(Macroplot == "PIPO 22", "Rx", Fire_Type),
-         Fire_Date = ifelse(Macroplot == "PIPO 22", "10/14/2011", Fire_Date),
-         Fire_Severity = ifelse(Macroplot == "PIPO 22", "Low Severity", Fire_Severity)) %>%
-  mutate(Fire_Type = ifelse(Fire_Type == "Rx", "RX", Fire_Type)) %>% 
-  select(!c("UV4"))
-
-# edit date column
-Fire03 <- Fire03 %>% 
-  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
-  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
-  select(!c("Month", "Day")) %>% 
-  relocate(Fire_Date_New, .after = Fire_Date) %>%
-  relocate(Fire_Year, .after = Fire_Date_New)
-```
-
-#### 04 Fire
-
-```{r}
-# add add relevant columns
-Fire04 <- MacroplotReport_Fires %>% 
-  select(c("Macroplot", "UV5")) %>% 
-  filter(!is.na(UV5)) %>% 
-  separate(UV5, sep = ": ", into = c("Entry", "Fire_Info"), remove = FALSE) %>% 
-  separate(Fire_Info, sep = ",", into = c("Fire_Name", "Fire_Type", "Fire_Date", "Fire_Severity"), remove = FALSE) %>% 
-  mutate(across(where(is.character), str_trim)) %>% 
-  mutate(Entry = 4) %>% 
-  select(!c("Fire_Info", "UV5"))
-
-# edit date column
-Fire04 <- Fire04 %>% 
-  mutate(Fire_Date_New = parse_date_time(Fire_Date, orders = c("mdy", "my", "y"))) %>% 
-  separate(Fire_Date_New, sep = "-", into = c("Fire_Year", "Month", "Day"), remove = F) %>% 
-  select(!c("Month", "Day")) %>% 
-  relocate(Fire_Date_New, .after = Fire_Date) %>%
-  relocate(Fire_Year, .after = Fire_Date_New)
-```
-
-#### Monitoring Status
-
-```{r}
-MacroplotReport_MonStatus <- MacroplotReport %>% 
-  select(c("MonStatus")) %>% 
-  filter(MonStatus != "") %>% 
-  unique()
-
-
-MacroplotReport_MonStatus <- MacroplotReport_MonStatus %>% 
-  # fill in missing details
-  mutate(MonStatus = ifelse(MonStatus == "", "Pre", MonStatus)) %>% 
+MacroplotReport_MonStatus <- MacroplotReport_SampleEvents %>% 
+  select(MonStatus) %>% 
+  unique() %>% 
   # extract info based on monitoring status names
   extract(MonStatus, into = c("Entry","Type","TimeSince"),
           regex = "([0-9]+)([A-Z][a-z]+)([0-9]+)", 
@@ -296,22 +223,213 @@ MacroplotReport_MonStatus <- MacroplotReport_MonStatus %>%
          TimeSince = as.numeric(TimeSince))
 ```
 
-#### Merge
+### Location
 
 ```{r}
-test <- merge(MacroplotReport_Fires, MacroplotReport_SampleEvents, by = c("Macroplot"))
-test2 <- merge(test, MacroplotReport_MonStatus, by = c("MonStatus"), all = T) %>% 
-  relocate(MonStatus, .after = MonStatusOrd)
-
-
-Fire <- rbind(Fire01, Fire02, Fire03, Fire04)
-
-
-test3 <- merge(test2, Fire, by = c("Macroplot", "Entry"), all = T) %>% 
-  relocate(Entry, .after = MonStatus)
+MacroplotReport_Location <- MacroplotReport %>% 
+  select(c("Macroplot", "DateIn", "FutureVisit", "DateOut", "LocatedBy", "Latitude", "Longitude", "UTM_X", "UTM_Y", "UTM_Zone", "Datum", "PDOP", "Precision", "Elevation", "ElevationUnits", "Azimuth", "Aspect", "SlopeHill", "SlopeTransect", "StartPoint", "Directions", "Comments")) %>% 
+  filter(!is.na(UTM_Zone))
 ```
 
-### Sample Event Report
+### Purpose
+
+```{r}
+MacroplotReport_Purpose <- MacroplotReport %>% 
+  select(c("Macroplot", "Purpose", "Type", "MetaData", "UV1")) %>% 
+  filter(!is.na(UV1)) 
+```
+
+### Disturbance
+
+```{r}
+MacroplotReport_Disturbance <- MacroplotReport %>% 
+  select(c("Macroplot", "Type", "UV2", "UV3", "UV4", "UV5", "UV6", "UV7", "UV8")) %>% 
+  filter(Type != "") %>% 
+  select(!Type)
+```
+
+#### 01 Disturbance
+
+```{r}
+# add add relevant columns
+Disturbance01 <- MacroplotReport_Disturbance %>% 
+  select(c("Macroplot", "UV2")) %>% 
+  filter(!is.na(UV2)) %>% 
+  separate(UV2, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>% 
+  separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Type", "Disturbance_Date", "Disturbance_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 1) %>% 
+  select(!c("Disturbance_Info"))
+
+# specific edits
+Disturbance01 <- Disturbance01 %>% 
+  mutate(Disturbance_Name = ifelse(Macroplot == "SC03", "Tipover East", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "SC03", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "SC03", "12/22/17", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "SC03", "(POST read '18)", Disturbance_Severity)) %>% 
+  mutate(Disturbance_Name = ifelse(Macroplot == "SC16", "Tipover East", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "SC16", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "SC16", "12/22/17", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "SC16", "(POST read '18)", Disturbance_Severity)) %>% 
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 06", "NW 1,3,5", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIAB 06", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIAB 06", "11/9/2007", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIAB 06", "Low Severity", Disturbance_Severity)) %>% 
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 24", "NW 1,3,5", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIAB 24", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIAB 24", "11/10/2007", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIAB 24", "Moderate/Low Severity", Disturbance_Severity)) %>% 
+  mutate(Disturbance_Type = ifelse(Disturbance_Type == "Rx", "RX", Disturbance_Type)) %>% 
+  select(!c("UV2"))
+
+# edit date column
+Disturbance01 <- Disturbance01 %>% 
+  mutate(Disturbance_Date_New = parse_date_time(Disturbance_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Disturbance_Date_New, sep = "-", into = c("Disturbance_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Disturbance_Date_New, .after = Disturbance_Date) %>%
+  relocate(Disturbance_Year, .after = Disturbance_Date_New)
+```
+
+#### 02 Disturbance
+
+```{r}
+# add add relevant columns
+Disturbance02 <- MacroplotReport_Disturbance %>% 
+  select(c("Macroplot", "UV3")) %>% 
+  filter(!is.na(UV3)) %>% 
+  separate(UV3, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>% 
+  separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Type", "Disturbance_Date", "Disturbance_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 2) %>% 
+  select(!c("Disturbance_Info"))
+
+# specific edits
+Disturbance02 <- Disturbance02 %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 07", "NW 1,3,5", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIAB 07", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIAB 07", "11/10/2007", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIAB 07", "Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 25", "NW 1,3,5", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIAB 25", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIAB 25", "11/10/2007", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIAB 25", "Moderate/Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIPN 01", "NW 1,3,5", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIPN 01", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIPN 01", "11/10/2007", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIPN 01", "Moderate/Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIPN 02", "NW 1,3,5", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIPN 02", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIPN 02", "11/10/2007", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIPN 02", "Moderate/Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 24", "Watson 2,3,4", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIPO 24", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIPO 24", "10/14/2011", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIPO 24", "Low Severity", Disturbance_Severity)) %>% 
+  mutate(Disturbance_Type = ifelse(Disturbance_Type == "Rx", "RX", Disturbance_Type)) %>% 
+  select(!c("UV3"))
+
+# edit date column
+Disturbance02 <- Disturbance02 %>% 
+  mutate(Disturbance_Date_New = parse_date_time(Disturbance_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Disturbance_Date_New, sep = "-", into = c("Disturbance_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Disturbance_Date_New, .after = Disturbance_Date) %>%
+  relocate(Disturbance_Year, .after = Disturbance_Date_New)
+```
+
+#### 03 Disturbance
+
+```{r}
+# add add relevant columns
+Disturbance03 <- MacroplotReport_Disturbance %>% 
+  select(c("Macroplot", "UV4")) %>% 
+  filter(!is.na(UV4)) %>% 
+  separate(UV4, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>% 
+  separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Type", "Disturbance_Date", "Disturbance_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 3) %>% 
+  select(!c("Disturbance_Info"))
+
+# specific edits
+Disturbance03 <- Disturbance03 %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 17", "Watson 2,3,4", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIPO 17", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIPO 17", "10/14/2011", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIPO 17", "Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 20", "Watson 2,3,4", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIPO 20", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIPO 20", "10/14/2011", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIPO 20", "Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 21", "Watson 2,3,4", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIPO 21", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIPO 21", "10/14/2011", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIPO 21", "Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 22", "Watson 2,3,4", Disturbance_Name),
+         Disturbance_Type = ifelse(Macroplot == "PIPO 22", "Rx", Disturbance_Type),
+         Disturbance_Date = ifelse(Macroplot == "PIPO 22", "10/14/2011", Disturbance_Date),
+         Disturbance_Severity = ifelse(Macroplot == "PIPO 22", "Low Severity", Disturbance_Severity)) %>%
+  mutate(Disturbance_Type = ifelse(Disturbance_Type == "Rx", "RX", Disturbance_Type)) %>% 
+  select(!c("UV4"))
+
+# edit date column
+Disturbance03 <- Disturbance03 %>% 
+  mutate(Disturbance_Date_New = parse_date_time(Disturbance_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Disturbance_Date_New, sep = "-", into = c("Disturbance_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Disturbance_Date_New, .after = Disturbance_Date) %>%
+  relocate(Disturbance_Year, .after = Disturbance_Date_New)
+```
+
+#### 04 Disturbance
+
+```{r}
+# add add relevant columns
+Disturbance04 <- MacroplotReport_Disturbance %>% 
+  select(c("Macroplot", "UV5")) %>% 
+  filter(!is.na(UV5)) %>% 
+  separate(UV5, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>% 
+  separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Type", "Disturbance_Date", "Disturbance_Severity"), remove = FALSE) %>% 
+  mutate(across(where(is.character), str_trim)) %>% 
+  mutate(Entry = 4) %>% 
+  select(!c("Disturbance_Info", "UV5"))
+
+# edit date column
+Disturbance04 <- Disturbance04 %>% 
+  mutate(Disturbance_Date_New = parse_date_time(Disturbance_Date, orders = c("mdy", "my", "y"))) %>% 
+  separate(Disturbance_Date_New, sep = "-", into = c("Disturbance_Year", "Month", "Day"), remove = F) %>% 
+  select(!c("Month", "Day")) %>% 
+  relocate(Disturbance_Date_New, .after = Disturbance_Date) %>%
+  relocate(Disturbance_Year, .after = Disturbance_Date_New)
+```
+
+#### All Disturbances
+
+```{r}
+Disturbance <- rbind(Disturbance01, Disturbance02, Disturbance03, Disturbance04)
+```
+
+### Merge
+
+```{r}
+
+
+
+
+test <- merge(MacroplotReport_Purpose, MacroplotReport_SampleEvents, by = c("Macroplot"))
+test2 <- merge(test, MacroplotReport_MonStatus, by = c("MonStatus"), all = T) %>% 
+  relocate(MonStatus, .after = LegacyMonStatus)
+test3 <- merge(test2, Disturbance, by = c("Macroplot", "Entry"), all = T) %>% 
+  relocate(Entry, .after = MonStatus)
+
+#why diff?
+test4 <- test3 %>% 
+  select(!c(Disturbance_Name, Disturbance_Type, Disturbance_Date, Disturbance_Date_New, Disturbance_Year, Disturbance_Severity))
+
+diff2 <- setdiff(test4, test2)
+```
+
+## Sample Event Report
 
 ```{r manipulate data, include=FALSE}
 #### Manipulate and add columns to data
