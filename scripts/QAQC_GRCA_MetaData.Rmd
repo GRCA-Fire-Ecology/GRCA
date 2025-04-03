@@ -1,0 +1,182 @@
+---
+title: "QAQC GRCA MetaData"
+author: "Alexandra Lalor"
+output:
+  html_document:
+    theme: readable
+    highlight: 
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: yes
+    code_download: true
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+### Setup
+
+```{r setup, include=FALSE}
+## Markdown Options
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = FALSE)
+```
+
+```{r install packages, include=FALSE}
+## Install packages (if needed)
+
+# install.packages("tidyverse")
+```
+
+```{r load packages, include=FALSE}
+## Load Packages
+
+# "here" helps you easily find and reference your working directory
+library(here)
+# "tidyverse" has lots of useful functions for data cleaning
+library(tidyverse)
+```
+
+### Adjust File Paths
+
+```{r import data, include=FALSE}
+# Identify working directory
+here()
+
+# Load in data.
+path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
+path_output <- paste0(here(), "/output/")
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/"
+```
+
+### Load Data
+
+```{r load data, include=FALSE}
+## Load Data
+
+MacroplotReport <- read.csv(paste0(path_data, "metadata/MacroplotReport.csv"))
+SampleEventReport <- read.csv(paste0(path_data, "metadata/SampleEventReport.csv"))
+#ProjectUnitReport <- read.csv(paste0(path_data, "metadata/ProjectUnitAssignmentReport.csv"))
+```
+
+### Clean Data
+
+```{r}
+# standardize Date columns - MacroplotReport
+MacroplotReport <- MacroplotReport %>% 
+  # separate Date columns into Date and Time columns
+  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
+  separate(DateIn, sep = " ", into = c("DateIn", "DateInTime")) %>% 
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y"),
+         DateIn = as.Date(DateIn, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
+  # remove unnecessary columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
+            DateInTime, DateIn_Month, DateIn_Day))
+
+
+# standardize Date columns - SampleEventReport
+SampleEventReport <- SampleEventReport %>% 
+  # separate Date columns into Date and Time columns
+  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  # remove unnecessary columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>%
+  # make column names match those in MacroplotReport
+  mutate(Macroplot = MacroPlot_Name,
+         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
+         MonStatus = MonitoringStatus_Name) %>% 
+  relocate(Macroplot, .after = ProjectUnit_Name) %>% 
+  relocate(LegacyMonitoringStatus, .after = SampleEventDate_Year) %>% 
+  relocate(MonStatus, .after = LegacyMonitoringStatus) %>%
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+```
+
+### Filter Data
+
+```{r}
+MacroplotReport_MetaData <- MacroplotReport %>% 
+  filter(is.na(SampleEventDate))
+
+MacroplotReport_SampleEvents <- MacroplotReport %>% 
+  filter(!is.na(SampleEventDate))
+```
+
+## Missing Data & Errors
+
+```{r}
+MonStatus_Missing_MacroplotReport <- MacroplotReport_SampleEvents %>% 
+  select(c(Macroplot, SampleEventDate, MonStatus, Purpose)) %>% 
+  filter(MonStatus == "", Purpose == "") %>% 
+  select(!c(Purpose))
+
+MonStatus_Missing_SampleEventReport <- SampleEventReport %>% 
+  select(c(Macroplot, SampleEventDate, MonStatus)) %>%
+  filter(MonStatus == "") %>% 
+  unique()
+
+# Protocols_Missing <- SampleEventReport %>% 
+#   select(c(Macroplot, SampleEventDate, MonStatus, Protocols, Visited)) %>% 
+#   filter(Visited == "N") %>% 
+#   unique()
+```
+
+### Add Missing Data (should be done in FFI)
+
+```{r}
+MonStatus_Missing_MacroplotReport_new <- MonStatus_Missing_MacroplotReport %>% 
+  mutate(MonStatus = "Pre")
+
+MacroplotReport_SampleEvents <- left_join(MacroplotReport_SampleEvents, MonStatus_Missing_MacroplotReport_new, by = c("Macroplot", "SampleEventDate")) %>% 
+  mutate(MonStatus = ifelse(MonStatus.x == "", MonStatus.y, MonStatus.x),
+         MonStatusOrd = ifelse(MonStatus == "Pre", 2, MonStatusOrd)) %>% 
+  relocate(MonStatus, .after = LegacyMonStatus) %>% 
+  relocate(MonStatusOrd, .before = LegacyMonStatus) %>% 
+  select(!c(MonStatus.x, MonStatus.y))
+```
+
+```{r}
+# some MonStatus values are missing in the Sample Event Report, but present in the Macroplot Report. Find correct values from Macroplot Report and add them to the Sample Event Report
+MonStatus_Missing_SampleEventReport_new <- left_join(MacroplotReport_SampleEvents, MonStatus_Missing_SampleEventReport, by = c("Macroplot", "SampleEventDate")) %>% 
+  filter(!is.na(SampleEventDate),
+         !is.na(MonStatus.y)) %>% 
+  select(Macroplot, SampleEventDate, MonStatus.x)
+
+SampleEventReport <- left_join(SampleEventReport, MonStatus_Missing_SampleEventReport_new, by = c("Macroplot", "SampleEventDate")) %>% 
+  mutate(MonStatus = ifelse(MonStatus == "", MonStatus.x, MonStatus)) %>% 
+  select(!c(MonStatus.x))
+```
+
+```{r}
+# make sure there are no differences
+MonStatus_SampleEventReport <- SampleEventReport %>% 
+  select(Macroplot, SampleEventDate, MonStatus) %>% 
+  unique()
+
+MonStatus_MacroplotReport <- MacroplotReport_SampleEvents %>% 
+  select(Macroplot, SampleEventDate, MonStatus) %>% 
+  filter(!is.na(SampleEventDate)) %>% 
+  unique()
+
+diff <- setdiff(MonStatus_SampleEventReport, MonStatus_MacroplotReport) %>% 
+  mutate(Error = TRUE)
+```
+
+### Isolate Errors to Fix, New Sample Event Report
+
+```{r}
+MonStatus_Errors <- left_join(SampleEventReport, diff, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>% 
+  filter(Error == TRUE) %>% 
+  select(c(ProjectUnit_Name, Macroplot, SampleEventDate, MonStatus, Error)) %>% 
+  unique()
+
+SampleEventReport <- left_join(SampleEventReport, MonStatus_Errors, by = c("ProjectUnit_Name", "Macroplot", "SampleEventDate", "MonStatus")) %>% 
+  filter(is.na(Error)) %>% 
+  select(!Error)
+```
