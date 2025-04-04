@@ -25,6 +25,7 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = F
 
 # install.packages("tidyverse")
 # install.packages("kableExtra")
+# install.packages("ggplot2")
 ```
 
 ```{r load packages, include=FALSE}
@@ -36,6 +37,8 @@ library(here)
 library(tidyverse)
 # "kableExtra" is used to produce formatted tables
 library(kableExtra)
+library(ggplot2)
+library(ggrepel)
 # library(stringr)
 # library(DT)
 # library(fs)
@@ -65,7 +68,7 @@ SampleEventReport <- read.csv(paste0(path_data, "metadata/SampleEventReport.csv"
 
 ### Clean Data
 
-#### Macroplot Report
+Macroplot Report
 
 ```{r}
 MacroplotReport <- MacroplotReport %>% 
@@ -85,7 +88,7 @@ MacroplotReport <- MacroplotReport %>%
   mutate(Disturbance_Type = ifelse(Purpose %in% c("Tusayan Pueblo (Thinning)"), "thin", "burn"))
 ```
 
-#### Sample Event Report
+Sample Event Report
 
 ```{r}
 SampleEventReport <- SampleEventReport %>% 
@@ -335,7 +338,7 @@ sum_DisturbanceHistory <- rbind(Disturbance01, Disturbance02, Disturbance03, Dis
 remove(Disturbance01, Disturbance02, Disturbance03, Disturbance04)
 ```
 
-## Macroplot Report
+## Metadata Report
 
 ```{r}
 # merge metadata and sample events
@@ -343,44 +346,61 @@ MacroplotReport_all <- merge(MacroplotReport_MetaData, MacroplotReport_SampleEve
 
 # merge monitoring status summary
 MacroplotReport_all <- merge(MacroplotReport_all, sum_MonStatus, by = c("MonStatus"), all = T) %>% 
-  relocate(MonStatus, .after = LegacyMonStatus)
+  relocate(MonStatus, .after = LegacyMonStatus) %>% 
+  mutate(MonStatus = factor(MonStatus, levels = c("PR05", "PR04", "PR03", "PR02", "PR01",
+                                                  "Pre", 
+                                                  "01Post", "01PostB", 
+                                                  "01Year1", "01Year2", 
+                                                  "01Year3" , 
+                                                  "01Year5", "01Year10", "01Year20",
+                                                  "02Pre",
+                                                  "02Post", "02PostB",
+                                                  "02Year1", "02Year2", 
+                                                  "02Year5", "02Year10", "02Year20",
+                                                  "03Post",
+                                                  "03Year1", "03Year2", 
+                                                  "03Year5", "03Year10",
+                                                  "04Post", 
+                                                  "04Year1", "04Year2",
+                                                  "04Year5")))
 
 # merge disturbance history summmary
 MacroplotReport_all <- merge(MacroplotReport_all, sum_DisturbanceHistory, by = c("Macroplot", "Entry", "Disturbance_Type"), all = T) %>% 
   relocate(Entry, .after = MonStatus) %>% 
   relocate(Disturbance_Type, .before = Disturbance_Name)
-```
 
-## Sample Event Report
 
-```{r}
-# merge monitoring status summary
-SampleEventReport_all <- merge(SampleEventReport, sum_MonStatus, by = c("MonStatus"), all = T) %>% 
-  relocate(MonStatus, .before = Entry)
+# filter Sample Event Report for merging
+SampleEventReport_merge <- SampleEventReport %>% 
+  filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>% 
+  filter(!ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>% 
+  select(!c(Multi_PU, SampleEventDate_Year, LegacyMonitoringStatus))
 
-# merge disturbance history summmary
-SampleEventReport_all <- merge(SampleEventReport_all, sum_DisturbanceHistory, by = c("Macroplot", "Entry"), all = T) %>% 
-  relocate(Entry, .after = MonStatus)
+# merge Macroplot Report and Sample Event Report
+MetadataReport <- merge(MacroplotReport_all, SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>% 
+  relocate(SampleEventDate, .before = SampleEventDate_Year) %>% 
+  relocate(MonStatus, .before = Entry) %>% 
+  relocate(Macroplot, .after = Purpose) %>% 
+  relocate(ProjectUnit_Name, .before = Purpose) %>% 
+  relocate(PlotType_Name, .before = ProjectUnit_Name) %>% 
+  relocate(AdministrationUnit_Name, .before = PlotType_Name)
 ```
 
 ## Tables
 
 ```{r manipulate data, include=FALSE}
 # check occurrence of unique values in newly created columns, make corrections as needed
-SampleEventReport_all$PlotType_Name %>% table(exclude = NULL)
-SampleEventReport_all$Status %>% table(exclude = NULL)
-SampleEventReport_all$Disturbance_Type %>% table(exclude = NULL)
-SampleEventReport_all$TimeSince %>% table(exclude = NULL)
+MetadataReport$PlotType_Name %>% table(exclude = NULL)
+MetadataReport$Status %>% table(exclude = NULL)
+MetadataReport$Disturbance_Type %>% table(exclude = NULL)
+MetadataReport$TimeSince %>% table(exclude = NULL)
 ```
 
 ### Overall Program Summary
 
 ```{r program summary}
 ## Summarise projects and events by park
-program_summ <- SampleEventReport_all %>%
-  filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>% 
-  filter(!ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>% 
-  filter(!ProjectUnit_Name %in% c("GRIN", "GRED")) %>% 
+program_summ <- MetadataReport %>%
   summarise(`Park` = "GRCA",
             `Projects` = n_distinct(ProjectUnit_Name),
             `Number of Plots` = n_distinct(Macroplot),
@@ -422,8 +442,9 @@ target_park <- c("GRCA")
 
 # designate target project(s)
 # see all project names
-unique(SampleEventReport_all$ProjectUnit_Name)
-target_project <- c("ALL_FMH")
+unique(MetadataReport$ProjectUnit_Name)
+unique(MetadataReport$PlotType_Name)
+target_project <- c("FMH")
 
 # designate target year or years
 target_year <- c(2024)
@@ -436,10 +457,7 @@ The table below summarizes current and past projects in `r target_park`.
 ```{r park summ}
 ## Summarise projects by park
 # uses 'target park' variable designated above
-target_park_summ <- SampleEventReport_all %>%
-  filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>% 
-  filter(!ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>% 
-  filter(!ProjectUnit_Name %in% c("GRIN", "GRED")) %>% 
+target_park_summ <- MetadataReport %>%
   filter(AdministrationUnit_Name == target_park) %>% 
   group_by(`Project Name` = ProjectUnit_Name) %>%
   summarise(`First Visit` = min(as.numeric(SampleEventDate_Year)),
@@ -478,14 +496,14 @@ The table below summarizes sample events recorded within the `r target_project` 
 ```{r project summ}
 ## Summarise project
 # uses 'target project' variable designated above
-target_project_summ <- SampleEventReport_all %>%
-  filter(ProjectUnit_Name == target_project) %>% 
+target_project_summ <- MetadataReport %>%
+  filter(PlotType_Name == target_project) %>%
   group_by(`Monitoring Status` = MonStatus) %>%
   summarise(`First Visit` = min(SampleEventDate_Year),
             `Latest Visit` = max(SampleEventDate_Year),
             `Number of Plots Visited in Monitoring Status` = n_distinct(Macroplot),
             `Protocols Used during Monitoring Status` = n_distinct(Protocols)) %>% 
-  arrange(`First Visit`)
+  arrange(`Monitoring Status`)
 
 target_project_summ %>% 
   kbl(align = "lcccc") %>%
@@ -501,10 +519,7 @@ The table below summarizes all projects with plots sampled within the following 
 ```{r year summ}
 ## Summarise yearly plot activity
 # uses 'target year' variable designated above
-target_year_summ <- SampleEventReport_all %>%
-  filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>% 
-  filter(!ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>% 
-  filter(!ProjectUnit_Name %in% c("GRIN", "GRED")) %>% 
+target_year_summ <- MetadataReport %>%
   filter(SampleEventDate_Year %in% target_year) %>% 
   group_by(`Project Name` = ProjectUnit_Name) %>%
   summarise(`Start Date` = as.character(min(SampleEventDate)),
@@ -538,10 +553,7 @@ The table below summarizes the frequency of use of protocols occurring in the FF
 
 ```{r protocol summ}
 ## Summarise protocol use by status
-protocol_use_summ <- SampleEventReport_all %>%
-  filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>% 
-  filter(!ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>% 
-  filter(!ProjectUnit_Name %in% c("GRIN", "GRED")) %>% 
+protocol_use_summ <- MetadataReport %>%
   group_by(`Protocol` = Protocols) %>%
   summarise(`First Use` = min(as.numeric(SampleEventDate_Year)),
             `Latest Use` = max(as.numeric(SampleEventDate_Year)),
@@ -560,125 +572,331 @@ protocol_use_summ %>%
 
 ## Graphs
 
-### Macroplot Report
-
-#### PIED
+### Metadata Report
 
 ```{r}
-MacroplotReport_all %>% 
-  mutate(MonStatus = fct_reorder(factor(MonStatus), as.integer(MonStatusOrd)),
-         SampleEventDate_Year = as.factor(SampleEventDate_Year)) %>% 
+MetadataReport_graph <- MetadataReport %>% 
+  # remove unnecessary columns
+  select(!c(Latitude, Longitude, UTM_X, UTM_Y, UTM_Zone, Datum, PDOP, Precision, )) %>% 
+  select(!c(Elevation, ElevationUnits, Azimuth, Aspect, SlopeHill, SlopeTransect)) %>% 
+  select(!c(LocatedBy, FutureVisit, DateOut, StartPoint, Directions, Comments, SampleEventTeam, SampleEventComment, LegacyMonStatus)) %>% 
+  separate(UV1, sep = " Project Unit", into = c("Burn_Unit")) %>% 
+  separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
+  separate(Macroplot, sep = "(?<=[A-Z])(?=[0-9])", into = c("Macroplot_Code1", "Macroplot_Num1"), remove = F) %>% 
+  mutate(Macroplot_Code = ifelse(PlotType_Name == "RAP", Macroplot_Code1, Macroplot_Code)) %>% 
+  mutate(Macroplot_Num = ifelse(PlotType_Name == "RAP", Macroplot_Num1, Macroplot_Num)) %>% 
+  select(!c(Macroplot_Code1, Macroplot_Num1)) %>% 
+  # reclassify columns for graphing purposes
+  mutate(Entry = factor(Entry)) %>% 
+  mutate(SampleEventDate_Year = as.numeric(SampleEventDate_Year))
+```
+
+#### All RAP
+
+```{r}
+MetadataReport_graph %>% 
+  filter(!Purpose %in% c("PIED", "PIPO", "PIPN", "PIAB", "PIEN", "GRIN", "GRED")) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
+  geom_point() +
+  geom_line(aes(group = Macroplot)) +
+  facet_wrap(~Macroplot_Code) +
+  labs(title = "Sample Event History",
+       subtitle = "Rapid Assessment Protocol (RAP) Plots",
+       y = "Plot Number",
+       x = "Year",
+       color = "Entry") +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### All FMH
+
+```{r}
+MetadataReport_graph %>% 
+  filter(Purpose %in% c("PIED", "PIPO", "PIPN", "PIAB", "PIEN")) %>% 
+  filter(!Macroplot %in% c("SHOS 01", "SHOS 02")) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
+  geom_point() +
+  geom_line(aes(group = Macroplot)) +
+  facet_grid(~Purpose) +
+  labs(title = "Sample Event History",
+       subtitle = "Fire Monitoring Handbook (FMH) Plots",
+       y = "Plot Number",
+       x = "Year",
+       color = "Entry") +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### Summarize
+
+```{r}
+# Summarize to one point per (Year, Macroplot, Visited)
+
+summary_points_PIED <- MetadataReport_graph %>%
+  filter(Purpose == "PIED") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")  # optional: keep count of protocols
+
+summary_points_PIPO <- MetadataReport_graph %>%
+  filter(Purpose == "PIPO") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+
+summary_points_PIPN <- MetadataReport_graph %>%
+  filter(Purpose == "PIPN") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+
+summary_points_PIAB <- MetadataReport_graph %>%
+  filter(Purpose == "PIAB") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+
+summary_points_PIEN <- MetadataReport_graph %>%
+  filter(Purpose == "PIEN") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+```
+
+##### PIED
+
+```{r}
+MetadataReport_graph %>% 
   filter(Purpose %in% c("PIED")) %>% 
-  ggplot(aes(x = SampleEventDate_Year, y = Macroplot, color = as.factor(Entry))) +
-  geom_point() +
-  geom_line(aes(group = Macroplot)) +
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIED %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIED %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
   labs(title = "Sample Event History",
+       subtitle = "Pinyon Juniper Ecosystem (PIED)",
        y = "Macroplot",
        x = "Year",
        color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
   scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        axis.title = element_text(size = 15, face="bold"),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
         axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
 ```
 
-#### PIPO
+##### PIPO
 
 ```{r}
-MacroplotReport_all %>% 
-  mutate(MonStatus = fct_reorder(factor(MonStatus), as.integer(MonStatusOrd))) %>% 
+MetadataReport_graph %>% 
   filter(Purpose %in% c("PIPO")) %>% 
-  ggplot(aes(x = SampleEventDate_Year, y = Macroplot, color = as.factor(Entry))) +
-  geom_point() +
-  geom_line(aes(group = Macroplot)) +
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIPO %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIPO %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
   labs(title = "Sample Event History",
+       subtitle = "South Rim Ponderosa Pine Ecosystem (PIPO)",
        y = "Macroplot",
        x = "Year",
-       color = "Entry") +
+       color = "Entry",
+       fill = "Visited") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
   scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        axis.title = element_text(size = 15, face="bold"),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
         axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
 ```
 
-#### PIPN
+##### PIPN
 
 ```{r}
-MacroplotReport_all %>% 
-  mutate(MonStatus = fct_reorder(factor(MonStatus), as.integer(MonStatusOrd))) %>% 
+MetadataReport_graph %>% 
   filter(Purpose %in% c("PIPN")) %>% 
-  ggplot(aes(x = SampleEventDate_Year, y = Macroplot, color = as.factor(Entry))) +
-  geom_point() +
-  geom_line(aes(group = Macroplot)) +
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIPN %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIPN %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
   labs(title = "Sample Event History",
+       subtitle = "North Rim Ponderosa Pine Ecosystem (PIPN)",
        y = "Macroplot",
        x = "Year",
        color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
   scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        axis.title = element_text(size = 15, face="bold"),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
         axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
 ```
 
-#### PIAB
+##### PIAB
 
 ```{r}
-MacroplotReport_all %>% 
-  mutate(MonStatus = fct_reorder(factor(MonStatus), as.integer(MonStatusOrd))) %>% 
+MetadataReport_graph %>% 
   filter(Purpose %in% c("PIAB")) %>% 
-  ggplot(aes(x = SampleEventDate_Year, y = Macroplot, color = as.factor(Entry))) +
-  geom_point() +
-  geom_line(aes(group = Macroplot)) +
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIAB %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIAB %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
   labs(title = "Sample Event History",
+       subtitle = "Pine-Fir Ecosystem (PIAB)",
        y = "Macroplot",
        x = "Year",
        color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
   scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        axis.title = element_text(size = 15, face="bold"),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
         axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
 ```
 
-#### PIEN
+##### PIEN
 
 ```{r}
-MacroplotReport_all %>% 
-  mutate(MonStatus = fct_reorder(factor(MonStatus), as.integer(MonStatusOrd))) %>% 
+MetadataReport_graph %>% 
   filter(Purpose %in% c("PIEN")) %>% 
-  ggplot(aes(x = SampleEventDate_Year, y = Macroplot, color = as.factor(Entry))) +
-  geom_point() +
-  geom_line(aes(group = Macroplot)) +
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIEN %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIEN %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
   labs(title = "Sample Event History",
+       subtitle = "Spruce-Fir Ecosystem (PIEN)",
        y = "Macroplot",
        x = "Year",
        color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
   scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        axis.title = element_text(size = 15, face="bold"),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
         axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### Fires
+
+```{r}
+MetadataReport_graph_fires <- MetadataReport_graph %>% 
+  filter(Purpose %in% c("PIED", "PIPO", "PIPN", "PIAB", "PIEN")) %>% 
+  filter(!Macroplot %in% c("SHOS 01", "SHOS 02")) %>% 
+  filter(Entry != "0") %>% 
+  mutate(Rim = ifelse(Purpose %in% c("PIED", "PIPO"), "S", "N")) %>% 
+  mutate(Sev = ifelse(Severity %in% c("Low Severity"), "Low", 
+                      ifelse(Severity %in% c("Moderate/Low Severity", "Moderate/Low Sev.", "Mod/Low Severity"), "Low/Mod", 
+                             ifelse(Severity %in% c("Moderate Severity"), "Mod", 
+                                    ifelse(Severity %in% c("Moderate/High Severity"), "Mod/High", 
+                                           ifelse(Severity %in% c("High Severity"), "High", 
+                                                  ifelse(Severity %in% c("Unburned"), "Unburned", NA))))))) %>% 
+  mutate(Sev = factor(Sev, levels = c("Unburned", "Low", "Low/Mod", "Mod", "Mod/High", "High"))) %>% 
+  group_by(Burn_Unit, DisturbanceDate_Year, SampleEventDate_Year, Rim, MonStatus, Disturbance_Name, Sev) %>% 
+  filter(DisturbanceDate_Year == SampleEventDate_Year) %>% 
+  summarise(n_macroplot = n())
+```
+
+```{r}
+MetadataReport_graph_fires %>% 
+  filter(Rim == "N") %>% 
+  ggplot(aes(x = DisturbanceDate_Year, y = Burn_Unit, label = Disturbance_Name)) +
+  geom_line(aes(group = Burn_Unit)) +
+  #geom_point(aes(size  = n_macroplot), shape = "\U1F525") +
+  geom_point(aes(fill = Sev, size  = n_macroplot), shape = 21) +
+  #geom_text(size = 2) +
+  #geom_label_repel(aes(label = Disturbance_Name)) +
+  labs(title = "Fire History",
+       y = "Burn Unit",
+       x = "Year",
+       fill = "Severity",
+       size = "Number of Plots") +
+  scale_fill_manual(values=c('yellowgreen', "yellow", 'orange', "red", "darkred","grey")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 8),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
 ```
