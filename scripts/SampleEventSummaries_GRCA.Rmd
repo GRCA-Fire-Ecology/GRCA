@@ -72,6 +72,7 @@ Macroplot Report
 
 ```{r}
 MacroplotReport <- MacroplotReport %>% 
+  
   # separate Date columns into Date and Time columns
   separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
   separate(DateIn, sep = " ", into = c("DateIn", "DateInTime")) %>% 
@@ -81,9 +82,10 @@ MacroplotReport <- MacroplotReport %>%
   # separate Date columns into Year, Month, and Day columns
   separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
   separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
-  # remove unnecessary columns
+  # remove unnecessary Date columns
   select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
             DateInTime, DateIn_Month, DateIn_Day)) %>% 
+  
   # add Disturbance_Type column
   mutate(Disturbance_Type = ifelse(Purpose %in% c("Tusayan Pueblo (Thinning)"), "thin", "burn"))
 ```
@@ -92,23 +94,28 @@ Sample Event Report
 
 ```{r}
 SampleEventReport <- SampleEventReport %>% 
+  
   # remove trailing/leading whitespace
   mutate(across(where(is.character), str_trim)) %>%
+  
   # separate Date columns into Date and Time columns
   separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
   # reformate Date columns
   mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
   # separate Date columns into Year, Month, and Day columns
   separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
-  # remove unnecessary columns
+  # remove unnecessary Date columns
   select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>%
+  
   # make column names match those in MacroplotReport
   mutate(Macroplot = MacroPlot_Name,
          LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
          MonStatus = MonitoringStatus_Name) %>% 
+  
   # add PlotType_Name column
   mutate(PlotType_Name = ifelse(grepl("RAP", ProjectUnit_Name), "RAP", 
                                  ifelse(grepl("GR", ProjectUnit_Name), "Meadow", "FMH"))) %>%
+  
   # reorganize columns
   relocate(Macroplot, .after = ProjectUnit_Name) %>% 
   relocate(LegacyMonitoringStatus, .after = SampleEventDate_Year) %>% 
@@ -137,7 +144,8 @@ Create columns for Entry (number of disturbances), Status (pre or post disturban
 
 ```{r}
 sum_MonStatus <- MacroplotReport_SampleEvents %>% 
-  select(MonStatus) %>% 
+  select(MonStatusOrd, MonStatus) %>% 
+  mutate(MonStatusOrd = NA) %>% 
   unique() %>% 
   filter(MonStatus != "") %>% 
   # extract info based on monitoring status names
@@ -158,7 +166,25 @@ sum_MonStatus <- MacroplotReport_SampleEvents %>%
          Status = ifelse(grepl("PR", MonStatus), "Pre", Status)) %>%
   # make columns numeric
   mutate(Entry = as.numeric(Entry),
-         TimeSince = as.numeric(TimeSince))
+         TimeSince = as.numeric(TimeSince)) %>% 
+  mutate(MonStatus = factor(MonStatus, levels = c("PR05", "PR04", "PR03", "PR02", "PR01",
+                                                  "Pre", 
+                                                  "01Post", "01PostB", 
+                                                  "01Year1", "01Year2", 
+                                                  "01Year3" , 
+                                                  "01Year5", "01Year10", "01Year20",
+                                                  "02Pre",
+                                                  "02Post", "02PostB",
+                                                  "02Year1", "02Year2", 
+                                                  "02Year5", "02Year10", "02Year20",
+                                                  "03Post",
+                                                  "03Year1", "03Year2", 
+                                                  "03Year5", "03Year10",
+                                                  "04Post", 
+                                                  "04Year1", "04Year2",
+                                                  "04Year5"))) %>% 
+  arrange(MonStatus) %>% 
+  mutate(MonStatusOrd = row_number())
 ```
 
 ### Disturbance History
@@ -336,39 +362,33 @@ Disturbance04 <- MacroplotReport_MetaData %>%
 sum_DisturbanceHistory <- rbind(Disturbance01, Disturbance02, Disturbance03, Disturbance04)
 
 remove(Disturbance01, Disturbance02, Disturbance03, Disturbance04)
+
+# reorganize severity column for consistency
+sum_DisturbanceHistory <- sum_DisturbanceHistory %>% 
+  mutate(Disturbance_Severity = ifelse(Severity %in% c("Low Severity"), "Low", 
+                      ifelse(Severity %in% c("Moderate/Low Severity", "Moderate/Low Sev.", "Mod/Low Severity"), "Low/Mod", 
+                             ifelse(Severity %in% c("Moderate Severity"), "Mod", 
+                                    ifelse(Severity %in% c("Moderate/High Severity"), "Mod/High", 
+                                           ifelse(Severity %in% c("High Severity"), "High", 
+                                                  ifelse(Severity %in% c("Unburned"), "Unburned", NA))))))) %>% 
+  select(!Severity)
 ```
 
 ## Metadata Report
 
 ```{r}
 # merge metadata and sample events
-MacroplotReport_all <- merge(MacroplotReport_MetaData, MacroplotReport_SampleEvents, by = c("Macroplot"))
+MacroplotReport_all <- merge(MacroplotReport_MetaData, MacroplotReport_SampleEvents, by = c("Macroplot")) %>% 
+  select(!MonStatusOrd)
 
 # merge monitoring status summary
 MacroplotReport_all <- merge(MacroplotReport_all, sum_MonStatus, by = c("MonStatus"), all = T) %>% 
-  relocate(MonStatus, .after = LegacyMonStatus) %>% 
-  mutate(MonStatus = factor(MonStatus, levels = c("PR05", "PR04", "PR03", "PR02", "PR01",
-                                                  "Pre", 
-                                                  "01Post", "01PostB", 
-                                                  "01Year1", "01Year2", 
-                                                  "01Year3" , 
-                                                  "01Year5", "01Year10", "01Year20",
-                                                  "02Pre",
-                                                  "02Post", "02PostB",
-                                                  "02Year1", "02Year2", 
-                                                  "02Year5", "02Year10", "02Year20",
-                                                  "03Post",
-                                                  "03Year1", "03Year2", 
-                                                  "03Year5", "03Year10",
-                                                  "04Post", 
-                                                  "04Year1", "04Year2",
-                                                  "04Year5")))
+  relocate(MonStatus, .after = LegacyMonStatus)
 
 # merge disturbance history summmary
 MacroplotReport_all <- merge(MacroplotReport_all, sum_DisturbanceHistory, by = c("Macroplot", "Entry", "Disturbance_Type"), all = T) %>% 
   relocate(Entry, .after = MonStatus) %>% 
   relocate(Disturbance_Type, .before = Disturbance_Name)
-
 
 # filter Sample Event Report for merging
 SampleEventReport_merge <- SampleEventReport %>% 
@@ -384,6 +404,57 @@ MetadataReport <- merge(MacroplotReport_all, SampleEventReport_merge, by = c("Ma
   relocate(ProjectUnit_Name, .before = Purpose) %>% 
   relocate(PlotType_Name, .before = ProjectUnit_Name) %>% 
   relocate(AdministrationUnit_Name, .before = PlotType_Name)
+
+
+# add more interesting columns
+MetadataReport <- MetadataReport %>% 
+  
+  # add park
+  mutate(Park = "GRCA") %>% 
+  relocate(Park, .after = AdministrationUnit_Name) %>% 
+  
+  # add park rim
+  mutate(Park_Rim = ifelse(Purpose %in% c("PIED", "PIPO", "Moqui", "Picnic", "Quarry", "Tusayan Pueblo (Thinning)"), "South", "North")) %>% 
+  relocate(Park_Rim, .after = PlotType_Name) %>% 
+  
+  # separate UV1 to get Burn Unit info
+  separate(UV1, sep = " Project Unit", into = c("Burn_Unit"), remove = F) %>% 
+  relocate(Burn_Unit, .after = Purpose) %>% 
+  relocate(MetaData, .after = Burn_Unit) %>% 
+  relocate(Type, .after = Park) %>% 
+  
+  # separate Macroplot to get the plot code and plot number
+  separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
+  separate(Macroplot, sep = "(?<=[A-Z])(?=[0-9])", into = c("Macroplot_Code1", "Macroplot_Num1"), remove = F) %>% 
+  mutate(Macroplot_Code = ifelse(PlotType_Name == "RAP", Macroplot_Code1, Macroplot_Code)) %>% 
+  mutate(Macroplot_Num = ifelse(PlotType_Name == "RAP", Macroplot_Num1, Macroplot_Num)) %>% 
+  select(!c(Macroplot_Code1, Macroplot_Num1))
+```
+
+```{r}
+str(MetadataReport)
+
+# reclassify data as correct type
+MetadataReport <- MetadataReport %>% 
+  mutate(MonStatus = factor(MonStatus, levels = c("PR05", "PR04", "PR03", "PR02", "PR01",
+                                                  "Pre", 
+                                                  "01Post", "01PostB", 
+                                                  "01Year1", "01Year2", 
+                                                  "01Year3" , 
+                                                  "01Year5", "01Year10", "01Year20",
+                                                  "02Pre",
+                                                  "02Post", "02PostB",
+                                                  "02Year1", "02Year2", 
+                                                  "02Year5", "02Year10", "02Year20",
+                                                  "03Post",
+                                                  "03Year1", "03Year2", 
+                                                  "03Year5", "03Year10",
+                                                  "04Post", 
+                                                  "04Year1", "04Year2",
+                                                  "04Year5"))) %>% 
+  mutate(Disturbance_Severity = factor(Disturbance_Severity, levels = c("Unburned", "Low", "Low/Mod", "Mod", "Mod/High", "High"))) %>% 
+  mutate(Entry = factor(Entry)) %>% 
+  mutate(SampleEventDate_Year = as.numeric(SampleEventDate_Year))
 ```
 
 ## Tables
@@ -575,27 +646,19 @@ protocol_use_summ %>%
 ### Metadata Report
 
 ```{r}
-MetadataReport_graph <- MetadataReport %>% 
+graph_MetadataReport <- MetadataReport %>% 
   # remove unnecessary columns
   select(!c(Latitude, Longitude, UTM_X, UTM_Y, UTM_Zone, Datum, PDOP, Precision, )) %>% 
   select(!c(Elevation, ElevationUnits, Azimuth, Aspect, SlopeHill, SlopeTransect)) %>% 
   select(!c(LocatedBy, FutureVisit, DateOut, StartPoint, Directions, Comments, SampleEventTeam, SampleEventComment, LegacyMonStatus)) %>% 
-  separate(UV1, sep = " Project Unit", into = c("Burn_Unit")) %>% 
-  separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
-  separate(Macroplot, sep = "(?<=[A-Z])(?=[0-9])", into = c("Macroplot_Code1", "Macroplot_Num1"), remove = F) %>% 
-  mutate(Macroplot_Code = ifelse(PlotType_Name == "RAP", Macroplot_Code1, Macroplot_Code)) %>% 
-  mutate(Macroplot_Num = ifelse(PlotType_Name == "RAP", Macroplot_Num1, Macroplot_Num)) %>% 
-  select(!c(Macroplot_Code1, Macroplot_Num1)) %>% 
-  # reclassify columns for graphing purposes
-  mutate(Entry = factor(Entry)) %>% 
-  mutate(SampleEventDate_Year = as.numeric(SampleEventDate_Year))
+  select(!c(UV1, UV2, UV3, UV4, UV5, UV6, UV7, UV8))
 ```
 
 #### All RAP
 
 ```{r}
-MetadataReport_graph %>% 
-  filter(!Purpose %in% c("PIED", "PIPO", "PIPN", "PIAB", "PIEN", "GRIN", "GRED")) %>% 
+graph_MetadataReport %>% 
+  filter(PlotType_Name == "RAP") %>% 
   ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
   geom_point() +
   geom_line(aes(group = Macroplot)) +
@@ -620,8 +683,8 @@ MetadataReport_graph %>%
 #### All FMH
 
 ```{r}
-MetadataReport_graph %>% 
-  filter(Purpose %in% c("PIED", "PIPO", "PIPN", "PIAB", "PIEN")) %>% 
+graph_MetadataReport %>% 
+  filter(PlotType_Name == "FMH") %>% 
   filter(!Macroplot %in% c("SHOS 01", "SHOS 02")) %>% 
   ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
   geom_point() +
@@ -649,27 +712,27 @@ MetadataReport_graph %>%
 ```{r}
 # Summarize to one point per (Year, Macroplot, Visited)
 
-summary_points_PIED <- MetadataReport_graph %>%
+summary_points_PIED <- graph_MetadataReport %>%
   filter(Purpose == "PIED") %>%
   group_by(SampleEventDate_Year, Macroplot, Visited) %>%
   summarise(n_protocols = n(), .groups = "drop")  # optional: keep count of protocols
 
-summary_points_PIPO <- MetadataReport_graph %>%
+summary_points_PIPO <- graph_MetadataReport %>%
   filter(Purpose == "PIPO") %>%
   group_by(SampleEventDate_Year, Macroplot, Visited) %>%
   summarise(n_protocols = n(), .groups = "drop")
 
-summary_points_PIPN <- MetadataReport_graph %>%
+summary_points_PIPN <- graph_MetadataReport %>%
   filter(Purpose == "PIPN") %>%
   group_by(SampleEventDate_Year, Macroplot, Visited) %>%
   summarise(n_protocols = n(), .groups = "drop")
 
-summary_points_PIAB <- MetadataReport_graph %>%
+summary_points_PIAB <- graph_MetadataReport %>%
   filter(Purpose == "PIAB") %>%
   group_by(SampleEventDate_Year, Macroplot, Visited) %>%
   summarise(n_protocols = n(), .groups = "drop")
 
-summary_points_PIEN <- MetadataReport_graph %>%
+summary_points_PIEN <- graph_MetadataReport %>%
   filter(Purpose == "PIEN") %>%
   group_by(SampleEventDate_Year, Macroplot, Visited) %>%
   summarise(n_protocols = n(), .groups = "drop")
@@ -678,7 +741,7 @@ summary_points_PIEN <- MetadataReport_graph %>%
 ##### PIED
 
 ```{r}
-MetadataReport_graph %>% 
+graph_MetadataReport %>% 
   filter(Purpose %in% c("PIED")) %>% 
   group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
   ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
@@ -714,7 +777,7 @@ MetadataReport_graph %>%
 ##### PIPO
 
 ```{r}
-MetadataReport_graph %>% 
+graph_MetadataReport %>% 
   filter(Purpose %in% c("PIPO")) %>% 
   group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
   ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
@@ -751,7 +814,7 @@ MetadataReport_graph %>%
 ##### PIPN
 
 ```{r}
-MetadataReport_graph %>% 
+graph_MetadataReport %>% 
   filter(Purpose %in% c("PIPN")) %>% 
   group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
   ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
@@ -787,7 +850,7 @@ MetadataReport_graph %>%
 ##### PIAB
 
 ```{r}
-MetadataReport_graph %>% 
+graph_MetadataReport %>% 
   filter(Purpose %in% c("PIAB")) %>% 
   group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
   ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
@@ -823,7 +886,7 @@ MetadataReport_graph %>%
 ##### PIEN
 
 ```{r}
-MetadataReport_graph %>% 
+graph_MetadataReport %>% 
   filter(Purpose %in% c("PIEN")) %>% 
   group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
   ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
@@ -859,32 +922,24 @@ MetadataReport_graph %>%
 #### Fires
 
 ```{r}
-MetadataReport_graph_fires <- MetadataReport_graph %>% 
-  filter(Purpose %in% c("PIED", "PIPO", "PIPN", "PIAB", "PIEN")) %>% 
+graph_MetadataReport_fires <- graph_MetadataReport %>% 
+  filter(PlotType_Name == "FMH") %>% 
   filter(!Macroplot %in% c("SHOS 01", "SHOS 02")) %>% 
   filter(Entry != "0") %>% 
-  mutate(Rim = ifelse(Purpose %in% c("PIED", "PIPO"), "S", "N")) %>% 
-  mutate(Sev = ifelse(Severity %in% c("Low Severity"), "Low", 
-                      ifelse(Severity %in% c("Moderate/Low Severity", "Moderate/Low Sev.", "Mod/Low Severity"), "Low/Mod", 
-                             ifelse(Severity %in% c("Moderate Severity"), "Mod", 
-                                    ifelse(Severity %in% c("Moderate/High Severity"), "Mod/High", 
-                                           ifelse(Severity %in% c("High Severity"), "High", 
-                                                  ifelse(Severity %in% c("Unburned"), "Unburned", NA))))))) %>% 
-  mutate(Sev = factor(Sev, levels = c("Unburned", "Low", "Low/Mod", "Mod", "Mod/High", "High"))) %>% 
-  group_by(Burn_Unit, DisturbanceDate_Year, SampleEventDate_Year, Rim, MonStatus, Disturbance_Name, Sev) %>% 
+  group_by(Burn_Unit, DisturbanceDate, DisturbanceDate_Year, SampleEventDate_Year, Park_Rim, MonStatus, Disturbance_Name, Disturbance_Desc, Disturbance_Severity) %>% 
   filter(DisturbanceDate_Year == SampleEventDate_Year) %>% 
   summarise(n_macroplot = n())
 ```
 
 ```{r}
-MetadataReport_graph_fires %>% 
-  filter(Rim == "N") %>% 
-  ggplot(aes(x = DisturbanceDate_Year, y = Burn_Unit, label = Disturbance_Name)) +
+graph_MetadataReport_fires %>% 
+  filter(Park_Rim == "North") %>% 
+  ggplot(aes(x = DisturbanceDate, y = Burn_Unit, label = Disturbance_Desc)) +
   geom_line(aes(group = Burn_Unit)) +
   #geom_point(aes(size  = n_macroplot), shape = "\U1F525") +
-  geom_point(aes(fill = Sev, size  = n_macroplot), shape = 21) +
-  #geom_text(size = 2) +
-  #geom_label_repel(aes(label = Disturbance_Name)) +
+  geom_point(aes(fill = Disturbance_Severity, size  = n_macroplot), shape = 21) +
+  #geom_text(size = 4) +
+  #geom_label_repel(aes(size = 4)) +
   labs(title = "Fire History",
        y = "Burn Unit",
        x = "Year",
