@@ -53,7 +53,7 @@ here()
 # Load in data.
 path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
 path_output <- paste0(here(), "/output/")
-path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/"
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
 ```
 
 ### Load Data
@@ -61,17 +61,105 @@ path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/"
 ```{r load data, include=FALSE}
 ## Load Data
 
-MacroplotReport <- read.csv(paste0(path_data, "metadata/MacroplotReport.csv"))
-SampleEventReport <- read.csv(paste0(path_data, "metadata/SampleEventReport.csv"))
-#ProjectUnitReport <- read.csv(paste0(path_data, "metadata/ProjectUnitAssignmentReport.csv"))
+# GRCA
+GRCA_MacroplotReport <- read.csv(paste0(path_data, "GRCA_MacroplotReport.csv"))
+GRCA_SampleEventReport <- read.csv(paste0(path_data, "GRCA_SampleEventReport.csv"))
+#GRCA_ProjectUnitReport <- read.csv(paste0(path_data, "GRCA_ProjectUnitAssignmentReport.csv"))
+
+# I&M
+IM_MacroplotReport <- read.csv(paste0(path_data, "I&M_MacroplotReport.csv"))
+IM_SampleEventReport <- read.csv(paste0(path_data, "I&M_SampleEventReport.csv"))
+#IM_ProjectUnitReport <- read.csv(paste0(path_data, "I&M_ProjectUnitAssignmentReport.csv"))
+
+# WACA
+WACA_MacroplotReport <- read.csv(paste0(path_data, "WACA_MacroplotReport.csv"))
+WACA_SampleEventReport <- read.csv(paste0(path_data, "WACA_SampleEventReport.csv"))
+#WACA_ProjectUnitReport <- read.csv(paste0(path_data, "WACA_ProjectUnitAssignmentReport.csv"))
 ```
 
 ### Clean Data
 
-Macroplot Report
+-   remove trailing/leading whitespace from character columns
+
+-   reformat date columns
+
+-   make column names match between reports
+
+##### Sample Event Report
 
 ```{r}
-MacroplotReport <- MacroplotReport %>% 
+GRCA_SampleEventReport <- GRCA_SampleEventReport %>% 
+  
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
+  
+  # separate Date columns into Date and Time columns
+  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  # remove unnecessary Date columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>% 
+  
+  # make column names match those in MacroplotReport
+  mutate(Macroplot = MacroPlot_Name,
+         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
+         MonStatus = MonitoringStatus_Name) %>% 
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+
+##############################################
+
+IM_SampleEventReport <- IM_SampleEventReport %>% 
+  
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
+  
+  # separate Date columns into Date and Time columns
+  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  # remove unnecessary Date columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>% 
+
+  # make column names match those in MacroplotReport
+  mutate(Macroplot = MacroPlot_Name,
+         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
+         MonStatus = MonitoringStatus_Name) %>% 
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+
+##############################################
+
+WACA_SampleEventReport <- WACA_SampleEventReport %>% 
+  
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
+  
+  # separate Date columns into Date and Time columns
+  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  # remove unnecessary Date columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>% 
+
+  # make column names match those in MacroplotReport
+  mutate(Macroplot = MacroPlot_Name,
+         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
+         MonStatus = MonitoringStatus_Name) %>% 
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+```
+
+##### Macroplot Report
+
+```{r}
+GRCA_MacroplotReport <- GRCA_MacroplotReport %>% 
+  
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
   
   # separate Date columns into Date and Time columns
   separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
@@ -84,56 +172,214 @@ MacroplotReport <- MacroplotReport %>%
   separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
   # remove unnecessary Date columns
   select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
-            DateInTime, DateIn_Month, DateIn_Day)) %>% 
-  
-  # add Disturbance_Type column
-  mutate(Disturbance_Type = ifelse(Purpose %in% c("Tusayan Pueblo (Thinning)"), "thin", "burn"))
-```
+            DateInTime, DateIn_Month, DateIn_Day))
 
-Sample Event Report
+##############################################
 
-```{r}
-SampleEventReport <- SampleEventReport %>% 
+IM_MacroplotReport <- IM_MacroplotReport %>% 
   
   # remove trailing/leading whitespace
   mutate(across(where(is.character), str_trim)) %>%
   
   # separate Date columns into Date and Time columns
-  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
+  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
+  separate(DateIn, sep = " ", into = c("DateIn", "DateInTime")) %>% 
   # reformate Date columns
-  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y"),
+         DateIn = as.Date(DateIn, "%m/%d/%Y")) %>% 
   # separate Date columns into Year, Month, and Day columns
   separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
   # remove unnecessary Date columns
-  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>%
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
+            DateInTime, DateIn_Month, DateIn_Day))
+
+##############################################
+
+WACA_MacroplotReport <- WACA_MacroplotReport %>% 
   
-  # make column names match those in MacroplotReport
-  mutate(Macroplot = MacroPlot_Name,
-         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
-         MonStatus = MonitoringStatus_Name) %>% 
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
   
-  # add PlotType_Name column
-  mutate(PlotType_Name = ifelse(grepl("RAP", ProjectUnit_Name), "RAP", 
-                                 ifelse(grepl("GR", ProjectUnit_Name), "Meadow", "FMH"))) %>%
-  
-  # reorganize columns
-  relocate(Macroplot, .after = ProjectUnit_Name) %>% 
-  relocate(LegacyMonitoringStatus, .after = SampleEventDate_Year) %>% 
-  relocate(MonStatus, .after = LegacyMonitoringStatus) %>%
-  relocate(PlotType_Name, .after = AdministrationUnit_Name) %>% 
-  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+  # separate Date columns into Date and Time columns
+  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
+  separate(DateIn, sep = " ", into = c("DateIn", "DateInTime")) %>% 
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y"),
+         DateIn = as.Date(DateIn, "%m/%d/%Y")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
+  separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
+  # remove unnecessary Date columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
+            DateInTime, DateIn_Month, DateIn_Day))
 ```
 
-### Filter Data
+#### Filter Data
 
 ```{r}
-MacroplotReport_MetaData <- MacroplotReport %>% 
+GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport %>% 
   filter(is.na(SampleEventDate)) %>% 
   select(!c(SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
 
-MacroplotReport_SampleEvents <- MacroplotReport %>% 
+GRCA_MacroplotReport_SampleEvents <- GRCA_MacroplotReport %>% 
   filter(!is.na(SampleEventDate)) %>% 
   select(c(Macroplot, SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
+
+##############################################
+
+IM_MacroplotReport_MetaData <- IM_MacroplotReport %>% 
+  filter(is.na(SampleEventDate)) %>% 
+  select(!c(SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
+
+IM_MacroplotReport_SampleEvents <- IM_MacroplotReport %>% 
+  filter(!is.na(SampleEventDate)) %>% 
+  select(c(Macroplot, SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
+
+##############################################
+
+WACA_MacroplotReport_MetaData <- WACA_MacroplotReport %>% 
+  filter(is.na(SampleEventDate)) %>% 
+  select(!c(SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
+
+WACA_MacroplotReport_SampleEvents <- WACA_MacroplotReport %>% 
+  filter(!is.na(SampleEventDate)) %>% 
+  select(c(Macroplot, SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
+```
+
+#### Add Columns
+
+-   Disturbance_Type (burn, thin, etc...)
+
+-   PlotType_Name (FMH, RAP, etc...)
+
+-   Park (GRCA, WACA)
+
+-   Park_Unit (North, South)
+
+-   Burn_Unit
+
+-   Macroplot_Code
+
+-   Macroplot_Num
+
+```{r}
+GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport_MetaData %>% 
+  
+  # PlotType_Name
+  mutate(PlotType_Name = ifelse(Purpose %in% c("PIED","PIPO","PIPN","PIAB","PIEN"), "FMH", 
+                                ifelse (Purpose %in% c("GRIN","GRED"), "Meadow", "RAP"))) %>%
+  
+  # Park
+  mutate(Park = "GRCA") %>% 
+  
+  # Macroplot_Code and Macroplot_Number
+  separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
+  separate(Macroplot, sep = "(?<=[A-Z])(?=[0-9])", into = c("Macroplot_Code1", "Macroplot_Num1"), remove = F) %>% 
+  mutate(Macroplot_Code = ifelse(PlotType_Name == "RAP", Macroplot_Code1, Macroplot_Code)) %>% 
+  mutate(Macroplot_Num = ifelse(PlotType_Name == "RAP", Macroplot_Num1, Macroplot_Num)) %>% 
+  select(!c(Macroplot_Code1, Macroplot_Num1)) %>% 
+  
+  # Park_Unit
+  mutate(Park_Unit = ifelse(Purpose %in% c("PIED", "PIPO", "Moqui", "Picnic", "Quarry", "Tusayan Pueblo (Thinning)"), "South", "North")) %>% 
+  
+  # Burn_Unit
+  separate(UV1, sep = " Project Unit", into = c("Burn_Unit"), remove = F) %>% 
+  
+  # Disturbance_Type
+  mutate(Disturbance_Type = ifelse(Purpose %in% c("Tusayan Pueblo (Thinning)"), "thin", "burn")) %>% 
+  
+  # reorder columns
+  relocate(PlotType_Name, .before = Macroplot) %>% 
+  relocate(Park, .before = PlotType_Name) %>% 
+  relocate(Type, .after = PlotType_Name) %>% 
+  relocate(Park_Unit, .after = Type) %>% 
+  relocate(Purpose, .after = Park_Unit) %>%
+  relocate(Burn_Unit, .after = Purpose) %>% 
+  relocate(MetaData, .after = Burn_Unit)
+
+##############################################
+
+IM_MacroplotReport_MetaData <- IM_MacroplotReport_MetaData %>% 
+  
+  # PlotType_Name
+  mutate(PlotType_Name = "I&M") %>% 
+  
+  # Park
+  separate(Macroplot, sep = "_", into = c("Park", "Macroplot"), remove = F) %>% 
+
+  # Macroplot_Code and Macroplot_Number
+   separate(Macroplot, sep = "(?<=[A-Z])(?=[0-9])", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>% 
+  
+  # Purpose
+  mutate(Purpose = ifelse(Macroplot_Code == "M", "Mixed Conifer", "Pinyon Juniper")) %>% 
+
+  # Park_Unit
+  mutate(Park_Unit = ifelse(Macroplot_Code == "M", "North", "South")) %>% 
+  
+  # Burn_Unit
+  separate(UV1, sep = " Project Unit", into = c("Burn_Unit"), remove = F) %>% 
+  
+  # Disturbance_Type
+  mutate(Disturbance_Type = "burn") %>% 
+  
+  # reorder columns
+  relocate(PlotType_Name, .before = Macroplot) %>% 
+  relocate(Park, .before = PlotType_Name) %>% 
+  relocate(Type, .after = PlotType_Name) %>% 
+  relocate(Park_Unit, .after = Type) %>% 
+  relocate(Purpose, .after = Park_Unit) %>%
+  relocate(Burn_Unit, .after = Purpose) %>% 
+  relocate(MetaData, .after = Burn_Unit)
+
+##############################################
+
+WACA_MacroplotReport_MetaData <- WACA_MacroplotReport_MetaData %>% 
+  
+  # Metadata
+  mutate(MetaData = ifelse(MetaData == "", Macroplot, MetaData)) %>% 
+  
+  # PlotType_Name
+  mutate(PlotType_Name = "FMH") %>% 
+  
+  # Park
+  mutate(Park = "WACA") %>% 
+
+  # Macroplot_Code and Macroplot_Number
+  mutate(Macroplot = ifelse(Macroplot == "B:FPIED1D02:01", "PIED 01", 
+                            ifelse(Macroplot == "B:FPIED1D02:02", "PIED 02", Macroplot))) %>%
+  separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>% 
+  # Park_Unit
+  mutate(Park_Unit = ifelse(Macroplot %in% c("PIPO 06", "PIPO 07", "PIPO 08", "PIPO 09", "PIPO 13", "PIPO 14"), "South", "North")) %>% 
+
+  # Burn_Unit
+  separate(UV1, sep = " Project Unit", into = c("Burn_Unit"), remove = F) %>% 
+  
+  # Disturbance_Type
+  mutate(Disturbance_Type = "burn") %>% 
+  
+  # reorder columns
+  relocate(PlotType_Name, .before = Macroplot) %>% 
+  relocate(Park, .before = PlotType_Name) %>% 
+  relocate(Type, .after = PlotType_Name) %>% 
+  relocate(Park_Unit, .after = Type) %>% 
+  relocate(Purpose, .after = Park_Unit) %>%
+  relocate(Burn_Unit, .after = Purpose) %>% 
+  relocate(MetaData, .after = Burn_Unit)
+
+  
+    
+  
+    
+
+  
+
+  # reorganize columns
+  # relocate(Macroplot, .after = ProjectUnit_Name) %>% 
+  # relocate(LegacyMonitoringStatus, .after = SampleEventDate_Year) %>% 
+  # relocate(MonStatus, .after = LegacyMonitoringStatus) %>%
+  # relocate(PlotType_Name, .after = AdministrationUnit_Name) %>% 
+  
 ```
 
 ## Summary Tables
@@ -143,47 +389,74 @@ MacroplotReport_SampleEvents <- MacroplotReport %>%
 Create columns for Entry (number of disturbances), Status (pre or post disturbance), and Time Since disturbance (i.e., Year 1) via break down of the Monitoring Status field
 
 ```{r}
-sum_MonStatus <- MacroplotReport_SampleEvents %>% 
+# Isolate different Monitoring Statuses from each park
+sum_GRCA_MonStatus <- GRCA_MacroplotReport_SampleEvents %>% 
   select(MonStatusOrd, MonStatus) %>% 
-  mutate(MonStatusOrd = NA) %>% 
+  mutate(MonStatusOrd = NA)
+
+sum_IM_MonStatus <- IM_MacroplotReport_SampleEvents %>% 
+  select(MonStatusOrd, MonStatus) %>% 
+  mutate(MonStatusOrd = NA)
+
+sum_WACA_MonStatus <- WACA_MacroplotReport_SampleEvents %>% 
+  select(MonStatusOrd, MonStatus) %>% 
+  mutate(MonStatusOrd = NA)
+
+# Combine Monitoring Statuses, keep only unique values
+sum_MonStatus <- rbind(sum_GRCA_MonStatus, sum_IM_MonStatus, sum_WACA_MonStatus) %>% 
   unique() %>% 
-  filter(MonStatus != "") %>% 
+  filter(MonStatus != "")
+
+# Create column with consistent naming
+sum_MonStatus <- sum_MonStatus %>% 
+  mutate(MonStatus_pre = ifelse(grepl("Measurement", MonStatus), "00Measurement0", 
+                                ifelse(grepl("Pre|PR", MonStatus), "00Pre0", NA))) %>% 
+  mutate(MonStatus_post = ifelse(grepl("01Post|01 Post", MonStatus), "01Post0",
+                                 ifelse(grepl("02Post", MonStatus), "02Post0",
+                                        ifelse(grepl("03Post", MonStatus), "03Post0",
+                                               ifelse(grepl("04Post", MonStatus), "04Post0", NA))))) %>% 
+  mutate(MonStatus_year = ifelse(grepl("01 yr01", MonStatus), "01Year1",
+                                ifelse(grepl("01 yr02", MonStatus), "01Year2", NA))) %>% 
+  mutate(MonStatus_new = ifelse(!is.na(MonStatus_pre), MonStatus_pre, 
+                                ifelse(!is.na(MonStatus_post), MonStatus_post,
+                                       ifelse(!is.na(MonStatus_year), MonStatus_year, MonStatus)))) %>% 
+  select(!c(MonStatus_pre, MonStatus_post, MonStatus_year))
+
+# Extract info 
+sum_MonStatus <- sum_MonStatus %>% 
+  unique() %>% 
   # extract info based on monitoring status names
-  extract(MonStatus, into = c("Entry","Status","TimeSince"),
-          regex = "([0-9]+)([A-Z][a-z]+)([0-9]+)", 
-          remove = FALSE) %>% 
-  # fix up classification of "Year" reads
-  mutate(Status = ifelse(Status == "Year", "Post", Status)) %>% 
-  # fix up classifications of "Pre" reads
-  mutate(Entry = ifelse(grepl("Pre", MonStatus), 0, Entry),
-         Status = ifelse(grepl("Pre", MonStatus), "Pre", Status)) %>% 
-  # fix up classifications of "Post" reads
-  mutate(Entry = ifelse(grepl("Post", MonStatus), substr(MonStatus, start = 1, stop = 2), Entry),
-         Status = ifelse(grepl("Post", MonStatus), "Post", Status),
-         TimeSince = ifelse(grepl("Post", MonStatus), 0, TimeSince)) %>% 
-  # fix up classifications of "PR" reads
-  mutate(Entry = ifelse(grepl("PR", MonStatus), "0", Entry),
-         Status = ifelse(grepl("PR", MonStatus), "Pre", Status)) %>%
+  extract(MonStatus_new, into = c("Entry","Status","TimeSince"),
+          regex = "([0-9]+)([A-Z][a-z]+)([0-9]+)",
+          remove = FALSE) %>%
+  # fix up classifications
+  mutate(Status = ifelse(Status == "Year", "Post", Status)) %>%
+  mutate(Status = ifelse(Status == "Measurement", "Pre", Status)) %>% 
+  mutate(TimeSince = ifelse(Status == "Pre", NA, TimeSince)) %>% 
   # make columns numeric
   mutate(Entry = as.numeric(Entry),
          TimeSince = as.numeric(TimeSince)) %>% 
-  mutate(MonStatus = factor(MonStatus, levels = c("PR05", "PR04", "PR03", "PR02", "PR01",
-                                                  "Pre", 
-                                                  "01Post", "01PostB", 
-                                                  "01Year1", "01Year2", 
-                                                  "01Year3" , 
+  # create factor order
+  mutate(MonStatus = factor(MonStatus, levels = c("Measurement_1", "Measurement_2",
+                                                  "Measurement_3", "Measurement_4",
+                                                  "PR01", "PR02", "PR03", "PR04", "PR05",
+                                                  "Pre", "00 PRE",
+                                                  "01Post", "01PostB", "01 Post",
+                                                  "01Year1", "01 yr01",
+                                                  "01Year2", "01 yr02",
+                                                  "01Year3" ,
                                                   "01Year5", "01Year10", "01Year20",
-                                                  "02Pre",
+                                                  "02PR01", "02PR02", "02Pre",
                                                   "02Post", "02PostB",
-                                                  "02Year1", "02Year2", 
+                                                  "02Year1", "02Year2",
                                                   "02Year5", "02Year10", "02Year20",
                                                   "03Post",
-                                                  "03Year1", "03Year2", 
+                                                  "03Year1", "03Year2",
                                                   "03Year5", "03Year10",
-                                                  "04Post", 
+                                                  "04Post",
                                                   "04Year1", "04Year2",
-                                                  "04Year5"))) %>% 
-  arrange(MonStatus) %>% 
+                                                  "04Year5"))) %>%
+  arrange(MonStatus) %>%
   mutate(MonStatusOrd = row_number())
 ```
 
@@ -193,21 +466,24 @@ Create columns for Entry (number of disturbances), Disturbance_Name (i.e., fire 
 
 ```{r}
 # Ensure blanks in UV columns are NA
-MacroplotReport_MetaData$UV1[MacroplotReport_MetaData$UV1==""] <- NA
-MacroplotReport_MetaData$UV2[MacroplotReport_MetaData$UV2==""] <- NA
-MacroplotReport_MetaData$UV3[MacroplotReport_MetaData$UV3==""] <- NA
-MacroplotReport_MetaData$UV4[MacroplotReport_MetaData$UV4==""] <- NA
-MacroplotReport_MetaData$UV5[MacroplotReport_MetaData$UV5==""] <- NA
-MacroplotReport_MetaData$UV6[MacroplotReport_MetaData$UV6==""] <- NA
-MacroplotReport_MetaData$UV7[MacroplotReport_MetaData$UV7==""] <- NA
-MacroplotReport_MetaData$UV8[MacroplotReport_MetaData$UV8==""] <- NA
+GRCA_MacroplotReport_MetaData$UV2[GRCA_MacroplotReport_MetaData$UV2==""] <- NA
+GRCA_MacroplotReport_MetaData$UV3[GRCA_MacroplotReport_MetaData$UV3==""] <- NA
+GRCA_MacroplotReport_MetaData$UV4[GRCA_MacroplotReport_MetaData$UV4==""] <- NA
+GRCA_MacroplotReport_MetaData$UV5[GRCA_MacroplotReport_MetaData$UV5==""] <- NA
+#GRCA_MacroplotReport_MetaData$UV6[GRCA_MacroplotReport_MetaData$UV6==""] <- NA
+#GRCA_MacroplotReport_MetaData$UV7[GRCA_MacroplotReport_MetaData$UV7==""] <- NA
+#GRCA_MacroplotReport_MetaData$UV8[GRCA_MacroplotReport_MetaData$UV8==""] <- NA
+
+IM_MacroplotReport_MetaData$UV2[IM_MacroplotReport_MetaData$UV2==""] <- NA
+
+WACA_MacroplotReport_MetaData$UV2[WACA_MacroplotReport_MetaData$UV2==""] <- NA
 ```
 
 #### 01 Disturbance
 
 ```{r}
 # add add relevant columns
-Disturbance01 <- MacroplotReport_MetaData %>% 
+GRCA_Disturbance01 <- GRCA_MacroplotReport_MetaData %>% 
   select(c("Macroplot", "Disturbance_Type", "UV2")) %>% 
   filter(!is.na(UV2)) %>% 
   separate(UV2, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>% 
@@ -217,7 +493,7 @@ Disturbance01 <- MacroplotReport_MetaData %>%
   select(!c("Disturbance_Info"))
 
 # specific edits
-Disturbance01 <- Disturbance01 %>% 
+GRCA_Disturbance01 <- GRCA_Disturbance01 %>% 
   mutate(Disturbance_Name = ifelse(Macroplot == "SC03", "Tipover East", Disturbance_Name),
          Disturbance_Desc = ifelse(Macroplot == "SC03", "Rx", Disturbance_Desc),
          DisturbanceDate = ifelse(Macroplot == "SC03", "12/22/17", DisturbanceDate),
@@ -238,19 +514,22 @@ Disturbance01 <- Disturbance01 %>%
   select(!c("UV2"))
 
 # edit date column
-Disturbance01 <- Disturbance01 %>% 
+GRCA_Disturbance01 <- GRCA_Disturbance01 %>% 
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>% 
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>% 
   select(!c("Month", "Day")) %>% 
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>% 
   relocate(Disturbance_Type, .before = Disturbance_Name)
+
+
+
 ```
 
 #### 02 Disturbance
 
 ```{r}
 # add add relevant columns
-Disturbance02 <- MacroplotReport_MetaData %>% 
+GRCA_Disturbance02 <- GRCA_MacroplotReport_MetaData %>% 
   select(c("Macroplot", "Disturbance_Type", "UV3")) %>% 
   filter(!is.na(UV3)) %>% 
   separate(UV3, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>% 
@@ -260,7 +539,7 @@ Disturbance02 <- MacroplotReport_MetaData %>%
   select(!c("Disturbance_Info"))
 
 # specific edits
-Disturbance02 <- Disturbance02 %>%
+GRCA_Disturbance02 <-GRCA_Disturbance02 %>%
   mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 07", "NW 1,3,5", Disturbance_Name),
          Disturbance_Desc = ifelse(Macroplot == "PIAB 07", "Rx", Disturbance_Desc),
          DisturbanceDate = ifelse(Macroplot == "PIAB 07", "11/10/2007", DisturbanceDate),
@@ -285,7 +564,7 @@ Disturbance02 <- Disturbance02 %>%
   select(!c("UV3"))
 
 # edit date column
-Disturbance02 <- Disturbance02 %>% 
+GRCA_Disturbance02 <- GRCA_Disturbance02 %>% 
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>% 
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>% 
   select(!c("Month", "Day")) %>% 
@@ -297,7 +576,7 @@ Disturbance02 <- Disturbance02 %>%
 
 ```{r}
 # add add relevant columns
-Disturbance03 <- MacroplotReport_MetaData %>% 
+GRCA_Disturbance03 <- GRCA_MacroplotReport_MetaData %>% 
   select(c("Macroplot", "Disturbance_Type", "UV4")) %>% 
   filter(!is.na(UV4)) %>% 
   separate(UV4, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>% 
@@ -307,7 +586,7 @@ Disturbance03 <- MacroplotReport_MetaData %>%
   select(!c("Disturbance_Info"))
 
 # specific edits
-Disturbance03 <- Disturbance03 %>%
+GRCA_Disturbance03 <- GRCA_Disturbance03 %>%
   mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 17", "Watson 2,3,4", Disturbance_Name),
          Disturbance_Desc = ifelse(Macroplot == "PIPO 17", "Rx", Disturbance_Desc),
          DisturbanceDate = ifelse(Macroplot == "PIPO 17", "10/14/2011", DisturbanceDate),
@@ -328,7 +607,7 @@ Disturbance03 <- Disturbance03 %>%
   select(!c("UV4"))
 
 # edit date column
-Disturbance03 <- Disturbance03 %>% 
+GRCA_Disturbance03 <- GRCA_Disturbance03 %>% 
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>% 
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>% 
   select(!c("Month", "Day")) %>% 
@@ -339,7 +618,7 @@ Disturbance03 <- Disturbance03 %>%
 #### 04 Disturbance
 
 ```{r}
-Disturbance04 <- MacroplotReport_MetaData %>% 
+GRCA_Disturbance04 <- GRCA_MacroplotReport_MetaData %>% 
   select(c("Macroplot", "Disturbance_Type", "UV5")) %>% 
   filter(!is.na(UV5)) %>% 
   # add add relevant columns
@@ -359,9 +638,15 @@ Disturbance04 <- MacroplotReport_MetaData %>%
 #### All Disturbances
 
 ```{r}
-sum_DisturbanceHistory <- rbind(Disturbance01, Disturbance02, Disturbance03, Disturbance04)
+sum_GRCA_DisturbanceHistory <- rbind(GRCA_Disturbance01, GRCA_Disturbance02, GRCA_Disturbance03, GRCA_Disturbance04)
 
-remove(Disturbance01, Disturbance02, Disturbance03, Disturbance04)
+sum_IM_DisturbanceHistory <- rbind(IM_Disturbance01)
+
+sum_WACA_DisturbanceHistory <- rbind(WACA_Disturbance01)
+
+#sum_DisturbanceHistory <- rbind(sum_GRCA_DisturbanceHistory, sum_IM_DisturbanceHistory, sum_WACA_DisturbanceHistory)
+
+#remove(Disturbance01, Disturbance02, Disturbance03, Disturbance04)
 
 # reorganize severity column for consistency
 sum_DisturbanceHistory <- sum_DisturbanceHistory %>% 
