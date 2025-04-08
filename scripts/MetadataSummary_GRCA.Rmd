@@ -1,0 +1,641 @@
+---
+title: "FFI Database Summary"
+subtitle: "Grand Canyon"
+output: 
+  html_document:
+    toc: true
+    toc-float: true
+    code_download: true
+date: "2025-03-17"
+---
+
+# Purpose
+
+This report summarizes plot work by the Fire Ecology Program. The included tables and enclosed code allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit. The code summarizes records in the Macroplot Report and Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server.
+
+
+```{r}
+source("C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/scripts/Metadata_GRCA.R")
+
+#str(all_MetadataReport)
+
+# reclassify data as correct type
+all_MetadataReport <- all_MetadataReport %>% 
+  mutate(AdministrationUnit_Name = factor(AdministrationUnit_Name)) %>% 
+  mutate(Park = factor(Park)) %>% 
+  mutate(PlotType_Name = factor(PlotType_Name)) %>% 
+  mutate(Type = factor(Type)) %>% 
+  mutate(Park_Unit = factor(Park_Unit)) %>% 
+  mutate(ProjectUnit_Name = factor(ProjectUnit_Name)) %>% 
+  mutate(Purpose = factor(Purpose)) %>% 
+  mutate(Burn_Unit = factor(Burn_Unit)) %>% 
+  mutate(MetaData = factor(MetaData)) %>% 
+  mutate(Macroplot = factor(Macroplot)) %>% 
+  mutate(Macroplot_Code = factor(Macroplot_Code)) %>% 
+  mutate(Macroplot_Num = factor(Macroplot_Num)) %>% 
+  #mutate(DateIn_Year = as.numeric()) %>%
+  mutate(SampleEventDate_Year = as.numeric(SampleEventDate_Year)) %>% 
+  mutate(Protocols = factor(Protocols)) %>%
+  mutate(Visited = factor(Visited)) %>%
+  mutate(LegacyMonStatus = factor(LegacyMonStatus)) %>%
+  mutate(MonStatus = factor(MonStatus)) %>%
+  mutate(Entry = factor(Entry)) %>% 
+  mutate(Status = factor(Status)) %>% 
+  #mutate(Disturbance_Type = factor()) %>% 
+  #mutate(Disturbance_Name = factor()) %>% 
+  #mutate(Disturbance_Desc = factor()) %>% 
+  #mutate(Disturbance_Year = as.numeric()) %>% 
+  mutate(Disturbance_Severity = factor(Disturbance_Severity, levels = c("Unburned", "Low", "Low/Mod", "Mod", "Mod/High", "High")))
+```
+
+# Tables
+
+```{r manipulate data, include=FALSE}
+# check occurrence of unique values in newly created columns, make corrections as needed
+all_MetadataReport$PlotType_Name %>% table(exclude = NULL)
+all_MetadataReport$Status %>% table(exclude = NULL)
+all_MetadataReport$Disturbance_Type %>% table(exclude = NULL)
+all_MetadataReport$TimeSince %>% table(exclude = NULL)
+```
+
+### Overall Program Summary
+
+```{r program summary}
+## Summarise projects and events by park
+program_summ <- all_MetadataReport %>%
+  summarise(`Parks` = n_distinct(AdministrationUnit_Name),
+            `Projects` = n_distinct(ProjectUnit_Name),
+            `Number of Plots` = n_distinct(Macroplot),
+            `Monitoring Statuses` = n_distinct(MonStatus),
+            `Visit Dates` = n_distinct(SampleEventDate),
+            `Protocols Used` = n_distinct(Protocols))
+
+program_summ %>% 
+  kbl(align = "lcccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T,
+                row_label_position = "c") %>% 
+  row_spec(0, font_size = 14, bold = TRUE) %>% 
+  row_spec(nrow(program_summ), font_size = 14, bold = TRUE)
+```
+
+### Filtered Summaries
+
+```{r set parameters, include=F}
+### Select Data to Summarize
+# use commas to build lists of acceptable values for filters
+
+# designate target park(s)
+unique(all_MetadataReport$Park)
+target_park <- c("GRCA")
+
+# designate target project(s)
+# see all project names
+unique(all_MetadataReport$PlotType_Name)
+target_project <- c("FMH")
+
+# designate target year or years
+unique(all_MetadataReport$SampleEventDate_Year)
+target_year <- c(2024)
+```
+
+The code underlying this report has been manipulated to display summaries of the following selected park(s), project(s), and year(s).\
+\
+Selected park(s): [`r target_park`]{style="color:red"}\
+Selected project(s): [`r target_project`]{style="color:red"}\
+Selected year(s): [`r target_year`]{style="color:red"}\
+
+#### Park Summary: [`r target_park`]{style="color:red"}
+
+The table below summarizes current and past projects in `r target_park`.
+
+```{r park summ}
+## Summarise projects by park
+# uses 'target park' variable designated above
+target_park_summ <- all_MetadataReport %>%
+  filter(Park == target_park) %>% 
+  group_by(`Project Name` = ProjectUnit_Name) %>%
+  summarise(`Plot Type` = unique(PlotType_Name),
+            `First Visit` = min(as.numeric(SampleEventDate_Year)),
+            `Latest Visit` = max(as.numeric(SampleEventDate_Year)),
+            `Number of Plots` = n_distinct(Macroplot),
+            `Monitoring Statuses` = n_distinct(MonStatus),
+            `Protocols Used` = n_distinct(Protocols)) %>% 
+  arrange(`Project Name`) %>% 
+  ungroup() %>% 
+  mutate_all(as.character)
+
+# Calculate totals
+target_park_summ_totals <- target_park_summ %>%
+  summarise(`Number of Plots` = sum(as.numeric(`Number of Plots`))) %>% 
+  mutate(`Project Name` = "",
+         `Plot Type` = "",
+         `First Visit` = "",
+         `Latest Visit` = "Total",
+         `Monitoring Statuses` = "",
+         `Protocols Used` = "") %>% 
+  mutate_all(as.character)
+
+# Bind the totals row to the original data frame
+target_park_summ_w_totals <- bind_rows(target_park_summ, target_park_summ_totals)
+  
+target_park_summ_w_totals %>% 
+  kbl(align = "lccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(nrow(target_park_summ_w_totals), font_size = 14, bold = TRUE)
+```
+
+#### Project Summary: [`r target_project`]{style="color:red"}
+
+The table below summarizes sample events recorded within the `r target_project` project.
+
+```{r project summ}
+## Summarise project
+# uses 'target project' variable designated above
+target_project_summ <- all_MetadataReport %>%
+  filter(Park == target_park,
+         PlotType_Name == target_project) %>%
+  group_by(`Monitoring Status` = MonStatus,
+           `Order` = MonStatusOrd) %>%
+  summarise(`Pre/Post` = unique(Status),
+            `First Visit` = min(SampleEventDate_Year),
+            `Latest Visit` = max(SampleEventDate_Year),
+            `Number of Plots Visited` = n_distinct(Macroplot),
+            `Protocols Used` = n_distinct(Protocols)) %>% 
+  arrange(`Order`) %>% 
+  select(!`Order`)
+
+target_project_summ %>% 
+  kbl(align = "lccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(0, font_size = 14, bold = TRUE)
+```
+
+#### Plot Activity Summary: [`r target_year`]{style="color:red"}
+
+The table below summarizes all projects with plots sampled within the following year(s): `r target_year`.
+
+```{r year summ}
+## Summarise yearly plot activity
+# uses 'target year' variable designated above
+target_year_summ <- all_MetadataReport %>%
+  filter(SampleEventDate_Year %in% target_year) %>% 
+  group_by(`Park` = Park,
+           `Project Name` = ProjectUnit_Name) %>%
+  summarise(`Plot Type` = unique(PlotType_Name),
+            `Start Date` = as.character(min(SampleEventDate)),
+            `End Date` = as.character(max(SampleEventDate)),
+            `Number of Plots` = n_distinct(Macroplot),
+            `Protocols Used` = n_distinct(Protocols)) %>% 
+  arrange(`Project Name`) %>% 
+  ungroup()
+
+# Calculate totals
+year_summ_totals <- target_year_summ %>%
+  summarise(across(where(is.numeric), \(x) sum(x, na.rm = TRUE))) %>%
+  mutate(`Park` = "",
+         `Project Name` = "",
+         `Plot Type` = "",
+         `Start Date` = "",
+         `End Date` = "Total")
+
+# Bind the totals row to the original data frame
+target_year_summ_w_totals <- bind_rows(target_year_summ, year_summ_totals)
+
+target_year_summ_w_totals %>% 
+  kbl(align = "lcccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(0, font_size = 14, bold = TRUE) %>% 
+  row_spec(nrow(target_year_summ_w_totals), font_size = 14, bold = TRUE)
+```
+
+### Protocol Use Summary
+
+The table below summarizes the frequency of use of protocols occurring in the FFI database, as utilized by the NPS Alaska Fire Ecology program. Protocols are arranged in descending order by number of plots such that the most frequently used protocols are listed first.
+
+```{r protocol summ}
+## Summarise protocol use by status
+protocol_use_summ <- all_MetadataReport %>%
+  group_by(`Protocol` = Protocols) %>%
+  summarise(`First Use` = min(as.numeric(SampleEventDate_Year)),
+            `Latest Use` = max(as.numeric(SampleEventDate_Year)),
+            `Number of Plots` = n_distinct(Macroplot),
+            `Number of Projects` = n_distinct(ProjectUnit_Name),
+            `Number of Monitoring Statuses` = n_distinct(MonStatus),
+            `Number of Parks` = n_distinct(AdministrationUnit_Name)) %>% 
+  arrange(desc(`Number of Plots`))
+
+protocol_use_summ %>% 
+  kbl(align = "lcccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(0, font_size = 14, bold = TRUE)
+```
+
+# Graphs
+
+```{r}
+graph_MetadataReport <- all_MetadataReport %>% 
+  filter(!is.na(AdministrationUnit_Name)) %>% 
+  # remove unnecessary columns
+  select(!c(Latitude, Longitude, UTM_X, UTM_Y, UTM_Zone, Datum, PDOP, Precision, )) %>% 
+  select(!c(Elevation, ElevationUnits, Azimuth, Aspect, SlopeHill, SlopeTransect)) %>% 
+  select(!c(LocatedBy, FutureVisit, DateOut, StartPoint, Directions, Comments, SampleEventTeam, SampleEventComment, LegacyMonStatus)) %>% 
+  select(!c(UV1, UV2, UV3, UV4, UV5, UV6, UV7, UV8))
+```
+
+## WACA
+
+### All FMH
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "WACA",
+         PlotType_Name == "FMH") %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
+  geom_point() +
+  geom_line(aes(group = Macroplot)) +
+  facet_grid(~Purpose) +
+  labs(title = "WACA Sample Event History",
+       subtitle = "Fire Monitoring Handbook (FMH) Plots",
+       y = "Plot Number",
+       x = "Year",
+       color = "Entry") +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+## GRCA
+
+### All I&M
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         PlotType_Name == "I&M") %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
+  geom_point() +
+  geom_line(aes(group = Macroplot)) +
+  facet_wrap(~Macroplot_Code) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "Inventory and Monitoring (I&M) Plots",
+       y = "Plot Number",
+       x = "Year",
+       color = "Entry") +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+### All RAP
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         PlotType_Name == "RAP") %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
+  geom_point() +
+  geom_line(aes(group = Macroplot)) +
+  facet_wrap(~Macroplot_Code) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "Rapid Assessment Protocol (RAP) Plots",
+       y = "Plot Number",
+       x = "Year",
+       color = "Entry") +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+### All FMH
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         PlotType_Name == "FMH") %>% 
+  filter(!Macroplot %in% c("SHOS 01", "SHOS 02")) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot_Num, color = Entry)) +
+  geom_point() +
+  geom_line(aes(group = Macroplot)) +
+  facet_grid(~Purpose) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "Fire Monitoring Handbook (FMH) Plots",
+       y = "Plot Number",
+       x = "Year",
+       color = "Entry") +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### Summarize
+
+```{r}
+# Summarize to one point per (Year, Macroplot, Visited)
+
+summary_points_PIED <- graph_MetadataReport %>%
+  filter(Park == "GRCA", Purpose == "PIED") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")  # optional: keep count of protocols
+
+summary_points_PIPO <- graph_MetadataReport %>%
+  filter(Park == "GRCA", Purpose == "PIPO") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+
+summary_points_PIPN <- graph_MetadataReport %>%
+  filter(Park == "GRCA", Purpose == "PIPN") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+
+summary_points_PIAB <- graph_MetadataReport %>%
+  filter(Park == "GRCA", Purpose == "PIAB") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+
+summary_points_PIEN <- graph_MetadataReport %>%
+  filter(Park == "GRCA", Purpose == "PIEN") %>%
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>%
+  summarise(n_protocols = n(), .groups = "drop")
+```
+
+#### PIED
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         Purpose %in% c("PIED")) %>% 
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIED %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIED %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "Pinyon Juniper Ecosystem (PIED)",
+       y = "Macroplot",
+       x = "Year",
+       color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### PIPO
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         Purpose %in% c("PIPO")) %>% 
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIPO %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIPO %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "South Rim Ponderosa Pine Ecosystem (PIPO)",
+       y = "Macroplot",
+       x = "Year",
+       color = "Entry",
+       fill = "Visited") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### PIPN
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         Purpose %in% c("PIPN")) %>% 
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIPN %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIPN %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "North Rim Ponderosa Pine Ecosystem (PIPN)",
+       y = "Macroplot",
+       x = "Year",
+       color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### PIAB
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         Purpose %in% c("PIAB")) %>% 
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIAB %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIAB %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "Pine-Fir Ecosystem (PIAB)",
+       y = "Macroplot",
+       x = "Year",
+       color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+#### PIEN
+
+```{r}
+graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         Purpose %in% c("PIEN")) %>% 
+  group_by(SampleEventDate_Year, Macroplot, Visited) %>% 
+  ggplot(aes(x = SampleEventDate_Year, y = Macroplot)) +
+  # Line plot
+  geom_line(aes(group = Macroplot, color = Entry)) +
+  # Plot green (Visited = Y) points first (background)
+  geom_jitter(data = summary_points_PIEN %>% filter(Visited == "Y"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  # Plot red (Visited = N) points second (foreground)
+  geom_jitter(data = summary_points_PIEN %>% filter(Visited == "N"),
+              aes(x = SampleEventDate_Year, y = Macroplot, fill = Visited),
+              shape = 21, size = 2, width = 0.1, height = 0.1) +
+  #geom_jitter(aes(group = Visited, fill = Visited), shape = 21) +
+  labs(title = "GRCA Sample Event History",
+       subtitle = "Spruce-Fir Ecosystem (PIEN)",
+       y = "Macroplot",
+       x = "Year",
+       color = "Entry") +
+  scale_fill_manual(values = c("Y" = "forestgreen", "N" = "red")) +
+  scale_color_manual(values=c('forestgreen', "yellow", 'darkorange', "red", "darkred")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+### Fires
+
+```{r}
+graph_fires_MetadataReport <- graph_MetadataReport %>% 
+  filter(Park == "GRCA",
+         PlotType_Name == "FMH") %>% 
+  filter(!Macroplot %in% c("SHOS 01", "SHOS 02")) %>% 
+  filter(Entry != "0") %>% 
+  group_by(Burn_Unit, DisturbanceDate, DisturbanceDate_Year, SampleEventDate_Year, Park_Unit, MonStatus, Disturbance_Name, Disturbance_Desc, Disturbance_Severity) %>% 
+  filter(DisturbanceDate_Year == SampleEventDate_Year) %>% 
+  summarise(n_macroplot = n())
+```
+
+```{r}
+graph_fires_MetadataReport %>% 
+  filter(Park_Unit == "North") %>% 
+  ggplot(aes(x = DisturbanceDate, y = Burn_Unit, label = Disturbance_Desc)) +
+  geom_line(aes(group = Burn_Unit)) +
+  #geom_point(aes(size  = n_macroplot), shape = "\U1F525") +
+  geom_point(aes(fill = Disturbance_Severity, size  = n_macroplot), shape = 21) +
+  #geom_text(size = 4) +
+  #geom_label_repel(aes(size = 4)) +
+  labs(title = "GRCA North Rim Fire History",
+       y = "Burn Unit",
+       x = "Year",
+       fill = "Severity",
+       size = "Number of Plots") +
+  scale_fill_manual(values=c('yellowgreen', "yellow", 'orange', "red", "darkred","grey")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 8),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+```{r}
+graph_fires_MetadataReport %>% 
+  filter(Park_Unit == "South") %>% 
+  ggplot(aes(x = DisturbanceDate, y = Burn_Unit, label = Disturbance_Desc)) +
+  geom_line(aes(group = Burn_Unit)) +
+  #geom_point(aes(size  = n_macroplot), shape = "\U1F525") +
+  geom_point(aes(fill = Disturbance_Severity, size  = n_macroplot), shape = 21) +
+  #geom_text(size = 4) +
+  #geom_label_repel(aes(size = 4)) +
+  labs(title = "GRCA South Rim Fire History",
+       y = "Burn Unit",
+       x = "Year",
+       fill = "Severity",
+       size = "Number of Plots") +
+  scale_fill_manual(values=c('yellowgreen', "yellow", 'orange', "red", "darkred","grey")) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 8),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
