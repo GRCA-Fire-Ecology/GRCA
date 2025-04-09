@@ -1,0 +1,433 @@
+{
+    "layers": [
+        {
+            "allowGeometryUpdates": true,
+            "capabilities": "Create",
+            "copyrightText": "",
+            "defaultVisibility": true,
+            "description": "",
+            "displayField": "objectid",
+            "drawingInfo": {
+                "labelingInfo": null,
+                "renderer": {
+                    "description": "Survey Data Locations",
+                    "label": "KLMN FE Photo Mon v1_1",
+                    "symbol": {
+                        "angle": 0,
+                        "color": [
+                            255,
+                            0,
+                            0,
+                            255
+                        ],
+                        "outline": {
+                            "color": [
+                                255,
+                                255,
+                                0,
+                                255
+                            ],
+                            "width": 1
+                        },
+                        "size": 8,
+                        "style": "esriSMSCircle",
+                        "type": "esriSMS",
+                        "xoffset": 0,
+                        "yoffset": 0
+                    },
+                    "type": "simple"
+                },
+                "transparency": 0
+            },
+            "extent": {
+                "spatialReference": {
+                    "wkid": 4326
+                },
+                "type": "extent",
+                "xmax": 180,
+                "xmin": -180,
+                "ymax": 90,
+                "ymin": -90
+            },
+            "fields": [
+                {
+                    "alias": "ObjectID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "name": "objectid",
+                    "nullable": false,
+                    "type": "esriFieldTypeOID"
+                },
+                {
+                    "alias": "GlobalID",
+                    "defaultValue": null,
+                    "domain": null,
+                    "editable": false,
+                    "length": 38,
+                    "name": "globalid",
+                    "nullable": false,
+                    "sqlType": "sqlTypeGUID",
+                    "type": "esriFieldTypeGlobalID"
+                },
+                {
+                    "alias": "Date",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "_date",
+                    "nullable": true,
+                    "type": "esriFieldTypeDate",
+                    "visible": true
+                },
+                {
+                    "alias": "Regular Date",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "reg_date",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Observation time",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "obs_time",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Who did the work",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "crew",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Other",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "crew_other",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Plot Crew",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "crew_pick",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Longitude (DD_X)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "Longitude_DD",
+                    "nullable": true,
+                    "type": "esriFieldTypeDouble",
+                    "visible": true
+                },
+                {
+                    "alias": "Latitude (DD_Y)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "Latitude_DD",
+                    "nullable": true,
+                    "type": "esriFieldTypeDouble",
+                    "visible": true
+                },
+                {
+                    "alias": "Easting (UTM_X)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "Easting_UTM",
+                    "nullable": true,
+                    "type": "esriFieldTypeDouble",
+                    "visible": true
+                },
+                {
+                    "alias": "Northing (UTM_Y)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "Northing_UTM",
+                    "nullable": true,
+                    "type": "esriFieldTypeDouble",
+                    "visible": true
+                },
+                {
+                    "alias": "Park Name",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "park_name",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Plot Name",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_name",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Burn Unit",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "burn_unit",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Protocol",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "protocol",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Veg Type",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "veg_type",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Default Photo Type",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_default",
+                    "nullable": true,
+                    "type": "esriFieldTypeInteger",
+                    "visible": true
+                },
+                {
+                    "alias": "READ",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_read",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Over Ride Default Plot Type",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "Yes",
+                                "name": "Yes"
+                            },
+                            {
+                                "code": "No",
+                                "name": "No"
+                            }
+                        ],
+                        "name": "cvd_plot_override",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_override",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Confirm Override (current plot photos will be erased!)",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "Yes",
+                                "name": "Yes"
+                            },
+                            {
+                                "code": "No",
+                                "name": "No"
+                            }
+                        ],
+                        "name": "cvd_override_yes",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "override_yes",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Manual Photo Type Pick",
+                    "domain": {
+                        "codedValues": [
+                            {
+                                "code": "8",
+                                "name": "8"
+                            },
+                            {
+                                "code": "4",
+                                "name": "4"
+                            },
+                            {
+                                "code": "2",
+                                "name": "2"
+                            }
+                        ],
+                        "name": "cvd_plot_type_pick",
+                        "type": "codedValue"
+                    },
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_type_pick",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Plot Type Selected",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_type",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "veg_calc",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "veg_calc",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "RA Photo 1 Desc. (direction)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "photo_4_1_note",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "RA Photo 2 Desc. (direction)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "photo_4_2_note",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "RA Photo 3 Desc. (direction)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "photo_4_3_note",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "RA Photo 4 Desc. (direction)",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "photo_4_4_note",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                },
+                {
+                    "alias": "Plot Notes",
+                    "domain": null,
+                    "editable": true,
+                    "length": 255,
+                    "name": "plot_notes",
+                    "nullable": true,
+                    "type": "esriFieldTypeString",
+                    "visible": true
+                }
+            ],
+            "geometryType": "esriGeometryPoint",
+            "globalIdField": "globalid",
+            "hasAttachments": true,
+            "hasM": false,
+            "hasStaticData": false,
+            "hasZ": false,
+            "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+            "id": 0,
+            "indexes": [
+                {
+                    "description": "GlobalID index",
+                    "fields": "globalid",
+                    "isAscending": false,
+                    "isUnique": true,
+                    "name": "GlobalIDIndex"
+                }
+            ],
+            "isDataVersioned": false,
+            "maxRecordCount": 1000,
+            "maxScale": 0,
+            "minScale": 0,
+            "name": "KLMN_FE_Photo_Mon_v1_1",
+            "objectIdField": "objectid",
+            "propagateVisibleFields": true,
+            "relationships": [
+            ],
+            "supportedQueryFormats": "JSON",
+            "supportsAdvancedQueries": true,
+            "supportsRollbackOnFailureParameter": true,
+            "supportsStatistics": true,
+            "templates": [
+                {
+                    "description": "",
+                    "name": "New Feature",
+                    "prototype": {
+                        "attributes": {
+                        }
+                    }
+                }
+            ],
+            "type": "Feature Layer",
+            "typeIdField": "",
+            "types": [
+            ]
+        }
+    ]
+}

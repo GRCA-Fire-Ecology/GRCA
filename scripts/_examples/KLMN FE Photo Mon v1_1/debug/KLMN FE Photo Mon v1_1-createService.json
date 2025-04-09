@@ -1,0 +1,38 @@
+{
+    "_ssl": false,
+    "allowGeometryUpdates": true,
+    "capabilities": "Create",
+    "copyrightText": "",
+    "currentVersion": 10.3,
+    "description": "",
+    "editorTrackingInfo": {
+        "allowAnonymousToDelete": false,
+        "allowAnonymousToQuery": false,
+        "allowAnonymousToUpdate": false,
+        "allowOthersToDelete": true,
+        "allowOthersToQuery": true,
+        "allowOthersToUpdate": true,
+        "enableEditorTracking": false,
+        "enableOwnershipAccessControl": false
+    },
+    "enableZDefaults": true,
+    "hasStaticData": false,
+    "hasVersionedData": false,
+    "maxRecordCount": 1000,
+    "name": "service_bcbf07d55fb84778a42d930c6dff8499",
+    "serviceDescription": "KLMN FE Photo Mon v1_1",
+    "spatialReference": {
+        "wkid": 4326
+    },
+    "supportedQueryFormats": "JSON",
+    "supportsDisconnectedEditing": false,
+    "syncEnabled": false,
+    "tables": [
+    ],
+    "units": "esriMeters",
+    "xssPreventionInfo": {
+        "xssInputRule": "rejectInvalid",
+        "xssPreventionEnabled": true,
+        "xssPreventionRule": "InputOnly"
+    }
+}

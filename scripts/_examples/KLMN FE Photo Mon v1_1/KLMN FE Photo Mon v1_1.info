@@ -1,0 +1,48 @@
+{
+    "collectInfo": {
+        "enabled": true
+    },
+    "displayInfo": {
+        "map": {
+            "defaultType": {
+            },
+            "home": {
+            },
+            "includeDefaultMaps": true,
+            "preview": {
+            }
+        },
+        "style": {
+        }
+    },
+    "foldersInfo": {
+        "showMap": true
+    },
+    "imagesInfo": {
+        "captureResolution": 0
+    },
+    "locationSharingInfo": {
+        "enabled": true,
+        "required": false
+    },
+    "overviewInfo": {
+        "enabled": false
+    },
+    "publishInfo": {
+        "connectVersion": "3.19.116",
+        "webFormTransform": true
+    },
+    "queryInfo": {
+        "applySpatialFilter": true,
+        "copyEnabled": false,
+        "editEnabled": true,
+        "mode": "",
+        "viewEnabled": false,
+        "where": ""
+    },
+    "sentInfo": {
+        "copyEnabled": true,
+        "editEnabled": false,
+        "enabled": true
+    }
+}

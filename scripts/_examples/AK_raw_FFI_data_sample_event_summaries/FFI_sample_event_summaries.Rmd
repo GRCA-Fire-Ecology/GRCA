@@ -1,0 +1,290 @@
+---
+title: "FFI Database Summary"
+subtitle: "ALASKA Admin Unit"
+output: 
+  html_document:
+    toc: true
+    toc-float: true
+    code_download: true
+date: "2025-03-17"
+---
+
+## Purpose
+
+This report summarizes plot work by the AKR Fire Ecology Program. The included tables and enclosed code allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit.
+
+```{r setup, include=FALSE}
+### Set up Environment
+## Load Packages
+library(stringr)
+library(tidyverse)
+library(DT)
+library(kableExtra)
+library(fs)
+library(here)
+
+## Markdown Options
+knitr::opts_chunk$set(echo = FALSE, error = FALSE,
+                      warnings = FALSE, message = FALSE)
+```
+
+```{r import data, include=FALSE}
+### Import Data
+## Set Working Directory
+wDir <- here()
+wDir
+
+## Load Data
+# In FFI, in the Project Management tab, Utilities menu, select Sample Event Report to export sample event info for all projects.
+sampAK <- read.csv(path("C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/scripts/examples/AK_raw_FFI_data_sample_event_summaries/SampleEventReport.csv"),
+                   na.strings = c("","NA","N/A"), # replace blanks and text NA as actual NA
+                   fileEncoding = 'UTF-8-BOM')
+```
+
+The code summarizes records in the Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server. FFI produces a 9-column .csv with a default filename of "SampleEventReport.csv" and the following column headers:
+
+```{r input data format, include=TRUE}
+header_list <- c("AdministrationUnit_Name","ProjectUnit_Name","MacroPlot_Name",
+                  "Multi_PU","SampleEvent_Date","SampleEvent_LegacyMonitoringStatus",
+                  "MonitoringStatus_Name","Protocols","Visited")
+
+print(header_list)
+```
+
+```{r manipulate data, include=FALSE}
+#### Manipulate and add columns to data
+## Create column for park via break down of ProjectUnit_Name
+#   return all characters to left of either "-" or "_"
+#   this won't work for all plot naming schemes but most?
+sampAK2 <- sampAK %>% 
+  filter(Visited == "Y") %>% # filter data for only visited plots
+  mutate(across(where(is.character), str_trim)) %>% # remove trailing/leading whitespace
+  mutate(Database = "ALASKA",
+         Park = gsub("\\-|_.*|-.*", "", ProjectUnit_Name)) %>%
+  separate(SampleEvent_Date, sep = " ", into = c("Date", "Time", "Period"), remove = FALSE) %>% # separate Date column into Date and Time columns
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  select(!c("Month", "Day", "Period", "Time")) # remove unneeded columns
+
+# clean up known issues with plot naming schemes
+sampAK3 <- sampAK2 %>% 
+  mutate(Park = case_when(Park=="IN" ~ NA,
+                          Park=="NULLNULL" ~ NA,
+                          Park=="Paired" ~ substr(MacroPlot_Name, 1, 4),
+                          TRUE ~ Park))
+
+## Assign parks to area programs
+# create area program park lists
+WAFM <- c("DENA", "BELA", "NOAT", "KOVA", "LACL")
+EAFM <- c("WRST", "GAAR", "YUCH")
+Coastal  <- c("KATM", "LACL", "SITK", "GLBA")
+
+# assign area program
+sampAK4 <- sampAK3 %>% 
+  mutate(AreaProgram_Name = case_when(Park %in% WAFM~"WAFM",
+                                      Park %in% EAFM~"EAFM",
+                                      Park %in% Coastal~"Coastal",
+                                      TRUE~NA))
+
+## Create columns for Status (i.e., pre or post), Type of disturbance (i.e., treatment or burn), and Time since disturbance (i.e., Year 1) via break down of the MonitoringStatus_Name field
+
+# split field at capital letters, pull TimeSince with digit value
+sampAK5 <- sampAK4 %>%
+  extract(MonitoringStatus_Name, into = c("Status","Type","TimeSince"),
+          regex = "([A-Z][a-z]+)([A-Z][a-z]+)([A-Z][a-z]+)", 
+          remove = FALSE) %>% # keep original column
+  mutate(Status = factor(Status,levels = c("Pre","Post","Un")),
+         TimeSince = as.numeric(str_extract(MonitoringStatus_Name,
+                              regex("([[:digit:]]+)"))))
+
+## Basic QA/QC of sample event report data
+# Check occurrence of remaining NA values
+check_NAs <- sampAK5 %>% 
+  summarise(across(everything(), ~ sum(is.na(.x)))) %>% 
+  pivot_longer(everything(), names_to = "Count")
+
+# check occurrence of unique values in newly created columns, make corrections as needed
+sampAK5$Park %>% table(exclude = NULL)
+sampAK5$Status %>% table(exclude = NULL)
+sampAK5$Type %>% table(exclude = NULL)
+sampAK5$TimeSince %>% table(exclude = NULL)
+```
+
+```{r set parameters, include=F}
+### Select Data to Summarize
+# use commas to build lists of acceptable values for filters
+
+# designate target park(s)
+target_park <- c("DENA")
+
+# designate target project(s)
+# see all project names
+unique(sampAK5$ProjectUnit_Name)
+target_project <- c("WRST-CHAKINA-FIRE-EFFECTS")
+
+# designate target year or years
+target_year <- c(2024)
+```
+
+## Overall Program Summary
+
+The Alaska NPS Fire Ecology program serves all National Parks in Alaska. All data are stored in the FFI database, in an 'Admin Unit' called 'ALASKA'.
+
+```{r program summary}
+## Summarise projects and events by park
+program_summ <- sampAK5 %>%
+  filter(Park %in% c(WAFM, EAFM, Coastal)) %>% 
+  group_by(`Area Program` = AreaProgram_Name,
+           `Park` = Park) %>%
+  summarise(`Projects` = n_distinct(ProjectUnit_Name),
+            `Number of Plots` = n_distinct(MacroPlot_Name),
+            `Monitoring Statuses` = n_distinct(MonitoringStatus_Name),
+            `Visit Dates` = n_distinct(SampleEvent_Date),
+            `Protocols Used` = n_distinct(Protocols)) %>% 
+  ungroup()
+
+# Calculate totals
+program_summ_totals <- program_summ %>%
+  summarise(across(where(is.numeric), \(x) sum(x, na.rm = TRUE))) %>%
+  mutate(`Area Program` = "",
+         Park = "Total")
+
+# Bind the totals row to the original data frame
+program_summ_w_totals <- bind_rows(program_summ, program_summ_totals)
+
+program_summ_w_totals %>% 
+  kbl(align = "lcccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T,
+                row_label_position = "c") %>% 
+  row_spec(0, font_size = 14, bold = TRUE) %>% 
+  row_spec(nrow(program_summ_w_totals), font_size = 14, bold = TRUE)
+```
+
+## Filtered Summaries
+
+The code underlying this report has been manipulated to display summaries of the following selected park(s), project(s), and year(s).\
+\
+Selected park(s): [`r target_park`]{style="color:red"}\
+Selected project(s): [`r target_project`]{style="color:red"}\
+Selected year(s): [`r target_year`]{style="color:red"}\
+
+### Park Summary: `r target_park`
+
+The table below summarizes current and past projects in `r target_park`.
+
+```{r park summ}
+## Summarise projects by park
+# uses 'target park' variable designated above
+target_park_summ <- sampAK5 %>%
+  filter(Park == target_park) %>% 
+  group_by(`Project Name` = ProjectUnit_Name) %>%
+  summarise(`First Visit` = min(as.numeric(Year)),
+            `Latest Visit` = max(as.numeric(Year)),
+            `Number of Plots` = n_distinct(MacroPlot_Name),
+            `Monitoring Statuses` = n_distinct(MonitoringStatus_Name),
+            `Protocols Used` = n_distinct(Protocols)) %>% 
+  arrange(desc(`First Visit`)) %>% 
+  ungroup() %>% 
+  mutate_all(as.character)
+
+# Calculate totals
+target_park_summ_totals <- target_park_summ %>%
+  summarise(`Number of Plots` = sum(as.numeric(`Number of Plots`))) %>% 
+  mutate(`Project Name` = "",
+         `First Visit` = "",
+         `Latest Visit` = "Total",
+         `Monitoring Statuses` = "",
+         `Protocols Used` = "") %>% 
+  mutate_all(as.character)
+
+# Bind the totals row to the original data frame
+target_park_summ_w_totals <- bind_rows(target_park_summ, target_park_summ_totals)
+  
+target_park_summ_w_totals %>% 
+  kbl(align = "lccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(0, font_size = 14, bold = TRUE) %>% 
+  row_spec(nrow(program_summ_w_totals), font_size = 14, bold = TRUE)
+```
+
+### Project Summary: `r target_project`
+
+The table below summarizes sample events recorded within the `r target_project` project.
+
+```{r project summ}
+## Summarise project
+# uses 'target project' variable designated above
+target_project_summ <- sampAK5 %>%
+  filter(ProjectUnit_Name == target_project) %>% 
+  group_by(`Monitoring Status` = MonitoringStatus_Name) %>%
+  summarise(`First Visit` = as.Date(min(SampleEvent_Date), format = "%m/%d/%y"),
+            `Latest Visit` = as.Date(max(SampleEvent_Date), format = "%m/%d/%y"),
+            `Number of Plots Visited in Monitoring Status` = n_distinct(MacroPlot_Name),
+            `Protocols Used during Monitoring Status` = n_distinct(Protocols)) %>% 
+  arrange(`First Visit`)
+
+target_project_summ %>% 
+  kbl(align = "lcccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(0, font_size = 14, bold = TRUE)
+```
+
+### Plot Activity Summary: `r target_year`
+
+The table below summarizes all projects with plots sampled within the following year(s): `r target_year`.
+
+```{r year summ}
+## Summarise yearly plot activity
+# uses 'target year' variable designated above
+target_year_summ <- sampAK5 %>%
+  filter(Year %in% target_year) %>% 
+  group_by(`Project Name` = ProjectUnit_Name) %>%
+  summarise(`Start Date` = as.character(as.Date(min(SampleEvent_Date), format = "%m/%d/%y")),
+            `End Date` = as.character(as.Date(max(SampleEvent_Date), format = "%m/%d/%y")),
+            `Number of Plots` = n_distinct(MacroPlot_Name),
+            `Protocols Used` = n_distinct(Protocols)) %>% 
+  arrange(`Start Date`) %>% 
+  ungroup()
+
+# Calculate totals
+year_summ_totals <- target_year_summ %>%
+  summarise(across(where(is.numeric), \(x) sum(x, na.rm = TRUE))) %>%
+  mutate(`Project Name` = "",
+         `Start Date` = "",
+         `End Date` = "Total")
+
+# Bind the totals row to the original data frame
+target_year_summ_w_totals <- bind_rows(target_year_summ, year_summ_totals)
+
+target_year_summ_w_totals %>% 
+  kbl(align = "lcccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(0, font_size = 14, bold = TRUE) %>% 
+  row_spec(nrow(target_year_summ_w_totals), font_size = 14, bold = TRUE)
+```
+
+## Protocol Use Summary
+
+The table below summarizes the frequency of use of protocols occurring in the FFI database, as utilized by the NPS Alaska Fire Ecology program. Protocols are arranged in descending order by number of plots such that the most frequently used protocols are listed first.
+
+```{r protocol summ}
+## Summarise protocol use by status
+protocol_use_summ <- sampAK5 %>%
+  group_by(`Protocol` = Protocols) %>%
+  summarise(`First Use` = min(as.numeric(Year)),
+            `Latest Use` = max(as.numeric(Year)),
+            `Number of Plots` = n_distinct(MacroPlot_Name),
+            `Number of Projects` = n_distinct(ProjectUnit_Name),
+            `Number of Monitoring Statuses` = n_distinct(MonitoringStatus_Name),
+            `Number of Parks` = n_distinct(Park)) %>% 
+  arrange(desc(`Number of Plots`))
+
+protocol_use_summ %>% 
+  kbl(align = "lcccccc") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"), 
+                full_width = F, position = "left", fixed_thead = T) %>% 
+  row_spec(0, font_size = 14, bold = TRUE)
+```

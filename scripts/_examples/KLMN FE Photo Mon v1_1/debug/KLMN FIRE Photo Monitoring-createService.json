@@ -1,0 +1,38 @@
+{
+    "_ssl": false,
+    "allowGeometryUpdates": true,
+    "capabilities": "Create",
+    "copyrightText": "",
+    "currentVersion": 10.3,
+    "description": "",
+    "editorTrackingInfo": {
+        "allowAnonymousToDelete": false,
+        "allowAnonymousToQuery": false,
+        "allowAnonymousToUpdate": false,
+        "allowOthersToDelete": true,
+        "allowOthersToQuery": true,
+        "allowOthersToUpdate": true,
+        "enableEditorTracking": false,
+        "enableOwnershipAccessControl": false
+    },
+    "enableZDefaults": true,
+    "hasStaticData": false,
+    "hasVersionedData": false,
+    "maxRecordCount": 1000,
+    "name": "service_6bc147e64b3b426fa82862db1e8bceac",
+    "serviceDescription": "KLMN FIRE Photo Monitoring",
+    "spatialReference": {
+        "wkid": 4326
+    },
+    "supportedQueryFormats": "JSON",
+    "supportsDisconnectedEditing": false,
+    "syncEnabled": false,
+    "tables": [
+    ],
+    "units": "esriMeters",
+    "xssPreventionInfo": {
+        "xssInputRule": "rejectInvalid",
+        "xssPreventionEnabled": true,
+        "xssPreventionRule": "InputOnly"
+    }
+}

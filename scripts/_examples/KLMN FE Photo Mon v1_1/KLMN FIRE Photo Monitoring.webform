@@ -1,0 +1,1649 @@
+{
+  "form": "<form autocomplete=\"off\" novalidate=\"novalidate\" class=\"or clearfix pages dynamic-grid\" dir=\"ltr\" data-form-id=\"KLMN_FIRE_Photo_Monitoring\">\n<!--This form was created by transforming an ODK/OpenRosa-flavored (X)Form using an XSL stylesheet created by Enketo LLC.--><section class=\"form-logo\"></section><h3 dir=\"auto\" id=\"form-title\">KLMN Fire Effects and Ecology Photo Monitoring</h3>\n  \n  \n    <section class=\"or-group or-appearance-w2 or-appearance-field-list\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm49032528\">General Info</span></h4><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49031664\">Date</span><span class=\"required\" id=\"idm49932336\">*</span><input type=\"datetime-local\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/_date\" data-required=\"true()\" data-type-xml=\"dateTime\" id=\"idm49032096\"><span lang=\"\" class=\"or-required-msg active\" id=\"idm48915888\">This is a required question</span></label><label class=\"question non-select or-appearance-hidden\"><span lang=\"\" class=\"question-label active\" id=\"idm49038640\">Regular Date</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/reg_date\" data-calculate=\"format-date( /KLMN_FIRE_Photo_Monitoring/group_gen_info/_date ,'%m, %d, %Y')\" data-type-xml=\"string\" id=\"idm49031088\"></label><label class=\"question non-select or-appearance-hidden type-time\"><span lang=\"\" class=\"question-label active\" id=\"idm49037488\">Observation time</span><span lang=\"\" class=\"or-hint active\" id=\"idm49037056\">What time did the observation take place?</span><input type=\"time\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/obs_time\" data-calculate=\"format-date( /KLMN_FIRE_Photo_Monitoring/group_gen_info/_date ,'%H:%M')\" data-type-xml=\"time\" id=\"idm49038064\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0ZM8 15C4.15 15 1 11.85 1 8C1 4.15 4.15 1 8 1C11.85 1 15 4.15 15 8C15 11.85 11.85 15 8 15ZM11.8254 11.1204L8.5 8.27003V4H7.5V8.72997L11.1746 11.8796L11.8254 11.1204Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49035904\">Who did the work</span><span class=\"required\" id=\"idm48914768\">*</span><span lang=\"\" class=\"or-hint active\" id=\"idm49035472\">Names of the people observing/surveying</span><select multiple=\"\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/crew\" data-required=\"true()\" data-type-xml=\"select\" id=\"idm49036480\"><option class=\"itemset-template\" value=\"\" data-items-path=\"instance('klmn_fire_list_worker')/root/item\">...</option></select><span class=\"or-option-translations\" style=\"display:none;\">\n                </span><span class=\"itemset-labels\" data-value-ref=\"name\" data-label-ref=\"label\"> </span><span lang=\"\" class=\"or-required-msg active\" id=\"idm48914544\">This is a required question</span></label><label class=\"question or-branch pre-init non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49041008\">Other</span><span lang=\"\" class=\"or-hint active\" id=\"idm49040576\">Other people involved in observing/surveying</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_other\" data-relevant=\"selected( /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew , 'Other')\" data-type-xml=\"string\" id=\"idm49041584\"></label><label class=\"question non-select or-appearance-predictivetext\"><span lang=\"\" class=\"question-label active\" id=\"idm49039424\">Plot Crew</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_pick\" data-calculate=\"if( /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_other =&quot;&quot;,  /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew , concat( /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew ,':', /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_other ))\" data-type-xml=\"string\" id=\"idm49040000\"></label><label class=\"question non-select or-appearance-w2 or-appearance-hide-input or-appearance-press-to-locate\"><span lang=\"\" class=\"question-label active\" id=\"idm49046400\">Location</span><span class=\"required\" id=\"idm48913520\">*</span><span lang=\"\" class=\"or-hint active\" id=\"idm49045968\">Where was the observation/survey made?</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/location\" data-required=\"true()\" data-type-xml=\"geopoint\" id=\"idm49046976\"><span lang=\"\" class=\"or-required-msg active\" id=\"idm48913408\">This is a required question</span></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm49044816\">Longitude (DD_X)</span><input type=\"number\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/Longitude_DD\" data-calculate=\"pulldata(&quot;@geopoint&quot;,  /KLMN_FIRE_Photo_Monitoring/group_gen_info/location , &quot;x&quot;)\" data-type-xml=\"decimal\" step=\"any\" readonly=\"\" id=\"idm49045392\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm49043664\">Latitude (DD_Y)</span><input type=\"number\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/Latitude_DD\" data-calculate=\"pulldata(&quot;@geopoint&quot;,  /KLMN_FIRE_Photo_Monitoring/group_gen_info/location , &quot;y&quot;)\" data-type-xml=\"decimal\" step=\"any\" readonly=\"\" id=\"idm49044240\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm49050640\">Easting (UTM_X)</span><input type=\"number\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/Easting_UTM\" data-type-xml=\"decimal\" step=\"any\" id=\"idm49043088\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm49049488\">Northing (UTM_Y)</span><input type=\"number\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/Northing_UTM\" data-type-xml=\"decimal\" step=\"any\" id=\"idm49050064\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49048480\">Park Name</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/park_name\" data-type-xml=\"string\" id=\"idm49048912\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49047472\">Plot Name</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_name\" data-type-xml=\"string\" id=\"idm49047904\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49091456\">Burn Unit</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/burn_unit\" data-type-xml=\"string\" id=\"idm49091888\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49090448\">Protocol</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/protocol\" data-type-xml=\"string\" id=\"idm49090880\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49089440\">Veg Type</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/veg_type\" data-type-xml=\"string\" id=\"idm49089872\"></label><label class=\"question non-select  type-number\"><span lang=\"\" class=\"question-label active\" id=\"idm49088432\">Default Photo Type</span><input type=\"number\" name=\"/KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default\" data-type-xml=\"int\" id=\"idm49088864\"><i class=\"webform-svg-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.56973 8.22652C9.60928 8.42988 9.62906 8.64681 9.62906 8.87729C9.62906 9.31923 9.56088 9.70945 9.42454 10.048C9.2882 10.3865 9.10719 10.6897 8.88152 10.9577C8.65585 11.2257 8.39727 11.4678 8.10578 11.6841C7.81429 11.9003 7.5134 12.1072 7.2031 12.3047C6.89281 12.4927 6.58251 12.6784 6.27221 12.8618C5.96192 13.0451 5.67748 13.2402 5.4189 13.4471C5.16032 13.654 4.93935 13.8773 4.75599 14.1171C4.57264 14.3568 4.45275 14.6319 4.39633 14.9422H9.53032V16H3C3.04701 15.4076 3.1528 14.9022 3.31735 14.4838C3.4819 14.0653 3.69111 13.701 3.94499 13.3907C4.19887 13.0804 4.48566 12.8077 4.80536 12.5726C5.12506 12.3376 5.45886 12.1166 5.80677 11.9097C6.2299 11.6464 6.60132 11.4043 6.92102 11.1834C7.24072 10.9624 7.50635 10.7391 7.71791 10.5134C7.92948 10.2877 8.08933 10.0433 8.19746 9.77997C8.3056 9.51669 8.35966 9.2111 8.35966 8.86319C8.35966 8.5905 8.30795 8.34368 8.20451 8.12271C8.10108 7.90174 7.96239 7.71133 7.78843 7.55148C7.61448 7.39163 7.40997 7.26939 7.17489 7.18477C6.93982 7.10014 6.69065 7.05783 6.42736 7.05783C6.07945 7.05783 5.78091 7.1307 5.53173 7.27645C5.28256 7.42219 5.07804 7.6126 4.91819 7.84767C4.75834 8.08275 4.64316 8.34838 4.57264 8.64457C4.50212 8.94076 4.47156 9.2393 4.48096 9.5402H3.44V13H2.25V5.888H0V4.936C0.0398421 4.936 0.101598 4.93667 0.185266 4.93802C1.33711 4.95657 2.33142 4.13474 2.53 3H3.44V8.12072C3.57173 7.69201 3.77532 7.32127 4.05078 7.00846C4.32816 6.69346 4.67372 6.44664 5.08745 6.26798C5.50118 6.08933 5.97132 6 6.49788 6C6.93042 6 7.33709 6.06347 7.71791 6.19041C8.09873 6.31735 8.43018 6.5007 8.71227 6.74048C8.99436 6.98026 9.21768 7.27879 9.38223 7.63611C9.39114 7.65546 9.39981 7.67497 9.40824 7.69465C9.35083 7.41995 9.32501 7.12359 9.33079 6.80556H10.5113C10.5299 7.44445 10.7151 7.96528 11.0669 8.36806C11.4188 8.77083 11.9326 8.97222 12.6086 8.97222C12.8956 8.97222 13.1688 8.92824 13.428 8.84028C13.6873 8.75231 13.9141 8.62732 14.1086 8.46528C14.303 8.30324 14.4581 8.10417 14.5738 7.86806C14.6896 7.63194 14.7475 7.36574 14.7475 7.06944C14.7475 6.76389 14.6919 6.49306 14.5808 6.25694C14.4697 6.02083 14.3215 5.82176 14.1363 5.65972C13.9512 5.49768 13.7313 5.37732 13.4766 5.29861C13.222 5.21991 12.9465 5.18056 12.6502 5.18056C12.4002 5.18056 12.1641 5.19444 11.9419 5.22222V4.22222C11.9882 4.23148 12.0299 4.23611 12.0669 4.23611H12.4558C12.7058 4.23611 12.9442 4.20139 13.1711 4.13194C13.3979 4.0625 13.597 3.96065 13.7683 3.82639C13.9396 3.69213 14.0762 3.52315 14.178 3.31944C14.2799 3.11574 14.3308 2.88426 14.3308 2.625C14.3308 2.09722 14.1641 1.70139 13.8308 1.4375C13.4975 1.17361 13.0808 1.04167 12.5808 1.04167C12.266 1.04167 11.9905 1.09954 11.7544 1.21528C11.5183 1.33102 11.3238 1.48611 11.1711 1.68056C11.0183 1.875 10.9049 2.10185 10.8308 2.36111C10.7567 2.62037 10.7197 2.89352 10.7197 3.18056H9.53913C9.55765 2.70833 9.63403 2.27778 9.76829 1.88889C9.90255 1.5 10.0947 1.16667 10.3447 0.888889C10.5947 0.61111 10.9072 0.393519 11.2822 0.236111C11.6572 0.0787029 12.09 0 12.5808 0C13.0067 0 13.4026 0.0532402 13.7683 0.159722C14.134 0.266204 14.4512 0.425925 14.7197 0.638889C14.9882 0.851853 15.1988 1.125 15.3516 1.45833C15.5044 1.79167 15.5808 2.18518 15.5808 2.63889C15.5808 3.08334 15.4512 3.47685 15.1919 3.81944C14.9326 4.16204 14.6086 4.4213 14.2197 4.59722C14.8215 4.75463 15.2683 5.03703 15.56 5.47222C15.8516 5.90741 15.9975 6.42129 15.9975 7.01389C15.9975 7.50463 15.9072 7.9375 15.7266 8.3125C15.5461 8.6875 15.303 9 14.9975 9.25C14.6919 9.5 14.3331 9.6875 13.9211 9.8125C13.509 9.9375 13.0715 10 12.6086 10C12.1086 10 11.6549 9.93056 11.2475 9.79167C10.8401 9.65278 10.4928 9.44676 10.2058 9.17361C9.93325 8.91426 9.72124 8.59856 9.56973 8.22652Z\" fill=\"#333333\"></path>\n</svg></i></label>\n            </section><!--end of group -->\n    <section class=\"or-group or-appearance-w2 or-appearance-field-list\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm49095264\">Photo Page</span></h4><fieldset class=\"question or-appearance-w1 or-appearance-likert\"><fieldset><legend><span lang=\"\" class=\"question-label active\" id=\"idm49094256\">Over Ride Default Plot Type</span>\n                    </legend><div class=\"option-wrapper\"><label class=\"\"><input type=\"radio\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override\" data-name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override\" value=\"Yes\" data-type-xml=\"select1\" id=\"idm49093824\"><span lang=\"\" class=\"option-label active\" id=\"idm49093536\">Yes</span></label><label class=\"\"><input type=\"radio\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override\" data-name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override\" value=\"No\" data-type-xml=\"select1\" id=\"idm49092528\"><span lang=\"\" class=\"option-label active\" id=\"idm49092240\">No</span></label></div></fieldset></fieldset><fieldset class=\"question or-appearance-w1 or-appearance-likert\"><fieldset><legend><span lang=\"\" class=\"question-label active\" id=\"idm49098496\">&lt;font color=\"red\"&gt;Confirm Override (current plot photos will be erased!)&lt;/font&gt;</span>\n                    </legend><div class=\"option-wrapper\"><label class=\"\"><input type=\"radio\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes\" data-name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes\" value=\"Yes\" data-type-xml=\"select1\" id=\"idm49098064\"><span lang=\"\" class=\"option-label active\" id=\"idm49097776\">Yes</span></label><label class=\"\"><input type=\"radio\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes\" data-name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes\" value=\"No\" data-type-xml=\"select1\" id=\"idm49096768\"><span lang=\"\" class=\"option-label active\" id=\"idm49096480\">No</span></label></div></fieldset></fieldset><fieldset class=\"question or-branch pre-init or-appearance-w1 or-appearance-likert\"><fieldset><legend><span lang=\"\" class=\"question-label active\" id=\"idm49102880\">Manual Photo Type Pick</span>\n                    </legend><div class=\"option-wrapper\"><label class=\"\"><input type=\"radio\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick\" data-name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick\" value=\"8\" data-relevant=\"selected( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes , 'Yes')\" data-type-xml=\"select1\" id=\"idm49102448\"><span lang=\"\" class=\"option-label active\" id=\"idm49102160\">8</span></label><label class=\"\"><input type=\"radio\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick\" data-name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick\" value=\"4\" data-relevant=\"selected( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes , 'Yes')\" data-type-xml=\"select1\" id=\"idm49101152\"><span lang=\"\" class=\"option-label active\" id=\"idm49100864\">4</span></label><label class=\"\"><input type=\"radio\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick\" data-name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick\" value=\"2\" data-relevant=\"selected( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes , 'Yes')\" data-type-xml=\"select1\" id=\"idm49107984\"><span lang=\"\" class=\"option-label active\" id=\"idm49107696\">2</span></label></div></fieldset></fieldset><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49105968\">Plot Type Selected</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type\" data-calculate=\"if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override ='',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default , if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes ='',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default , if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override ='No' and  /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes ='No',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default , if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override ='Yes' and  /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes ='No',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default  , /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick ))))\" data-type-xml=\"string\" id=\"idm49106544\"></label><section class=\"or-group or-branch pre-init or-appearance-w2:2\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest\" data-relevant=\" /KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc =8\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm49104816\">8 Shot Photo Inventory</span></h4><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49111792\">0P-50P</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_0p_50p\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49112512\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49110496\">Q4-Q1</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q4_q1\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49111216\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49109200\">P1-P2</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_p1_p2\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49109920\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49152896\">Q1-Q4</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q1_q4\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49108624\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49151600\">50P-0P</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_50p_0p\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49152320\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49150304\">Q2-Q3</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q2_q3\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49151024\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49157136\">P2-P1</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_p2_p1\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49149728\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49155840\">Q3-Q2</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q3_q2\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49156560\"></label>\n            </section><!--end of group --><section class=\"or-group or-branch pre-init or-appearance-w2:2\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_brush\" data-relevant=\" /KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc =2\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm49154544\">2 Shot Photo Inventory</span></h4><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49161520\">0P-30P</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_brush/photo_2_0p_30p\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49154112\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49160224\">30P-0P</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_brush/photo_2_30p_0p\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49160944\"></label>\n            </section><!--end of group --><section class=\"or-group or-branch pre-init or-appearance-w2:2\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra\" data-relevant=\" /KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc =4\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm49158928\">4 Shot RA Photo Inventory</span></h4><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49157920\">RA Photo 1</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_1\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49158496\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49165040\">RA Photo 1 Desc. (direction)</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_1_note\" data-type-xml=\"string\" id=\"idm49165472\"></label><label class=\"question non-select or-appearance-w1 or-appearance-minimal\"><span lang=\"\" class=\"question-label active\" id=\"idm49163744\">RA Photo 2</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_2\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49164464\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49162736\">RA Photo 2 Desc. (direction)</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_2_note\" data-type-xml=\"string\" id=\"idm49163168\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49169712\">RA Photo 3</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_3\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49162160\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49168704\">RA Photo 3 Desc. (direction)</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_3_note\" data-type-xml=\"string\" id=\"idm49169136\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49167552\">RA Photo 4</span><input type=\"file\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_4\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49168128\"></label><label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm49166544\">RA Photo 4 Desc. (direction)</span><input type=\"text\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_4_note\" data-type-xml=\"string\" id=\"idm49166976\"></label>\n            </section><!--end of group --><section class=\"or-group or-appearance-w2:2\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_notes_photo\"><h4><span lang=\"\" class=\"question-label active\" id=\"idm49173376\">Plot Notes and Other Photos</span></h4><label class=\"question non-select or-appearance-w1 or-appearance-multiline\"><span lang=\"\" class=\"question-label active\" id=\"idm49172224\">Other Photos</span><textarea name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_notes_photo/photo_other\" data-type-xml=\"binary\" accept=\"image/*\" id=\"idm49172944\"></textarea></label><label class=\"question non-select or-appearance-w1 or-appearance-multiline\"><span lang=\"\" class=\"question-label active\" id=\"idm49171072\">Plot Notes</span><textarea name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_notes_photo/plot_notes\" data-type-xml=\"string\" id=\"idm49171648\"></textarea></label>\n            </section><!--end of group -->\n            </section><!--end of group -->\n  \n<fieldset id=\"or-calculated-items\" style=\"display:none;\"><label class=\"calculation non-select \"><input type=\"hidden\" name=\"/KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc\" data-calculate=\"if(selected( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes , 'Yes'),  /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type ,  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default )\" data-type-xml=\"string\" id=\"idm48693280\"></label><label class=\"calculation non-select \"><input type=\"hidden\" name=\"/KLMN_FIRE_Photo_Monitoring/meta/instanceID\" data-calculate=\"concat('uuid:', uuid())\" data-type-xml=\"string\" id=\"idm48957648\"></label><label class=\"calculation non-select \"><input type=\"hidden\" name=\"/KLMN_FIRE_Photo_Monitoring/meta/instanceName\" data-calculate=\"concat( /KLMN_FIRE_Photo_Monitoring/group_gen_info/reg_date ,' ', /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_name ,' ', /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_pick )\" data-type-xml=\"string\" id=\"idm49034544\"></label></fieldset></form>",
+  "languageMap": {},
+  "model": "<model><instance>\n        <KLMN_FIRE_Photo_Monitoring xmlns:esri=\"http://esri.com/xforms\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\" id=\"KLMN_FIRE_Photo_Monitoring\">\n          <group_gen_info>\n            <_date>now()</_date>\n            <reg_date/>\n            <obs_time/>\n            <crew/>\n            <crew_other/>\n            <crew_pick/>\n            <location/>\n            <Longitude_DD/>\n            <Latitude_DD/>\n            <Easting_UTM/>\n            <Northing_UTM/>\n            <park_name/>\n            <plot_name/>\n            <burn_unit/>\n            <protocol/>\n            <veg_type/>\n            <plot_default/>\n          </group_gen_info>\n          <group_photo_page>\n            <plot_override>No</plot_override>\n            <override_yes>No</override_yes>\n            <plot_type_pick/>\n            <plot_type/>\n            <veg_calc/>\n            <group_photo_forest>\n              <photo_8_0p_50p/>\n              <photo_8_q4_q1/>\n              <photo_8_p1_p2/>\n              <photo_8_q1_q4/>\n              <photo_8_50p_0p/>\n              <photo_8_q2_q3/>\n              <photo_8_p2_p1/>\n              <photo_8_q3_q2/>\n            </group_photo_forest>\n            <group_photo_brush>\n              <photo_2_0p_30p/>\n              <photo_2_30p_0p/>\n            </group_photo_brush>\n            <group_photo_ra>\n              <photo_4_1/>\n              <photo_4_1_note/>\n              <photo_4_2/>\n              <photo_4_2_note/>\n              <photo_4_3/>\n              <photo_4_3_note/>\n              <photo_4_4/>\n              <photo_4_4_note/>\n            </group_photo_ra>\n            <group_notes_photo>\n              <photo_other/>\n              <plot_notes/>\n            </group_notes_photo>\n          </group_photo_page>\n          <meta>\n            <instanceID/>\n            <instanceName/>\n          </meta>\n        </KLMN_FIRE_Photo_Monitoring>\n      </instance><instance id=\"klmn_fire_list_worker\" src=\"jr://file-csv/klmn_fire_list_worker.csv\">\n        <root xmlns:esri=\"http://esri.com/xforms\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\">\n          <item>\n            <name>_</name>\n            <label>_</label>\n          </item>\n        </root>\n      </instance><instance id=\"@geopoint\" >\n        <root xmlns:esri=\"http://esri.com/xforms\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\">\n          <item>\n            <name>_</name>\n            <label>_</label>\n          </item>\n        </root>\n      </instance></model>",
+  "success": true,
+  "surveyFormJson": {
+    "footer": {
+      "content": "",
+      "isVisible": true
+    },
+    "header": {
+      "content": "<p>KLMN Fire Effects and Ecology Photo Monitoring</p>",
+      "isVisible": true
+    },
+    "isCreatedByExistingFeatureService": false,
+    "layerName": "KLMN_FIRE_Photo_Monitoring",
+    "locales": [
+      {
+        "code": "en-us",
+        "isDefault": true,
+        "label": "English-US"
+      }
+    ],
+    "portalUrl": "https://www.arcgis.com",
+    "questions": [
+      {
+        "appearance": {
+          "layout": "expanded"
+        },
+        "description": null,
+        "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info",
+        "label": "General Info",
+        "name": "group_gen_info",
+        "position": 18,
+        "questions": [
+          {
+            "appearance": {
+              "layout": "day-month-year"
+            },
+            "defaultValue": "now()",
+            "description": null,
+            "fieldName": "_date",
+            "fieldType": "esriFieldTypeDate",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/_date",
+            "isRequired": true,
+            "label": "Date",
+            "name": "_date",
+            "position": 1,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeDateTime",
+            "validation": {
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "format-date( /KLMN_FIRE_Photo_Monitoring/group_gen_info/_date ,'%m, %d, %Y')",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "reg_date",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/reg_date",
+            "isRequired": false,
+            "label": "Regular Date",
+            "name": "reg_date",
+            "position": 2,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            },
+            "visibility": {
+              "expression": "false()",
+              "type": "xform"
+            }
+          },
+          {
+            "calculation": {
+              "expression": "format-date( /KLMN_FIRE_Photo_Monitoring/group_gen_info/_date ,'%H:%M')",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "obs_time",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/obs_time",
+            "isRequired": false,
+            "label": "Observation time",
+            "name": "obs_time",
+            "position": 3,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeTime",
+            "visibility": {
+              "expression": "false()",
+              "type": "xform"
+            }
+          },
+          {
+            "appearance": {
+              "layout": "minimal"
+            },
+            "choices": {
+              "items": [],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              },
+              "reference": "@survey/info/media/klmn_fire_list_worker.csv"
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "description": null,
+            "fieldLength": "255",
+            "fieldName": "crew",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/crew",
+            "isRequired": true,
+            "label": "Who did the work",
+            "name": "crew",
+            "position": 4,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeMultiChoice",
+            "validation": {
+              "inputCount": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "crew_other",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_other",
+            "isRequired": false,
+            "label": "Other",
+            "name": "crew_other",
+            "position": 5,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": "selected( /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew , 'Other')",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "if( /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_other =\"\",  /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew , concat( /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew ,':', /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_other ))",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "crew_pick",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_pick",
+            "isRequired": false,
+            "label": "Plot Crew",
+            "name": "crew_pick",
+            "position": 6,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "",
+              "type": "xform"
+            },
+            "defaultExtent": {
+              "spatialReference": {}
+            },
+            "defaultMap": {
+              "name": "undefined",
+              "type": "linkedItem"
+            },
+            "defaultValue": null,
+            "description": null,
+            "deviceLocation": {
+              "trigger": "interaction"
+            },
+            "displayFormats": [
+              "DD"
+            ],
+            "fieldType": "esriFieldTypeGeometry",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/location",
+            "inputTools": [
+              "pin",
+              "search",
+              "locate"
+            ],
+            "isRequired": true,
+            "label": "Location",
+            "maps": [
+              {
+                "name": "undefined",
+                "type": "linkedItem"
+              }
+            ],
+            "name": "location",
+            "position": 7,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "search": {
+              "sources": []
+            },
+            "snapping": {
+              "isEnabled": false,
+              "modes": []
+            },
+            "type": "esriQuestionTypeGeoPoint"
+          },
+          {
+            "calculation": {
+              "expression": "pulldata(\"@geopoint\",  /KLMN_FIRE_Photo_Monitoring/group_gen_info/location , \"x\")",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "Longitude_DD",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/Longitude_DD",
+            "isRequired": false,
+            "label": "Longitude (DD_X)",
+            "name": "Longitude_DD",
+            "position": 8,
+            "readOnly": {
+              "expression": "true()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": false,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "pulldata(\"@geopoint\",  /KLMN_FIRE_Photo_Monitoring/group_gen_info/location , \"y\")",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "Latitude_DD",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/Latitude_DD",
+            "isRequired": false,
+            "label": "Latitude (DD_Y)",
+            "name": "Latitude_DD",
+            "position": 9,
+            "readOnly": {
+              "expression": "true()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": false,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "Easting_UTM",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/Easting_UTM",
+            "isRequired": false,
+            "label": "Easting (UTM_X)",
+            "name": "Easting_UTM",
+            "position": 10,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": false,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "Northing_UTM",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/Northing_UTM",
+            "isRequired": false,
+            "label": "Northing (UTM_Y)",
+            "name": "Northing_UTM",
+            "position": 11,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": false,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "park_name",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/park_name",
+            "isRequired": false,
+            "label": "Park Name",
+            "name": "park_name",
+            "position": 12,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "plot_name",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_name",
+            "isRequired": false,
+            "label": "Plot Name",
+            "name": "plot_name",
+            "position": 13,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "burn_unit",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/burn_unit",
+            "isRequired": false,
+            "label": "Burn Unit",
+            "name": "burn_unit",
+            "position": 14,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "protocol",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/protocol",
+            "isRequired": false,
+            "label": "Protocol",
+            "name": "protocol",
+            "position": 15,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "veg_type",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/veg_type",
+            "isRequired": false,
+            "label": "Veg Type",
+            "name": "veg_type",
+            "position": 16,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "plot_default",
+            "fieldType": "esriFieldTypeDouble",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default",
+            "isRequired": false,
+            "label": "Default Photo Type",
+            "name": "plot_default",
+            "position": 17,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeNumber",
+            "validation": {
+              "isInteger": true,
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          }
+        ],
+        "relevant": {
+          "expression": null,
+          "type": "xform"
+        },
+        "type": "esriQuestionTypeGroup"
+      },
+      {
+        "appearance": {
+          "layout": "expanded"
+        },
+        "description": null,
+        "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page",
+        "label": "Photo Page",
+        "name": "group_photo_page",
+        "position": 48,
+        "questions": [
+          {
+            "appearance": {
+              "layout": "likert"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "Yes",
+                  "position": 0,
+                  "value": "Yes"
+                },
+                {
+                  "label": "No",
+                  "position": 1,
+                  "value": "No"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "defaultValue": "No",
+            "description": null,
+            "fieldName": "plot_override",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override",
+            "isRequired": false,
+            "label": "Over Ride Default Plot Type",
+            "name": "plot_override",
+            "position": 19,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeSingleChoice"
+          },
+          {
+            "appearance": {
+              "layout": "likert"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "Yes",
+                  "position": 0,
+                  "value": "Yes"
+                },
+                {
+                  "label": "No",
+                  "position": 1,
+                  "value": "No"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "defaultValue": "No",
+            "description": null,
+            "fieldName": "override_yes",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes",
+            "isRequired": false,
+            "label": "<font color=\"red\">Confirm Override (current plot photos will be erased!)</font>",
+            "name": "override_yes",
+            "position": 20,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeSingleChoice",
+            "visibility": {
+              "expression": "selected( /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override , 'Yes')",
+              "type": "xform"
+            }
+          },
+          {
+            "appearance": {
+              "layout": "likert"
+            },
+            "choices": {
+              "items": [
+                {
+                  "label": "8",
+                  "position": 0,
+                  "value": "8"
+                },
+                {
+                  "label": "4",
+                  "position": 1,
+                  "value": "4"
+                },
+                {
+                  "label": "2",
+                  "position": 2,
+                  "value": "2"
+                }
+              ],
+              "other": {
+                "isEnabled": false,
+                "label": null
+              }
+            },
+            "choicesOrder": {
+              "type": "default"
+            },
+            "description": null,
+            "fieldName": "plot_type_pick",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick",
+            "isRequired": false,
+            "label": "Manual Photo Type Pick",
+            "name": "plot_type_pick",
+            "position": 21,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": "selected( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes , 'Yes')",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeSingleChoice"
+          },
+          {
+            "calculation": {
+              "expression": "if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override ='',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default , if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes ='',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default , if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override ='No' and  /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes ='No',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default , if( /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_override ='Yes' and  /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes ='No',  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default  , /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type_pick ))))",
+              "type": "xform"
+            },
+            "defaultValue": "",
+            "description": null,
+            "fieldName": "plot_type",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type",
+            "isRequired": false,
+            "label": "Plot Type Selected",
+            "name": "plot_type",
+            "position": 22,
+            "readOnly": {
+              "expression": "false()",
+              "type": "xform"
+            },
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            }
+          },
+          {
+            "calculation": {
+              "expression": "if(selected( /KLMN_FIRE_Photo_Monitoring/group_photo_page/override_yes , 'Yes'),  /KLMN_FIRE_Photo_Monitoring/group_photo_page/plot_type ,  /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_default )",
+              "type": "xform"
+            },
+            "description": null,
+            "fieldName": "veg_calc",
+            "fieldType": "esriFieldTypeString",
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc",
+            "isRequired": false,
+            "label": "veg_calc",
+            "name": "veg_calc",
+            "position": 23,
+            "type": "esriQuestionTypeText",
+            "validation": {
+              "inputMask": {
+                "customFormat": "",
+                "isEnabled": false
+              },
+              "valueRange": {
+                "isEnabled": false
+              }
+            },
+            "visibility": {
+              "expression": "false()",
+              "type": "xform"
+            }
+          },
+          {
+            "appearance": {
+              "layout": "expanded"
+            },
+            "description": null,
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest",
+            "label": "8 Shot Photo Inventory",
+            "name": "group_photo_forest",
+            "position": 32,
+            "questions": [
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_0p_50p",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "0P-50P",
+                "name": "photo_8_0p_50p",
+                "position": 24,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q4_q1",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "Q4-Q1",
+                "name": "photo_8_q4_q1",
+                "position": 25,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_p1_p2",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "P1-P2",
+                "name": "photo_8_p1_p2",
+                "position": 26,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q1_q4",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "Q1-Q4",
+                "name": "photo_8_q1_q4",
+                "position": 27,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_50p_0p",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "50P-0P",
+                "name": "photo_8_50p_0p",
+                "position": 28,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q2_q3",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "Q2-Q3",
+                "name": "photo_8_q2_q3",
+                "position": 29,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_p2_p1",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "P2-P1",
+                "name": "photo_8_p2_p1",
+                "position": 30,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_forest/photo_8_q3_q2",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "Q3-Q2",
+                "name": "photo_8_q3_q2",
+                "position": 31,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              }
+            ],
+            "relevant": {
+              "expression": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc =8",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeGroup"
+          },
+          {
+            "appearance": {
+              "layout": "expanded"
+            },
+            "description": null,
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_brush",
+            "label": "2 Shot Photo Inventory",
+            "name": "group_photo_brush",
+            "position": 35,
+            "questions": [
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_brush/photo_2_0p_30p",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "0P-30P",
+                "name": "photo_2_0p_30p",
+                "position": 33,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_brush/photo_2_30p_0p",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "30P-0P",
+                "name": "photo_2_30p_0p",
+                "position": 34,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              }
+            ],
+            "relevant": {
+              "expression": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc =2",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeGroup"
+          },
+          {
+            "appearance": {
+              "layout": "expanded"
+            },
+            "description": null,
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra",
+            "label": "4 Shot RA Photo Inventory",
+            "name": "group_photo_ra",
+            "position": 44,
+            "questions": [
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_1",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "RA Photo 1",
+                "name": "photo_4_1",
+                "position": 36,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "photo_4_1_note",
+                "fieldType": "esriFieldTypeString",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_1_note",
+                "isRequired": false,
+                "label": "RA Photo 1 Desc. (direction)",
+                "name": "photo_4_1_note",
+                "position": 37,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_2",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "RA Photo 2",
+                "name": "photo_4_2",
+                "position": 38,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "photo_4_2_note",
+                "fieldType": "esriFieldTypeString",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_2_note",
+                "isRequired": false,
+                "label": "RA Photo 2 Desc. (direction)",
+                "name": "photo_4_2_note",
+                "position": 39,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_3",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "RA Photo 3",
+                "name": "photo_4_3",
+                "position": 40,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "photo_4_3_note",
+                "fieldType": "esriFieldTypeString",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_3_note",
+                "isRequired": false,
+                "label": "RA Photo 3 Desc. (direction)",
+                "name": "photo_4_3_note",
+                "position": 41,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              },
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_4",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "RA Photo 4",
+                "name": "photo_4_4",
+                "position": 42,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": true,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "photo_4_4_note",
+                "fieldType": "esriFieldTypeString",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_photo_ra/photo_4_4_note",
+                "isRequired": false,
+                "label": "RA Photo 4 Desc. (direction)",
+                "name": "photo_4_4_note",
+                "position": 43,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeText",
+                "validation": {
+                  "inputMask": {
+                    "customFormat": "",
+                    "isEnabled": false
+                  },
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              }
+            ],
+            "relevant": {
+              "expression": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/veg_calc =4",
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeGroup"
+          },
+          {
+            "appearance": {
+              "layout": "expanded"
+            },
+            "description": null,
+            "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_notes_photo",
+            "label": "Plot Notes and Other Photos",
+            "name": "group_notes_photo",
+            "position": 47,
+            "questions": [
+              {
+                "description": null,
+                "fieldType": "esriAttachment",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_notes_photo/photo_other",
+                "inputTools": [
+                  "browse",
+                  "camera"
+                ],
+                "isRequired": false,
+                "label": "Other Photos",
+                "name": "photo_other",
+                "position": 45,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeImage",
+                "validation": {
+                  "allowFileSize": {
+                    "max": 10,
+                    "min": 0
+                  },
+                  "allowFileType": {
+                    "exts": [
+                      "*"
+                    ],
+                    "type": "image"
+                  },
+                  "inputCount": {
+                    "isEnabled": false,
+                    "max": 1,
+                    "min": 1
+                  }
+                }
+              },
+              {
+                "defaultValue": "",
+                "description": null,
+                "fieldName": "plot_notes",
+                "fieldType": "esriFieldTypeString",
+                "id": "/KLMN_FIRE_Photo_Monitoring/group_photo_page/group_notes_photo/plot_notes",
+                "isRequired": false,
+                "label": "Plot Notes",
+                "name": "plot_notes",
+                "position": 46,
+                "readOnly": {
+                  "expression": "false()",
+                  "type": "xform"
+                },
+                "relevant": {
+                  "expression": null,
+                  "type": "xform"
+                },
+                "type": "esriQuestionTypeTextArea",
+                "validation": {
+                  "valueRange": {
+                    "isEnabled": false
+                  }
+                }
+              }
+            ],
+            "relevant": {
+              "expression": null,
+              "type": "xform"
+            },
+            "type": "esriQuestionTypeGroup"
+          }
+        ],
+        "relevant": {
+          "expression": null,
+          "type": "xform"
+        },
+        "type": "esriQuestionTypeGroup"
+      }
+    ],
+    "settings": {
+      "captcha": {
+        "content": "",
+        "isEnabled": false
+      },
+      "draftInfo": {
+        "isEnabled": false
+      },
+      "instanceName": "concat( /KLMN_FIRE_Photo_Monitoring/group_gen_info/reg_date ,' ', /KLMN_FIRE_Photo_Monitoring/group_gen_info/plot_name ,' ', /KLMN_FIRE_Photo_Monitoring/group_gen_info/crew_pick )",
+      "isVersionLocked": true,
+      "multiSubmissionInfo": {
+        "autoReload": -1,
+        "maxAllowed": 0,
+        "redirectUrl": "",
+        "showSubmitAnotherTip": false
+      },
+      "notificationsInfo": {},
+      "openStatusInfo": {
+        "closedStatusContent": "",
+        "schedule": {
+          "end": null,
+          "start": null
+        },
+        "status": "open"
+      },
+      "recordStartEndTime": {
+        "fieldInfos": [],
+        "isEnabled": false
+      },
+      "thankYouScreenContent": ""
+    },
+    "subHeader": {
+      "content": "",
+      "isVisible": true
+    },
+    "submit": {},
+    "themes": [
+      {
+        "form": {
+          "backgroundColor": "#ffffff",
+          "backgroundOpacity": 1,
+          "inputBackgroundColor": "#ffffff",
+          "inputTextColor": "#505050",
+          "primaryColor": "#31872E",
+          "primaryTextColor": "#ffffff",
+          "textColor": "#505050"
+        },
+        "header": {
+          "backgroundColor": "#31872E",
+          "textColor": "#ffffff"
+        },
+        "id": null,
+        "isEnabled": true,
+        "name": "theme-color1",
+        "webpage": {
+          "backgroundColor": "#B7DCC7"
+        }
+      }
+    ],
+    "version": "3.19"
+  },
+  "transformerVersion": "2.3.0"
+}
