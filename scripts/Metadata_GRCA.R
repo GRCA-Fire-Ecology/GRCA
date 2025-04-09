@@ -2,20 +2,13 @@
 
 ### Setup
 
-```{r setup, include=FALSE}
-## Markdown Options
-knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE, message = FALSE)
-```
-
-```{r install packages, include=FALSE}
 ## Install packages (if needed)
 
 # install.packages("tidyverse")
 # install.packages("kableExtra")
 # install.packages("ggplot2")
-```
 
-```{r load packages, include=FALSE}
+
 ## Load Packages
 
 # "here" helps you easily find and reference your working directory
@@ -25,24 +18,22 @@ library(tidyverse)
 # "kableExtra" is used to produce formatted tables
 library(kableExtra)
 library(ggplot2)
-```
+
 
 ### Adjust File Paths
 
-```{r import data, include=FALSE}
 # Identify working directory
 here()
 
 # Load in data.
-path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
+path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
 path_output <- paste0(here(), "/output/")
-path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
-```
+
+##############################################
+##############################################
+##############################################
 
 ### Load Data
-
-```{r load data, include=FALSE}
-## Load Data
 
 # GRCA
 GRCA_MacroplotReport <- read.csv(paste0(path_data, "GRCA_MacroplotReport.csv"))
@@ -58,19 +49,18 @@ IM_SampleEventReport <- read.csv(paste0(path_data, "I&M_SampleEventReport.csv"))
 WACA_MacroplotReport <- read.csv(paste0(path_data, "WACA_MacroplotReport.csv"))
 WACA_SampleEventReport <- read.csv(paste0(path_data, "WACA_SampleEventReport.csv"))
 #WACA_ProjectUnitReport <- read.csv(paste0(path_data, "WACA_ProjectUnitAssignmentReport.csv"))
-```
+
+##############################################
+##############################################
+##############################################
 
 ### Clean Data
 
--   remove trailing/leading whitespace from character columns
-
--   reformat date columns
-
--   make column names match between reports
+##############################################
+##############################################
 
 #### Sample Event Report
 
-```{r}
 GRCA_SampleEventReport <- GRCA_SampleEventReport %>%
 
   # remove trailing/leading whitespace
@@ -143,11 +133,12 @@ WACA_SampleEventReport <- WACA_SampleEventReport %>%
   mutate(Macroplot = ifelse(Macroplot == "B:FPIED1D02:01", "PIED 01",
                             ifelse(Macroplot == "B:FPIED1D02:02", "PIED 02", Macroplot))) %>%
   mutate(ProjectUnit_Name = ifelse(ProjectUnit_Name == "FPIED1D02", "PIED", ProjectUnit_Name))
-```
+
+##############################################
+##############################################
 
 #### Macroplot Report
 
-```{r}
 GRCA_MacroplotReport <- GRCA_MacroplotReport %>%
 
   # remove trailing/leading whitespace
@@ -214,15 +205,20 @@ WACA_MacroplotReport <- WACA_MacroplotReport %>%
                            ifelse(Macroplot == "B:FPIED1D02:02" & Purpose == "PIED", Macroplot, MetaData))) %>%
   mutate(Macroplot = ifelse(Macroplot == "B:FPIED1D02:01", "PIED 01",
                             ifelse(Macroplot == "B:FPIED1D02:02", "PIED 02", Macroplot)))
-```
+
+##############################################
+##############################################
+##############################################
 
 ### Filter Data
 
+##############################################
+##############################################
+
 #### Sample Event Report
 
-The Sample Event Report contains multiple project units, and each plot can be assigned to any project unit. To reduce duplicates, select only the core project units.
+#The Sample Event Report contains multiple project units, and each plot can be assigned to any project unit. To reduce duplicates, select only the core project units.
 
-```{r}
 GRCA_SampleEventReport_merge <- GRCA_SampleEventReport %>%
   filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>%
   filter(!ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>%
@@ -238,11 +234,14 @@ IM_SampleEventReport_merge <- IM_SampleEventReport %>%
 
 WACA_SampleEventReport_merge <- WACA_SampleEventReport %>%
   select(!c(Multi_PU, SampleEventDate_Year, LegacyMonitoringStatus))
-```
+
+##############################################
+##############################################
 
 #### Macroplot Report
 
-```{r}
+#The Macroplot Report contains information on both plot metadata, and sample event history. Separate these into 2 tables. These will be formatted separately and then merged back together.
+
 GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport %>%
   filter(is.na(SampleEventDate)) %>%
   select(!c(SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
@@ -270,33 +269,26 @@ WACA_MacroplotReport_MetaData <- WACA_MacroplotReport %>%
 WACA_MacroplotReport_SampleEvents <- WACA_MacroplotReport %>%
   filter(!is.na(SampleEventDate)) %>%
   select(c(Macroplot, SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
-```
+
+##############################################
+##############################################
+##############################################
 
 ### Add Columns
 
--   Disturbance_Type (burn, thin, etc...)
+#-   PlotType_Name (FMH, RAP, etc...)
+#-   Macroplot_Code
+#-   Macroplot_Num
+#-   Park (GRCA, WACA)
+#-   Park_Unit (North, South)
+#-   Burn_Unit
+#-   Disturbance_Type (burn, thin, etc...)
 
--   PlotType_Name (FMH, RAP, etc...)
-
--   Park (GRCA, WACA)
-
--   Park_Unit (North, South)
-
--   Burn_Unit
-
--   Macroplot_Code
-
--   Macroplot_Num
-
-```{r}
 GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport_MetaData %>%
 
   # PlotType_Name
   mutate(PlotType_Name = ifelse(Purpose %in% c("PIED","PIPO","PIPN","PIAB","PIEN"), "FMH",
                                 ifelse (Purpose %in% c("GRIN","GRED"), "Meadow", "RAP"))) %>%
-
-  # Park
-  mutate(Park = "GRCA") %>%
 
   # Macroplot_Code and Macroplot_Number
   separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
@@ -304,6 +296,9 @@ GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport_MetaData %>%
   mutate(Macroplot_Code = ifelse(PlotType_Name == "RAP", Macroplot_Code1, Macroplot_Code)) %>%
   mutate(Macroplot_Num = ifelse(PlotType_Name == "RAP", Macroplot_Num1, Macroplot_Num)) %>%
   select(!c(Macroplot_Code1, Macroplot_Num1)) %>%
+
+  # Park
+  mutate(Park = "GRCA") %>%
 
   # Park_Unit
   mutate(Park_Unit = ifelse(Purpose %in% c("PIED", "PIPO", "Moqui", "Picnic", "Quarry", "Tusayan Pueblo (Thinning)"), "South", "North")) %>%
@@ -361,11 +356,12 @@ WACA_MacroplotReport_MetaData <- WACA_MacroplotReport_MetaData %>%
   # PlotType_Name
   mutate(PlotType_Name = "FMH") %>%
 
+  # Macroplot_Code and Macroplot_Number
+  separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
+
   # Park
   mutate(Park = "WACA") %>%
 
-  # Macroplot_Code and Macroplot_Number
-  separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
   # Park_Unit
   mutate(Park_Unit = ifelse(Macroplot %in% c("PIPO 06", "PIPO 07", "PIPO 08", "PIPO 09", "PIPO 13", "PIPO 14"), "South", "North")) %>%
 
@@ -383,15 +379,20 @@ WACA_MacroplotReport_MetaData <- WACA_MacroplotReport_MetaData %>%
   relocate(Purpose, .after = Park_Unit) %>%
   relocate(Burn_Unit, .after = Purpose) %>%
   relocate(MetaData, .after = Burn_Unit)
-```
+
+##############################################
+##############################################
+##############################################
 
 ## Summary Tables
 
+##############################################
+##############################################
+
 ### Monitoring Status
 
-Create columns for Entry (number of disturbances), Status (pre or post disturbance), and Time Since disturbance (i.e., Year 1) via break down of the Monitoring Status field
+#Create columns for Entry (number of disturbances), Status (pre or post disturbance), and Time Since disturbance (i.e., Year 1) via break down of the Monitoring Status field
 
-```{r}
 # Isolate different Monitoring Statuses from each park
 GRCA_MonStatus <- GRCA_MacroplotReport_SampleEvents %>%
   select(MonStatusOrd, MonStatus) %>%
@@ -462,13 +463,14 @@ all_MonStatus <- all_MonStatus %>%
   arrange(MonStatus) %>%
   mutate(MonStatusOrd = row_number()) %>%
   select(!c(MonStatus_new))
-```
+
+##############################################
+##############################################
 
 ### Disturbance History
 
-Create columns for Entry (number of disturbances), Disturbance_Name (i.e., fire name or project name), Disturbance_Desc (i.e., RX, WF, Supp), DisturbanceDate, and Severity (i.e., low, mod, high).
+#Create columns for Entry (number of disturbances), Disturbance_Name (i.e., fire name or project name), Disturbance_Desc (i.e., RX, WF, Supp), DisturbanceDate, and Severity (i.e., low, mod, high).
 
-```{r}
 # Ensure blanks in UV columns are NA
 GRCA_MacroplotReport_MetaData$UV2[GRCA_MacroplotReport_MetaData$UV2==""] <- NA
 GRCA_MacroplotReport_MetaData$UV3[GRCA_MacroplotReport_MetaData$UV3==""] <- NA
@@ -481,11 +483,12 @@ GRCA_MacroplotReport_MetaData$UV5[GRCA_MacroplotReport_MetaData$UV5==""] <- NA
 IM_MacroplotReport_MetaData$UV2[IM_MacroplotReport_MetaData$UV2==""] <- NA
 
 WACA_MacroplotReport_MetaData$UV2[WACA_MacroplotReport_MetaData$UV2==""] <- NA
-```
+
+##############################################
+##############################################
 
 #### 01 Disturbance
 
-```{r}
 # add add relevant columns
 GRCA_Disturbance01 <- GRCA_MacroplotReport_MetaData %>%
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV2)) %>%
@@ -564,11 +567,12 @@ WACA_Disturbance01 <- WACA_MacroplotReport_MetaData %>%
   # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
-```
+
+##############################################
+##############################################
 
 #### 02 Disturbance
 
-```{r}
 # add add relevant columns
 GRCA_Disturbance02 <- GRCA_MacroplotReport_MetaData %>%
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV3)) %>%
@@ -611,11 +615,12 @@ GRCA_Disturbance02 <- GRCA_Disturbance02 %>%
   select(!c("Month", "Day")) %>%
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
-```
+
+##############################################
+##############################################
 
 #### 03 Disturbance
 
-```{r}
 # add add relevant columns
 GRCA_Disturbance03 <- GRCA_MacroplotReport_MetaData %>%
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV4)) %>%
@@ -654,11 +659,12 @@ GRCA_Disturbance03 <- GRCA_Disturbance03 %>%
   select(!c("Month", "Day")) %>%
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
-```
+
+##############################################
+##############################################
 
 #### 04 Disturbance
 
-```{r}
 GRCA_Disturbance04 <- GRCA_MacroplotReport_MetaData %>%
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV5)) %>%
   filter(!is.na(UV5)) %>%
@@ -674,11 +680,12 @@ GRCA_Disturbance04 <- GRCA_MacroplotReport_MetaData %>%
   select(!c("Month", "Day")) %>%
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
-```
+
+##############################################
+##############################################
 
 #### All Disturbances
 
-```{r}
 GRCA_DisturbanceHistory <- rbind(GRCA_Disturbance01, GRCA_Disturbance02, GRCA_Disturbance03, GRCA_Disturbance04)
 
 ##############################################
@@ -688,9 +695,9 @@ IM_DisturbanceHistory <- rbind(IM_Disturbance01)
 ##############################################
 
 WACA_DisturbanceHistory <- rbind(WACA_Disturbance01)
-```
 
-```{r}
+##############################################
+
 # merge all disturbances
 all_DisturbanceHistory <- rbind(GRCA_DisturbanceHistory, IM_DisturbanceHistory, WACA_DisturbanceHistory)
 
@@ -703,16 +710,18 @@ all_DisturbanceHistory <- all_DisturbanceHistory %>%
                                                             ifelse(Severity %in% c("High Severity"), "High",
                                                                    ifelse(Severity %in% c("Unburned"), "Unburned", NA))))))) %>%
   select(!Severity)
-```
+
+##############################################
+##############################################
+##############################################
 
 ## Merge
 
-```{r}
-# merge metadata and sample events
+# GRCA merge metadata and sample events
 GRCA_MacroplotReport_all <- merge(GRCA_MacroplotReport_MetaData, GRCA_MacroplotReport_SampleEvents, by = c("Macroplot")) %>%
   select(!MonStatusOrd)
 
-# merge Macroplot Report and Sample Event Report
+# GRCA merge Macroplot Report and Sample Event Report
 GRCA_MetadataReport <- merge(GRCA_MacroplotReport_all, GRCA_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>%
   relocate(AdministrationUnit_Name, .before = Park) %>%
   relocate(ProjectUnit_Name, .before = Purpose) %>%
@@ -722,11 +731,11 @@ GRCA_MetadataReport <- merge(GRCA_MacroplotReport_all, GRCA_SampleEventReport_me
 
 ##############################################
 
-# merge metadata and sample events
+# I&M merge metadata and sample events
 IM_MacroplotReport_all <- merge(IM_MacroplotReport_MetaData, IM_MacroplotReport_SampleEvents, by = c("Macroplot")) %>%
   select(!MonStatusOrd)
 
-# merge Macroplot Report and Sample Event Report
+# I&M merge Macroplot Report and Sample Event Report
 IM_MetadataReport <- merge(IM_MacroplotReport_all, IM_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>%
   relocate(AdministrationUnit_Name, .before = Park) %>%
   relocate(ProjectUnit_Name, .before = Purpose) %>%
@@ -736,20 +745,18 @@ IM_MetadataReport <- merge(IM_MacroplotReport_all, IM_SampleEventReport_merge, b
 
 ##############################################
 
-# merge metadata and sample events
+# WACA merge metadata and sample events
 WACA_MacroplotReport_all <- merge(WACA_MacroplotReport_MetaData, WACA_MacroplotReport_SampleEvents, by = c("Macroplot")) %>%
   select(!MonStatusOrd)
 
-# merge Macroplot Report and Sample Event Report
+# WACA merge Macroplot Report and Sample Event Report
 WACA_MetadataReport <- merge(WACA_MacroplotReport_all, WACA_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>%
   relocate(AdministrationUnit_Name, .before = Park) %>%
   relocate(ProjectUnit_Name, .before = Purpose) %>%
   relocate(Macroplot, .after = MetaData) %>%
   relocate(SampleEventDate, .before = SampleEventDate_Year) %>%
   relocate(MonStatus, .after = LegacyMonStatus)
-```
 
-```{r}
 # merge all admin units
 all_MetadataReport <- rbind(GRCA_MetadataReport, IM_MetadataReport, WACA_MetadataReport)
 
@@ -764,4 +771,12 @@ all_MetadataReport <- merge(all_MetadataReport, all_DisturbanceHistory, by = c("
   relocate(Macroplot, .after = MetaData) %>%
   relocate(Entry, .after = MonStatus) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
-```
+
+
+##############################################
+##############################################
+##############################################
+
+## Save file
+
+write.csv(all_MetadataReport, paste0(path_output, "all_MetadataReport.csv"))

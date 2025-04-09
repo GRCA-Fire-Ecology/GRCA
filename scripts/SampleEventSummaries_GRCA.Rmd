@@ -49,9 +49,9 @@ library(ggplot2)
 here()
 
 # Load in data.
-path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
-path_output <- paste0(here(), "/output/")
-path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
+path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
+# path_output <- paste0(here(), "/output/")
+# path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
 ```
 
 ### Load Data
@@ -257,6 +257,8 @@ WACA_SampleEventReport_merge <- WACA_SampleEventReport %>%
 
 #### Macroplot Report
 
+The Macroplot Report contains information on both plot metadata, and sample event history. Separate these into 2 tables. These will be formatted separately and then merged back together.
+
 ```{r}
 GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport %>% 
   filter(is.na(SampleEventDate)) %>% 
@@ -289,9 +291,11 @@ WACA_MacroplotReport_SampleEvents <- WACA_MacroplotReport %>%
 
 ### Add Columns
 
--   Disturbance_Type (burn, thin, etc...)
-
 -   PlotType_Name (FMH, RAP, etc...)
+
+-   Macroplot_Code
+
+-   Macroplot_Num
 
 -   Park (GRCA, WACA)
 
@@ -299,9 +303,7 @@ WACA_MacroplotReport_SampleEvents <- WACA_MacroplotReport %>%
 
 -   Burn_Unit
 
--   Macroplot_Code
-
--   Macroplot_Num
+-   Disturbance_Type (burn, thin, etc...)
 
 ```{r}
 GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport_MetaData %>% 
@@ -310,15 +312,15 @@ GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport_MetaData %>%
   mutate(PlotType_Name = ifelse(Purpose %in% c("PIED","PIPO","PIPN","PIAB","PIEN"), "FMH", 
                                 ifelse (Purpose %in% c("GRIN","GRED"), "Meadow", "RAP"))) %>%
   
-  # Park
-  mutate(Park = "GRCA") %>% 
-  
   # Macroplot_Code and Macroplot_Number
   separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>%
   separate(Macroplot, sep = "(?<=[A-Z])(?=[0-9])", into = c("Macroplot_Code1", "Macroplot_Num1"), remove = F) %>% 
   mutate(Macroplot_Code = ifelse(PlotType_Name == "RAP", Macroplot_Code1, Macroplot_Code)) %>% 
   mutate(Macroplot_Num = ifelse(PlotType_Name == "RAP", Macroplot_Num1, Macroplot_Num)) %>% 
   select(!c(Macroplot_Code1, Macroplot_Num1)) %>% 
+  
+  # Park
+  mutate(Park = "GRCA") %>% 
   
   # Park_Unit
   mutate(Park_Unit = ifelse(Purpose %in% c("PIED", "PIPO", "Moqui", "Picnic", "Quarry", "Tusayan Pueblo (Thinning)"), "South", "North")) %>% 
@@ -375,12 +377,13 @@ WACA_MacroplotReport_MetaData <- WACA_MacroplotReport_MetaData %>%
 
   # PlotType_Name
   mutate(PlotType_Name = "FMH") %>% 
-  
-  # Park
-  mutate(Park = "WACA") %>% 
 
   # Macroplot_Code and Macroplot_Number
   separate(Macroplot, sep = " ", into = c("Macroplot_Code", "Macroplot_Num"), remove = F) %>% 
+  
+  # Park
+  mutate(Park = "WACA") %>% 
+  
   # Park_Unit
   mutate(Park_Unit = ifelse(Macroplot %in% c("PIPO 06", "PIPO 07", "PIPO 08", "PIPO 09", "PIPO 13", "PIPO 14"), "South", "North")) %>% 
 
@@ -723,11 +726,11 @@ all_DisturbanceHistory <- all_DisturbanceHistory %>%
 ## Merge
 
 ```{r}
-# merge metadata and sample events
+# GRCA merge metadata and sample events
 GRCA_MacroplotReport_all <- merge(GRCA_MacroplotReport_MetaData, GRCA_MacroplotReport_SampleEvents, by = c("Macroplot")) %>% 
   select(!MonStatusOrd)
 
-# merge Macroplot Report and Sample Event Report
+# GRCA merge Macroplot Report and Sample Event Report
 GRCA_MetadataReport <- merge(GRCA_MacroplotReport_all, GRCA_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>% 
   relocate(AdministrationUnit_Name, .before = Park) %>% 
   relocate(ProjectUnit_Name, .before = Purpose) %>% 
@@ -737,11 +740,11 @@ GRCA_MetadataReport <- merge(GRCA_MacroplotReport_all, GRCA_SampleEventReport_me
 
 ##############################################
 
-# merge metadata and sample events
+# I&M merge metadata and sample events
 IM_MacroplotReport_all <- merge(IM_MacroplotReport_MetaData, IM_MacroplotReport_SampleEvents, by = c("Macroplot")) %>% 
   select(!MonStatusOrd)
 
-# merge Macroplot Report and Sample Event Report
+# I&M merge Macroplot Report and Sample Event Report
 IM_MetadataReport <- merge(IM_MacroplotReport_all, IM_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>% 
   relocate(AdministrationUnit_Name, .before = Park) %>% 
   relocate(ProjectUnit_Name, .before = Purpose) %>% 
@@ -751,11 +754,11 @@ IM_MetadataReport <- merge(IM_MacroplotReport_all, IM_SampleEventReport_merge, b
 
 ##############################################
 
-# merge metadata and sample events
+# WACA merge metadata and sample events
 WACA_MacroplotReport_all <- merge(WACA_MacroplotReport_MetaData, WACA_MacroplotReport_SampleEvents, by = c("Macroplot")) %>% 
   select(!MonStatusOrd)
 
-# merge Macroplot Report and Sample Event Report
+# WACA merge Macroplot Report and Sample Event Report
 WACA_MetadataReport <- merge(WACA_MacroplotReport_all, WACA_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>% 
   relocate(AdministrationUnit_Name, .before = Park) %>% 
   relocate(ProjectUnit_Name, .before = Purpose) %>% 

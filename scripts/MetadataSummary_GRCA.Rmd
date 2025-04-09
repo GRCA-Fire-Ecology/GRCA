@@ -6,16 +6,66 @@ output:
     toc: true
     toc-float: true
     code_download: true
-date: "2025-03-17"
+date: "`r Sys.Date()`"
 ---
 
 # Purpose
 
-This report summarizes plot work by the Fire Ecology Program. The included tables and enclosed code allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit. The code summarizes records in the Macroplot Report and Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server.
+This report summarizes plot work by the Fire Ecology Program. The included tables and graphs allow a user to quickly view the overall status of program, park, project, or protocol activities in an FFI admin unit.
 
+The code summarizes records in the Macroplot Report and Sample Event Report that can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server. You can recreate this Metadata Report by running code found in the file "Metadata_GRCA.R", under the scripts folder for this R project. This script was made specifically for Grand Canyon, and will combine files (SampleEventReport.csv and MacroplotReport.csv) from all Admin Units (GRCA, I&M, WACA).
+
+### Setup
 
 ```{r}
-source("C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/scripts/Metadata_GRCA.R")
+## Markdown Options
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+## Install packages (if needed)
+
+# install.packages("tidyverse")
+# install.packages("kableExtra")
+# install.packages("ggplot2")
+```
+
+```{r}
+## Load Packages
+
+# "here" helps you easily find and reference your working directory
+library(here)
+# "tidyverse" has lots of useful functions for data cleaning
+library(tidyverse)
+# "kableExtra" is used to produce formatted tables
+library(kableExtra)
+library(ggplot2)
+```
+
+```{r}
+## Adjust File Paths
+
+# Identify working directory
+here()
+
+# Adjust File Paths
+path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
+path_output <- paste0(here(), "/output/")
+path_scripts <- paste0(here(), "/scripts/")
+# path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
+```
+
+### Load Data
+
+Load in the Metadata Report. This Metadta Report was created by combining Macroplot Reports and Sample Event Reports from each Admin Unit, which can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server.
+
+```{r}
+# Load in data
+all_MetadataReport <- read.csv(paste0(path_output, "all_MetadataReport.csv"))
+```
+
+```{r}
+## reclassify columns
 
 #str(all_MetadataReport)
 
