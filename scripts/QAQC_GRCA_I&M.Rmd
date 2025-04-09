@@ -172,11 +172,12 @@ Trees_all <- rbind(Trees_all_M, Trees_all_P)
 remove(Fuels1000_all_M, Fuels1000_all_P, FuelsDuffLitt_all_M, FuelsDuffLitt_all_P, FuelsFine_all_M, FuelsFine_all_P, PostBurn_all_M, PostBurn_all_P, Trees_all_M, Trees_all_P)
 ```
 
-### Clean & Filter Data
-
-Fuels1000
+### Clean Data
 
 ```{r}
+#####
+# Fuels1000
+#####
 # Clean up data frame
 Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column
@@ -190,22 +191,9 @@ Fuels1000_all <- Fuels1000_all %>%
   select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
-
-# Ensure blanks in Visited column are NA
-Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
-  
-# Filter for only data, by year
-Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
-
-# Filter for only headers, by year
-Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
-```
-
-FuelsDuffLitt
-
-```{r}
+#####
+# FuelsDuffLitt
+#####
 # Clean up data frame
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   # Separate Date column
@@ -219,21 +207,9 @@ FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
-# Ensure blanks in Visited column are NA
-FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA
-  
-# Filter for only data, by year
-FuelsDuffLitt_data <- FuelsDuffLitt_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
-
-# Filter for only headers, by year
-FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
-```
-
-FuelsFine
-
-```{r}
+#####
+# FuelsFine
+#####
 # Clean up data frame
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column
@@ -247,21 +223,9 @@ FuelsFine_all <- FuelsFine_all %>%
   select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
-# Ensure blanks in Visited column are NA
-FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
-  
-# Filter for only data, by year
-FuelsFine_data <- FuelsFine_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
-
-# Filter for only headers, by year
-FuelsFine_header <- FuelsFine_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
-```
-
-PostBurn
-
-```{r}
+#####
+# PostBurn
+#####
 # Clean up data frame
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column
@@ -275,21 +239,9 @@ PostBurn_all <- PostBurn_all %>%
   select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 
-# Ensure blanks in Visited column are NA
-PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
-  
-# Filter for only data, by year
-PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
-
-# Filter for only headers, by year
-PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
-```
-
-Trees
-
-```{r}
+#####
+# Trees
+#####
 # Clean up data frame
 Trees_all <- Trees_all %>%
   # Separate Date column
@@ -302,14 +254,67 @@ Trees_all <- Trees_all %>%
   separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
   select(!c("Park", "PlotNumber")) %>% 
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+```
 
+### Filter Data
+
+```{r}
+#####
+# Fuels1000
+#####
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+# Filter for only data
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited), Year %in% c(2024))
+# Filter for only headers
+Fuels1000_header <- Fuels1000_all %>%
+  filter(!is.na(Visited), Year %in% c(2024))
+
+#####
+# FuelsDuffLitt
+#####
+# Ensure blanks in Visited column are NA
+FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA
+# Filter for only data, by year
+FuelsDuffLitt_data <- FuelsDuffLitt_all %>%
+  filter(is.na(Visited), Year %in% c(2024))
+# Filter for only headers, by year
+FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
+  filter(!is.na(Visited), Year %in% c(2024))
+
+#####
+# FuelsFine
+#####
+# Ensure blanks in Visited column are NA
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
+# Filter for only data, by year
+FuelsFine_data <- FuelsFine_all %>%
+  filter(is.na(Visited), Year %in% c(2024))
+# Filter for only headers, by year
+FuelsFine_header <- FuelsFine_all %>%
+  filter(!is.na(Visited), Year %in% c(2024))
+
+#####
+# PostBurn
+#####
+# Ensure blanks in Visited column are NA
+PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
+# Filter for only data, by year
+PostBurn_data <- PostBurn_all %>%
+  filter(is.na(Visited), Year %in% c(2024))
+# Filter for only headers, by year
+PostBurn_header <- PostBurn_all %>%
+  filter(!is.na(Visited), Year %in% c(2024))
+
+#####
+# Trees
+#####
 # Ensure blanks in Visited column are NA
 Trees_all$Visited[Trees_all$Visited==""] <- NA
-  
 # Filter for only data, by year
 Trees_data <- Trees_all %>%
   filter(is.na(Visited), Year %in% c(2024))
-
 # Filter for only headers, by year
 Trees_header <- Trees_all %>%
   filter(!is.na(Visited), Year %in% c(2024))

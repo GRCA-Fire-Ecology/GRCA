@@ -175,11 +175,12 @@ HerbsObs_all <- rbind(HerbsObs_all_N, HerbsObs_all_S)
 remove(Fuels1000_all_N, Fuels1000_all_S, FuelsDuffLitt_all_N, FuelsDuffLitt_all_S, FuelsFine_all_N, FuelsFine_all_S, PostBurn_all_N, PostBurn_all_S, Trees_all_N, Trees_all_S, Seedlings_all_N, Seedlings_all_S, HerbsObs_all_N, HerbsObs_all_S)
 ```
 
-### Clean & Filter Data
-
-Fuels1000
+### Clean Data
 
 ```{r}
+#####
+# Fuels1000
+#####
 # Clean up data frame
 Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column
@@ -188,22 +189,10 @@ Fuels1000_all <- Fuels1000_all %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
-# Ensure blanks in Visited column are NA
-Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
-
-# Filter for only data
-Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2018))
-
-# Filter for only headers
-Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2018))
-```
-
-FuelsDuffLitt
-
-```{r}
-# Clean up data frame 
+#####
+# FuelsDuffLitt
+#####
+# Reformat date column
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%  
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -211,22 +200,10 @@ FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
-# Ensure blanks in Visited column are NA 
-FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA 
-
-# Filter for only data 
-FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
-
-# Filter for only headers 
-FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
-```
-
-FuelsFine
-
-```{r}
-# Clean up data frame 
+#####
+# FuelsFine
+#####
+# Reformat date column
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -234,22 +211,10 @@ FuelsFine_all <- FuelsFine_all %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
-# Ensure blanks in Visited column are NA 
-FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
-
-# Filter for only data 
-FuelsFine_data <- FuelsFine_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
-
-# Filter for only headers 
-FuelsFine_header <- FuelsFine_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
-```
-
-PostBurn
-
-```{r}
-# Clean up data frame
+#####
+# PostBurn
+#####
+# Reformat date column
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -257,22 +222,10 @@ PostBurn_all <- PostBurn_all %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
-# Ensure blanks in Visited column are NA
-PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
-
-# Filter for only data
-PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2018))
-
-# Filter for only headers
-PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2018))
-```
-
-Trees
-
-```{r}
-# Clean up data frame 
+#####
+# Trees
+#####
+# Reformat date column
 Trees_all <- Trees_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -280,22 +233,11 @@ Trees_all <- Trees_all %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
-# Ensure blanks in Visited column are NA 
-Trees_all$Visited[Trees_all$Visited==""] <- NA  
 
-# Filter for only data 
-Trees_data <- Trees_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
-
-# Filter for only headers 
-Trees_header <- Trees_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
-```
-
-Seedlings
-
-```{r}
-# Clean up data frame 
+#####
+# Seedlings
+#####
+# Reformat date column
 Seedlings_all <- Seedlings_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -303,36 +245,101 @@ Seedlings_all <- Seedlings_all %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
-# Ensure blanks in Visited column are NA 
-Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA 
-
-# Filter for only data 
-Seedlings_data <- Seedlings_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
-
-# Filter for only headers 
-Seedlings_header <- Seedlings_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
-```
-
-HerbsObs
-
-```{r}
-# Clean up data frame 
-HerbsObs_all <- HerbsObs_all %>%  
+#####
+# HerbsObs
+#####
+# Reformat date column
+HerbsObs_all <- HerbsObs_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
+```
 
+### Filter Data
+
+```{r}
+#####
+# Fuels1000
+#####
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+# Filter for only data
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited), Year %in% c(2018))
+# Filter for only headers
+Fuels1000_header <- Fuels1000_all %>%
+  filter(!is.na(Visited), Year %in% c(2018))
+
+#####
+# FuelsDuffLitt
+#####
+# Ensure blanks in Visited column are NA 
+FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA 
+# Filter for only data 
+FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
+  filter(is.na(Visited), Year %in% c(2018))  
+# Filter for only headers 
+FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
+  filter(!is.na(Visited), Year %in% c(2018))
+
+#####
+# FuelsFine
+#####
+# Ensure blanks in Visited column are NA 
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
+# Filter for only data 
+FuelsFine_data <- FuelsFine_all %>%   
+  filter(is.na(Visited), Year %in% c(2018))  
+# Filter for only headers 
+FuelsFine_header <- FuelsFine_all %>%   
+  filter(!is.na(Visited), Year %in% c(2018))
+
+#####
+# PostBurn
+#####
+# Ensure blanks in Visited column are NA
+PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
+# Filter for only data
+PostBurn_data <- PostBurn_all %>%
+  filter(is.na(Visited), Year %in% c(2018))
+# Filter for only headers
+PostBurn_header <- PostBurn_all %>%
+  filter(!is.na(Visited), Year %in% c(2018))
+
+#####
+# Trees
+#####
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA  
+# Filter for only data 
+Trees_data <- Trees_all %>%   
+  filter(is.na(Visited), Year %in% c(2018))  
+# Filter for only headers 
+Trees_header <- Trees_all %>%   
+  filter(!is.na(Visited), Year %in% c(2018))
+
+#####
+# Seedlings
+#####
+# Ensure blanks in Visited column are NA 
+Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA 
+# Filter for only data 
+Seedlings_data <- Seedlings_all %>%   
+  filter(is.na(Visited), Year %in% c(2018))  
+# Filter for only headers 
+Seedlings_header <- Seedlings_all %>%   
+  filter(!is.na(Visited), Year %in% c(2018))
+
+#####
+# HerbsObs
+#####
 # Ensure blanks in Visited column are NA 
 HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA  
-
 # Filter for only data 
 HerbsObs_data <- HerbsObs_all %>%   
   filter(is.na(Visited), Year %in% c(2018))  
-
 # Filter for only headers 
 HerbsObs_header <- HerbsObs_all %>%   
   filter(!is.na(Visited), Year %in% c(2018))

@@ -148,9 +148,7 @@ HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv")
 #####
 # Fuels1000
 #####
-# Ensure blanks in Visited column are NA
-Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
-# Reformat data column
+# Reformat date column
 Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -161,9 +159,7 @@ Fuels1000_all <- Fuels1000_all %>%
 #####
 # FuelsDuffLitt
 #####
-# Ensure blanks in Visited column are NA 
-FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA 
-# Reformat data column
+# Reformat date column
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%  
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -174,9 +170,7 @@ FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
 #####
 # FuelsFine
 #####
-# Ensure blanks in Visited column are NA 
-FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
-# Reformat data column
+# Reformat date column
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -187,9 +181,7 @@ FuelsFine_all <- FuelsFine_all %>%
 #####
 # PostBurn
 #####
-# Ensure blanks in Visited column are NA
-PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
-# Reformat data column
+# Reformat date column
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -200,9 +192,7 @@ PostBurn_all <- PostBurn_all %>%
 #####
 # Trees
 #####
-# Ensure blanks in Visited column are NA 
-Trees_all$Visited[Trees_all$Visited==""] <- NA  
-# Reformat data column
+# Reformat date column
 Trees_all <- Trees_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -214,9 +204,7 @@ Trees_all <- Trees_all %>%
 #####
 # Seedlings
 #####
-# Ensure blanks in Visited column are NA
-Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA
-# Reformat data column
+# Reformat date column
 Seedlings_all <- Seedlings_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -227,9 +215,7 @@ Seedlings_all <- Seedlings_all %>%
 #####
 # Shrubs
 #####
-# Ensure blanks in Visited column are NA
-Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA
-# Reformat data column
+# Reformat date column
 Shrubs_all <- Shrubs_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -240,9 +226,7 @@ Shrubs_all <- Shrubs_all %>%
 #####
 # HerbsObs
 #####
-# Ensure blanks in Visited column are NA
-HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA
-# Reformat data column
+# Reformat date column
 HerbsObs_all <- HerbsObs_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -253,9 +237,7 @@ HerbsObs_all <- HerbsObs_all %>%
 #####
 # HerbsPoints
 #####
-# Ensure blanks in Visited column are NA
-HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA
-# Reformat data column
+# Reformat date column
 HerbsPoints_all <- HerbsPoints_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
@@ -267,6 +249,11 @@ HerbsPoints_all <- HerbsPoints_all %>%
 ### Filter Data
 
 ```{r}
+#####
+# Fuels1000
+#####
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 # Fuels1000 data
 Fuels1000_data <- Fuels1000_all %>%
   filter(is.na(Visited), Year %in% c(2024))
@@ -274,6 +261,11 @@ Fuels1000_data <- Fuels1000_all %>%
 Fuels1000_header <- Fuels1000_all %>%
   filter(!is.na(Visited), Year %in% c(2024))
 
+#####
+# FuelsDuffLitt
+#####
+# Ensure blanks in Visited column are NA 
+FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA 
 # FuelsDuffLitt data
 FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
   filter(is.na(Visited), Year %in% c(2024))  
@@ -281,6 +273,11 @@ FuelsDuffLitt_data <- FuelsDuffLitt_all %>%
 FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
   filter(!is.na(Visited), Year %in% c(2024))
 
+#####
+# FuelsFine
+#####
+# Ensure blanks in Visited column are NA 
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
 # FuelsFine data
 FuelsFine_data <- FuelsFine_all %>%   
   filter(is.na(Visited), Year %in% c(2024))  
@@ -288,6 +285,11 @@ FuelsFine_data <- FuelsFine_all %>%
 FuelsFine_header <- FuelsFine_all %>%   
   filter(!is.na(Visited), Year %in% c(2024))
 
+#####
+# PostBurn
+#####
+# Ensure blanks in Visited column are NA
+PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
 # PostBurn data
 PostBurn_data <- PostBurn_all %>%
   filter(is.na(Visited), Year %in% c(2024))
@@ -295,6 +297,11 @@ PostBurn_data <- PostBurn_all %>%
 PostBurn_header <- PostBurn_all %>%
   filter(!is.na(Visited), Year %in% c(2024))
 
+#####
+# Trees
+#####
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA  
 # Trees data
 Trees_data <- Trees_all %>%   
   filter(is.na(Visited), Year %in% c(2023), MacroPlot.Purpose %in%  c("PIED"))  
@@ -302,6 +309,11 @@ Trees_data <- Trees_all %>%
 Trees_header <- Trees_all %>%   
   filter(!is.na(Visited), Year %in% c(2023), MacroPlot.Purpose %in%  c("PIED"))
 
+#####
+# Seedlings
+#####
+# Ensure blanks in Visited column are NA
+Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA
 # Seedlings data
 Seedlings_data <- Seedlings_all %>%
   filter(is.na(Visited), Year %in% c(2024))
@@ -309,6 +321,11 @@ Seedlings_data <- Seedlings_all %>%
 Seedlings_header <- Seedlings_all %>%
   filter(!is.na(Visited), Year %in% c(2024))
 
+#####
+# Shrubs
+#####
+# Ensure blanks in Visited column are NA
+Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA
 # Shrubs data
 Shrubs_data <- Shrubs_all %>%
   filter(is.na(Visited), Year %in% c(2024))
@@ -316,6 +333,11 @@ Shrubs_data <- Shrubs_all %>%
 Shrubs_header <- Shrubs_all %>%
   filter(!is.na(Visited), Year %in% c(2024))
 
+#####
+# HerbsObs
+#####
+# Ensure blanks in Visited column are NA
+HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA
 # HerbsObs data
 HerbsObs_data <- HerbsObs_all %>%
   filter(is.na(Visited), Year %in% c(2024))
@@ -323,6 +345,11 @@ HerbsObs_data <- HerbsObs_all %>%
 HerbsObs_header <- HerbsObs_all %>%
   filter(!is.na(Visited), Year %in% c(2024))
 
+#####
+# HerbsPoints
+#####
+# Ensure blanks in Visited column are NA
+HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA
 # HerbsPoints data
 HerbsPoints_data <- HerbsPoints_all %>%
   filter(is.na(Visited), Year %in% c(2024))
