@@ -26,6 +26,9 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = F
 ## Install packages (if needed)
 
 # install.packages("tidyverse")
+# install.packages("Rtools")
+# install.packages("janitor")
+# install.packages("condformat")
 ```
 
 ```{r load packages, include=FALSE}
@@ -33,8 +36,20 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = F
 
 # "here" helps you easily find and reference your working directory
 library(here)
-# "tidyverse" has lots of useful functions for data cleaning
+# tidyverse and dplyr have lots of useful functions for data cleaning
 library(tidyverse)
+library(dplyr)
+library(plyr)
+# janitor has functions to find duplicates
+library(janitor)
+# EnvStats is needed for the rosnerTest() function
+library(EnvStats)
+# writexl is used to create excel output files
+library(writexl)
+# condformat is used to format excel output files
+library(condformat)
+# knitr is used to create output files from R Markdown
+library(knitr)
 ```
 
 ### Adjust File Paths
@@ -44,9 +59,70 @@ library(tidyverse)
 here()
 
 # Load in data.
-path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/metadata/"
+path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
 path_output <- paste0(here(), "/output/")
-path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/"
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/"
+```
+
+### Create Function
+
+```{r}
+# Blank data frame
+errors_blank <- data.frame("SavedQuery" = "","Macroplot" = "","SampleEventDate" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+
+# QAQC function
+qaqc <- function(data, query, query_message, values_check) {
+  
+  # Check if there is data to QAQC
+  if(nrow(data) == 0) {
+  # If there is no data, default to "No Error" data frame
+  errors <- errors_blank %>%
+    mutate(SavedQuery = query,
+           Error = "No Error")
+  # If there is data, perform error check
+} else {
+  
+  # Use relevant dataset to look for errors
+  errors <- data %>%  
+    # Add columns relevant to error checking
+           # Populate the "SavedQuery" column with the query name
+    mutate("SavedQuery" = query, 
+           # Populate the "Error" column with the query message and relevant data
+           "Error" = paste(query_message, "=", values_data),
+           # Create a blank "Fixed" column
+           "Fixed" = "",
+           # Create a blank "Explanation" column
+           "Explanation" = "",
+           # Create a blank "Queryers" column
+           "Queryers" = "") %>%   
+    # Filter for data which is "false" (data does not match valid conditions)
+    # NA values are treated as "false" (missing data is not valid)
+    filter(!(values_check %>% replace_na(FALSE))) %>%   
+    # Select relevant columns to view errors
+    select("SavedQuery","Macroplot","SampleEventDate","Error", "Fixed", "Explanation", "Queryers")
+  
+  # Next, check if there are duplicate errors
+  errors_temp <- errors %>% 
+    get_dupes(SavedQuery, Macroplot, SampleEventDate, Error)
+  # Merge duplicate errors
+  errors <- unique(merge(errors, errors_temp, all = T))
+  # If duplicate errors exist, add number of duplicates to error message
+  errors <- errors %>% 
+    mutate(Error = ifelse(is.na(dupe_count), Error, paste0("(x", dupe_count, ") ", Error))) %>% 
+    select(!"dupe_count")
+}
+  
+  # Check if there are no errors
+  if (nrow(errors) == 0) {  
+    # If there are no errors, default to "No Error" data frame
+    errors <- errors_blank %>%
+      mutate(SavedQuery = query,
+             Error = "No Error")
+    # If there are errors, keep error log you just created
+  } else {   
+    errors <- errors
+  }
+}
 ```
 
 ### Load Data
@@ -54,129 +130,170 @@ path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/"
 ```{r load data, include=FALSE}
 ## Load Data
 
-MacroplotReport <- read.csv(paste0(path_data, "metadata/MacroplotReport.csv"))
-SampleEventReport <- read.csv(paste0(path_data, "metadata/SampleEventReport.csv"))
-#ProjectUnitReport <- read.csv(paste0(path_data, "metadata/ProjectUnitAssignmentReport.csv"))
+GRCA_MacroplotReport <- read.csv(paste0(path_data, "GRCA_MacroplotReport.csv"))
+GRCA_SampleEventReport <- read.csv(paste0(path_data, "GRCA_SampleEventReport.csv"))
+#GRCA_ProjectUnitReport <- read.csv(paste0(path_data, "GRCA_ProjectUnitAssignmentReport.csv"))
 ```
 
 ### Clean Data
 
 ```{r}
-# standardize Date columns - MacroplotReport
-MacroplotReport <- MacroplotReport %>% 
-  # separate Date columns into Date and Time columns
-  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
-  separate(DateIn, sep = " ", into = c("DateIn", "DateInTime")) %>% 
-  # reformate Date columns
-  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y"),
-         DateIn = as.Date(DateIn, "%m/%d/%Y")) %>% 
-  # separate Date columns into Year, Month, and Day columns
-  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
-  separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
-  # remove unnecessary columns
-  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
-            DateInTime, DateIn_Month, DateIn_Day))
-
-
-# standardize Date columns - SampleEventReport
-SampleEventReport <- SampleEventReport %>% 
+GRCA_SampleEventReport <- GRCA_SampleEventReport %>% 
+  
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
+  
   # separate Date columns into Date and Time columns
   separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
-  # reformate Date columns
-  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>% 
   # separate Date columns into Year, Month, and Day columns
-  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>% 
-  # remove unnecessary columns
-  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>%
+  separate(SampleEventDate, sep = "/", into = c("SampleEventDate_Month", "SampleEventDate_Day", "SampleEventDate_Year"), remove = FALSE) %>% 
+  # remove unnecessary Date columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>% 
+  
   # make column names match those in MacroplotReport
   mutate(Macroplot = MacroPlot_Name,
          LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
-         MonStatus = MonitoringStatus_Name) %>% 
-  relocate(Macroplot, .after = ProjectUnit_Name) %>% 
-  relocate(LegacyMonitoringStatus, .after = SampleEventDate_Year) %>% 
-  relocate(MonStatus, .after = LegacyMonitoringStatus) %>%
+         MonStatus = MonitoringStatus_Name,
+         Date = SampleEventDate) %>% 
   select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+
+##############################################
+
+GRCA_MacroplotReport <- GRCA_MacroplotReport %>% 
+  
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
+  
+  # separate Date columns into Date and Time columns
+  separate(SampleEventDate, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>% 
+  separate(DateIn, sep = " ", into = c("DateIn", "DateInTime")) %>% 
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "/", into = c("SampleEventDate_Month", "SampleEventDate_Day", "SampleEventDate_Year"), remove = FALSE) %>% 
+  separate(DateIn, sep = "-", into = c("DateIn_Year", "DateIn_Month", "DateIn_Day"), remove = FALSE) %>% 
+  # remove unnecessary Date columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day, 
+            DateInTime, DateIn_Month, DateIn_Day))
 ```
 
 ### Filter Data
 
 ```{r}
-MacroplotReport_MetaData <- MacroplotReport %>% 
-  filter(is.na(SampleEventDate))
-
-MacroplotReport_SampleEvents <- MacroplotReport %>% 
-  filter(!is.na(SampleEventDate))
+# Ensure blanks in Sample Event Date column are NA
+GRCA_MacroplotReport$SampleEventDate[GRCA_MacroplotReport$SampleEventDate==""] <- NA
+# Filter for MetaData
+GRCA_MacroplotReport_MetaData <- GRCA_MacroplotReport %>% 
+  filter(is.na(SampleEventDate)) %>% 
+  select(!c(SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
+#Filter for Sample Events
+GRCA_MacroplotReport_SampleEvents <- GRCA_MacroplotReport %>% 
+  filter(!is.na(SampleEventDate)) %>% 
+  select(c(Macroplot, SampleEventDate, SampleEventDate_Year, SampleEventTeam, SampleEventComment, MonStatusOrd, LegacyMonStatus, MonStatus))
 ```
 
-## Missing Data & Errors
+### Combine
 
 ```{r}
-MonStatus_Missing_MacroplotReport <- MacroplotReport_SampleEvents %>% 
-  select(c(Macroplot, SampleEventDate, MonStatus, Purpose)) %>% 
-  filter(MonStatus == "", Purpose == "") %>% 
-  select(!c(Purpose))
-
-MonStatus_Missing_SampleEventReport <- SampleEventReport %>% 
-  select(c(Macroplot, SampleEventDate, MonStatus)) %>%
-  filter(MonStatus == "") %>% 
-  unique()
-
-# Protocols_Missing <- SampleEventReport %>% 
-#   select(c(Macroplot, SampleEventDate, MonStatus, Protocols, Visited)) %>% 
-#   filter(Visited == "N") %>% 
-#   unique()
+# GRCA Macroplot Report, merge metadata and sample events
+GRCA_MacroplotReport_all <- merge(GRCA_MacroplotReport_MetaData, GRCA_MacroplotReport_SampleEvents, by = c("Macroplot")) %>% 
+  select(!MonStatusOrd)
 ```
 
-### Add Missing Data (should be done in FFI)
+# Macroplot Report
+
+### Monitoring Status
+
+[Problem:]{.underline}
+
+[Procedure:]{.underline}
+
+-   
 
 ```{r}
-MonStatus_Missing_MacroplotReport_new <- MonStatus_Missing_MacroplotReport %>% 
-  mutate(MonStatus = "Pre")
+# Set parameters 
+data <- GRCA_MacroplotReport_all
+query <- "Macroplot Report MonStatus"
+query_message <- "Monitoring Status" 
+values_data <- data$MonStatus
+values_valid <- ""
+values_check <- values_data != values_valid
 
-MacroplotReport_SampleEvents <- left_join(MacroplotReport_SampleEvents, MonStatus_Missing_MacroplotReport_new, by = c("Macroplot", "SampleEventDate")) %>% 
-  mutate(MonStatus = ifelse(MonStatus.x == "", MonStatus.y, MonStatus.x),
-         MonStatusOrd = ifelse(MonStatus == "Pre", 2, MonStatusOrd)) %>% 
-  relocate(MonStatus, .after = LegacyMonStatus) %>% 
-  relocate(MonStatusOrd, .before = LegacyMonStatus) %>% 
-  select(!c(MonStatus.x, MonStatus.y))
-```
-
-```{r}
-# some MonStatus values are missing in the Sample Event Report, but present in the Macroplot Report. Find correct values from Macroplot Report and add them to the Sample Event Report
-MonStatus_Missing_SampleEventReport_new <- left_join(MacroplotReport_SampleEvents, MonStatus_Missing_SampleEventReport, by = c("Macroplot", "SampleEventDate")) %>% 
-  filter(!is.na(SampleEventDate),
-         !is.na(MonStatus.y)) %>% 
-  select(Macroplot, SampleEventDate, MonStatus.x)
-
-SampleEventReport <- left_join(SampleEventReport, MonStatus_Missing_SampleEventReport_new, by = c("Macroplot", "SampleEventDate")) %>% 
-  mutate(MonStatus = ifelse(MonStatus == "", MonStatus.x, MonStatus)) %>% 
-  select(!c(MonStatus.x))
+# Identify errors
+errors_Macroplot_MonStatus1 <- qaqc(data, query, query_message, values_check)
 ```
 
 ```{r}
 # make sure there are no differences
-MonStatus_SampleEventReport <- SampleEventReport %>% 
+data_temp1 <- GRCA_SampleEventReport %>% 
   select(Macroplot, SampleEventDate, MonStatus) %>% 
   unique()
 
-MonStatus_MacroplotReport <- MacroplotReport_SampleEvents %>% 
+data_temp2 <- GRCA_MacroplotReport_SampleEvents %>% 
   select(Macroplot, SampleEventDate, MonStatus) %>% 
   filter(!is.na(SampleEventDate)) %>% 
   unique()
 
-diff <- setdiff(MonStatus_SampleEventReport, MonStatus_MacroplotReport) %>% 
-  mutate(Error = TRUE)
+data_temp <- setdiff(data_temp1, data_temp2) %>% 
+  mutate(MonStatusError = MonStatus) %>% 
+  filter(MonStatus != "") %>% 
+  select(!MonStatus)
+
+
+# Set parameters 
+data <- merge(GRCA_MacroplotReport_all, data_temp, by = c("Macroplot", "SampleEventDate"), all = T)
+#data$MonStatusError[data$MonStatusError==NA] <- ""
+query <- "Macroplot Report MonStatus"
+query_message <- "Monitoring Status" 
+values_data <- data$MonStatusError
+values_valid <- NA
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Macroplot_MonStatus2 <- qaqc(data, query, query_message, values_check)
 ```
 
-### Isolate Errors to Fix, New Sample Event Report
+### Fire History
+
+[Problem:]{.underline}
+
+[Procedure:]{.underline}
+
+-   
 
 ```{r}
-MonStatus_Errors <- left_join(SampleEventReport, diff, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>% 
-  filter(Error == TRUE) %>% 
-  select(c(ProjectUnit_Name, Macroplot, SampleEventDate, MonStatus, Error)) %>% 
-  unique()
+# Ensure blanks in UV columns are NA
+GRCA_MacroplotReport_all$UV2[GRCA_MacroplotReport_all$UV2==""] <- NA
 
-SampleEventReport <- left_join(SampleEventReport, MonStatus_Errors, by = c("ProjectUnit_Name", "Macroplot", "SampleEventDate", "MonStatus")) %>% 
-  filter(is.na(Error)) %>% 
-  select(!Error)
+# Set parameters 
+data <- GRCA_MacroplotReport_all
+query <- "Macroplot Report UV2"
+query_message <- "UV2 (01Fire)" 
+values_data <- data$UV2
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Macroplot_UV2 <- qaqc(data, query, query_message, values_check)
+```
+
+# Sample Event Report
+
+### Monitoring Status
+
+[Problem:]{.underline}
+
+[Procedure:]{.underline}
+
+-   
+
+```{r}
+# Set parameters 
+data <- GRCA_SampleEventReport
+query <- "Sample Event Report MonStatus"
+query_message <- paste0("Project Unit = ", GRCA_SampleEventReport$ProjectUnit_Name, ". ", "Monitoring Status") 
+values_data <- data$MonStatus
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_SampleEvent_MonStatus <- qaqc(data, query, query_message, values_check)
 ```
