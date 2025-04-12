@@ -50,7 +50,7 @@ here()
 
 # Adjust File Paths
 path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
-path_output <- paste0(here(), "/output/")
+path_dataclean <- paste0(here(), "/output/data_clean")
 path_scripts <- paste0(here(), "/scripts/")
 # path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
 ```
@@ -61,7 +61,7 @@ Load in the Metadata Report. This Metadta Report was created by combining Macrop
 
 ```{r}
 # Load in data
-all_MetadataReport <- read.csv(paste0(path_output, "all_MetadataReport.csv"))
+all_MetadataReport <- read.csv(paste0(path_dataclean, "all_MetadataReport.csv"))
 ```
 
 ```{r}
