@@ -1,0 +1,282 @@
+---
+title: "3_GRCA_FMH"
+author: "Alexandra Lalor"
+output:
+  html_document:
+    theme: readable
+    highlight: 
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: yes
+    code_download: true
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+# BEFORE STARTING
+
+### Install Packages (if needed)
+
+```{r}
+# install.packages("tidyverse")
+# install.packages("Rtools")
+# install.packages("janitor")
+# install.packages("condformat")
+```
+
+### Load Packages
+
+```{r}
+# tidyverse and dplyr have lots of useful functions for data cleaning
+library(tidyverse)
+library(dplyr)
+library(plyr)
+# janitor has functions to find duplicates
+library(janitor)
+# EnvStats is needed for the rosnerTest() function
+library(EnvStats)
+# writexl is used to create excel output files
+library(writexl)
+# condformat is used to format excel output files
+library(condformat)
+# knitr is used to create output files from R Markdown
+library(knitr)
+```
+
+### Adjust File Paths
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
+# Identify working directory (specifically user name)
+getwd()
+
+# Load in data. Change file path based on user name!
+path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
+path_errors_name <- "2023 GRCA FMH PIED QAQC Errors"
+
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
+```
+
+### Create Function
+
+```{r}
+# Blank data frame
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+
+# QAQC function
+qaqc <- function(data, query, query_message, values_check) {
+  
+  # Check if there is data to QAQC
+  if(nrow(data) == 0) {
+  # If there is no data, default to "No Error" data frame
+  errors <- errors_blank %>%
+    mutate(SavedQuery = query,
+           Error = "No Error")
+  # If there is data, perform error check
+} else {
+  
+  # Use relevant dataset to look for errors
+  errors <- data %>%  
+    # Add columns relevant to error checking
+           # Populate the "SavedQuery" column with the query name
+    mutate("SavedQuery" = query, 
+           # Populate the "Error" column with the query message and relevant data
+           "Error" = paste(query_message, "=", values_data),
+           # Create a blank "Fixed" column
+           "Fixed" = "",
+           # Create a blank "Explanation" column
+           "Explanation" = "",
+           # Create a blank "Queryers" column
+           "Queryers" = "") %>%   
+    # Filter for data which is "false" (data does not match valid conditions)
+    # NA values are treated as "false" (missing data is not valid)
+    filter(!(values_check %>% replace_na(FALSE))) %>%   
+    # Select relevant columns to view errors
+    select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+  
+  # Next, check if there are duplicate errors
+  errors_temp <- errors %>% 
+    get_dupes(SavedQuery,MacroPlot.Name, Date, Error)
+  # Merge duplicate errors
+  errors <- unique(merge(errors, errors_temp, all = T))
+  # If duplicate errors exist, add number of duplicates to error message
+  errors <- errors %>% 
+    mutate(Error = ifelse(is.na(dupe_count), Error, paste0("(x", dupe_count, ") ", Error))) %>% 
+    select(!"dupe_count")
+}
+  
+  # Check if there are no errors
+  if (nrow(errors) == 0) {  
+    # If there are no errors, default to "No Error" data frame
+    errors <- errors_blank %>%
+      mutate(SavedQuery = query,
+             Error = "No Error")
+    # If there are errors, keep error log you just created
+  } else {   
+    errors <- errors
+  }
+}
+```
+
+### Load Data
+
+```{r}
+# # Load in data
+Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"), quote = "")
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+```
+
+### Clean Data
+
+```{r}
+#####
+# Fuels1000
+#####
+# Reformat date column
+Fuels1000_all <- Fuels1000_all %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+#####
+# FuelsFine
+#####
+# Reformat date column
+FuelsFine_all <- FuelsFine_all %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+#####
+# Trees
+#####
+# Reformat date column
+Trees_all <- Trees_all %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+```
+
+### Filter Data
+
+```{r}
+#####
+# Fuels1000
+#####
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+# Fuels1000 data
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited))
+# Fuels1000 headers
+Fuels1000_header <- Fuels1000_all %>%
+  filter(!is.na(Visited))
+
+#####
+# FuelsFine
+#####
+# Ensure blanks in Visited column are NA 
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
+# FuelsFine data
+FuelsFine_data <- FuelsFine_all %>%   
+  filter(is.na(Visited))  
+# FuelsFine headers 
+FuelsFine_header <- FuelsFine_all %>%   
+  filter(!is.na(Visited))
+
+#####
+# Trees
+#####
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA  
+# Trees data
+Trees_data <- Trees_all %>%   
+  filter(is.na(Visited))  
+# Trees headers
+Trees_header <- Trees_all %>%   
+  filter(!is.na(Visited))
+```
+
+# PROTOCOL - SURFACE FUELS
+
+## 1000HR (CWD) & FINE FUELS (FWD)
+
+This code conducts cross-year quality control checks on 2 surface fuels datasets
+
+-   coarse woody debris (CWD) surface fuels data within the "Surface Fuels - 1000Hr" data set
+
+-   fine woody debris (FWD) surface fuels data within the "Surface Fuels - Fine" data set.
+
+It checks for errors in: Fuel Slope consistency across years, Fuel Azimuth consistency across years
+
+### Fuel Slope
+
+### Fuel Azimuth
+
+# PROTOCOL - TREES
+
+This code conducts quality control checks on tree data within the "Trees - Individuals (metric)" data set.
+
+It checks for errors in:
+
+### Trees Completeness
+
+(tree info not updated, old data exists)
+
+### Trees CBH Decrease
+
+### Trees DBH Decrease
+
+### Trees Height Decrease
+
+### Trees Status Change
+
+```{r}
+Trees_data %>% 
+  filter(MacroPlot.Purpose == "PIAB",
+         MacroPlot.Name == "PIAB 20") %>% 
+  mutate(SubFrac = factor(SubFrac),
+         TagNo = factor(TagNo),
+         Status = factor(Status),
+         CrwnCl = factor(CrwnCl, levels = c("X", "",
+                                            "SC", "I", "C", "D",
+                                            "RS", "LBS", "CS", "BAD", 
+                                            "BBD", "CUS", "DD"))) %>% 
+  arrange(Date) %>% 
+  ggplot(aes(x = Year, y = TagNo)) +
+  geom_line(aes(group = TagNo, color = Status), size = 1) +
+  geom_point(aes(fill = Status), shape = 21, size = 3) +
+  theme_light() +
+  scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange")) +
+  scale_color_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
+  # scale_color_manual(values=c('darkgrey', 'darkgrey',
+  #                             'forestgreen', 'forestgreen', 'forestgreen', 'forestgreen',
+  #                             'darkorange', 'darkorange', 'darkorange',
+  #                             'red', 'red', 'red')) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+### Trees TagNo Change
