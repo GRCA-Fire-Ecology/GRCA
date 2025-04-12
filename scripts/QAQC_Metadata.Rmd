@@ -1,0 +1,477 @@
+---
+title: "QAQC GRCA MetaData"
+author: "Alexandra Lalor"
+output:
+  html_document:
+    theme: readable
+    highlight: 
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: yes
+    code_download: true
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+# Before Starting
+
+### Setup
+
+```{r setup, include=FALSE}
+## Markdown Options
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = FALSE)
+```
+
+```{r install packages, include=FALSE}
+## Install packages (if needed)
+
+# install.packages("tidyverse")
+# install.packages("Rtools")
+# install.packages("janitor")
+# install.packages("condformat")
+```
+
+```{r load packages, include=FALSE}
+## Load Packages
+
+# "here" helps you easily find and reference your working directory
+library(here)
+# tidyverse and dplyr have lots of useful functions for data cleaning
+library(tidyverse)
+library(dplyr)
+library(plyr)
+# janitor has functions to find duplicates
+library(janitor)
+# EnvStats is needed for the rosnerTest() function
+library(EnvStats)
+# writexl is used to create excel output files
+library(writexl)
+# condformat is used to format excel output files
+library(condformat)
+# knitr is used to create output files from R Markdown
+library(knitr)
+```
+
+### Adjust File Paths
+
+```{r import data, include=FALSE}
+# Identify working directory
+here()
+
+# Load in data.
+path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
+path_dataclean <- paste0(here(), "/output/data_clean/")
+path_errors <- paste0(here(), "/output/errors/")
+path_errors_name <- "Metadata QAQC Errors"
+
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
+path_dataclean <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/data_clean/"
+path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
+path_errors_name <- "Metadata QAQC Errors"
+```
+
+### Create Function
+
+```{r}
+# Blank data frame
+errors_blank <- data.frame("SavedQuery" = "","Macroplot" = "","SampleEventDate" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+
+# QAQC function
+qaqc_meta <- function(data, query, query_message, values_check) {
+  
+  # Check if there is data to QAQC
+  if(nrow(data) == 0) {
+  # If there is no data, default to "No Error" data frame
+  errors <- errors_blank %>%
+    mutate(SavedQuery = query,
+           Error = "No Error")
+  # If there is data, perform error check
+} else {
+  
+  # Use relevant dataset to look for errors
+  errors <- data %>%  
+    # Add columns relevant to error checking
+           # Populate the "SavedQuery" column with the query name
+    mutate("SavedQuery" = query, 
+           # Populate the "Error" column with the query message and relevant data
+           "Error" = paste(query_message, "=", values_data),
+           # Create a blank "Fixed" column
+           "Fixed" = "",
+           # Create a blank "Explanation" column
+           "Explanation" = "",
+           # Create a blank "Queryers" column
+           "Queryers" = "") %>%   
+    # Filter for data which is "false" (data does not match valid conditions)
+    # NA values are treated as "false" (missing data is not valid)
+    filter(!(values_check %>% replace_na(FALSE))) %>%   
+    # Select relevant columns to view errors
+    select("SavedQuery","Macroplot","SampleEventDate","Error", "Fixed", "Explanation", "Queryers")
+  
+  # Next, check if there are duplicate errors
+  errors_temp <- errors %>% 
+    get_dupes(SavedQuery, Macroplot, SampleEventDate, Error)
+  # Merge duplicate errors
+  errors <- unique(merge(errors, errors_temp, all = T))
+  # If duplicate errors exist, add number of duplicates to error message
+  errors <- errors %>% 
+    mutate(Error = ifelse(is.na(dupe_count), Error, paste0("(x", dupe_count, ") ", Error))) %>% 
+    select(!"dupe_count")
+}
+  
+  # Check if there are no errors
+  if (nrow(errors) == 0) {  
+    # If there are no errors, default to "No Error" data frame
+    errors <- errors_blank %>%
+      mutate(SavedQuery = query,
+             Error = "No Error")
+    # If there are errors, keep error log you just created
+  } else {   
+    errors <- errors
+  }
+}
+```
+
+### Load Data
+
+```{r load data, include=FALSE}
+## Load Data
+GRCA_SampleEventReport <- read.csv(paste0(path_data, "GRCA_SampleEventReport.csv"))
+IM_SampleEventReport <- read.csv(paste0(path_data, "I&M_SampleEventReport.csv"))
+WACA_SampleEventReport <- read.csv(paste0(path_data, "WACA_SampleEventReport.csv"))
+
+MetadataReport_all <- read.csv(paste0(path_dataclean, "all_MetadataReport.csv"))
+```
+
+### Prep Data
+
+```{r}
+IM_SampleEventReport <- IM_SampleEventReport %>%
+  # edit Macroplot column
+  separate(MacroPlot_Name, sep = "_", into = c("Park", "MacroPlot_Name"), remove = F) %>%
+  select(!Park)
+
+##############################################
+
+WACA_SampleEventReport <- WACA_SampleEventReport %>%
+  # edit Macroplot and ProjectUnit_Name columns
+  mutate(MacroPlot_Name = ifelse(MacroPlot_Name == "B:FPIED1D02:01", "PIED 01",
+                            ifelse(MacroPlot_Name == "B:FPIED1D02:02", "PIED 02", MacroPlot_Name))) %>%
+  mutate(ProjectUnit_Name = ifelse(ProjectUnit_Name == "FPIED1D02", "PIED", ProjectUnit_Name))
+```
+
+### Combine
+
+```{r}
+SampleEventReport_all <- rbind(GRCA_SampleEventReport, IM_SampleEventReport, WACA_SampleEventReport)
+
+remove(GRCA_SampleEventReport, IM_SampleEventReport, WACA_SampleEventReport)
+```
+
+### Clean Data
+
+```{r}
+#### Sample Event Report
+
+SampleEventReport_all <- SampleEventReport_all %>%
+
+  # remove trailing/leading whitespace
+  mutate(across(where(is.character), str_trim)) %>%
+
+  # separate Date columns into Date and Time columns
+  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
+  # reformate Date columns
+  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>%
+  # separate Date columns into Year, Month, and Day columns
+  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>%
+  # remove unnecessary Date columns
+  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>%
+
+  # make column names match those in MacroplotReport
+  mutate(Macroplot = MacroPlot_Name,
+         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
+         MonStatus = MonitoringStatus_Name) %>%
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+```
+
+```{r}
+MetadataReport_all <- MetadataReport_all %>% 
+  # reformate Date column
+  mutate(SampleEventDate = as.Date(SampleEventDate)) %>% 
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc %in% c(" RX", "  RX", " Rx"), "RX",
+                                   ifelse(Disturbance_Desc == " WFU", "WFU",
+                                          ifelse(Disturbance_Desc == " WF", "WF",
+                                                 ifelse(Disturbance_Desc == " WF-Supp", "WF-Supp", Disturbance_Desc))))) %>% 
+  # remove weird column (need to fix this in export)
+  select(!X)
+```
+
+# Metadata Report
+
+## Disturbance History
+
+[Problem:]{.underline} Disturbance info is missing or written incorrectly
+
+[Procedure:]{.underline}
+
+-   If Entry \> 0, Check that UV2-8 fields are not blank and and written correctly.
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>%
+  filter(Entry == "1")
+query <- "Disturbance History"
+query_message <- paste0("Entry = ", data$Entry, ". ", "UV2 = ", data$UV2, ". ", "Disturbance Desc") 
+values_data <- data$Disturbance_Desc
+values_valid <- c("RX", "WF-Supp", "WFU", "WF")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Disturbance01 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>%
+  filter(Entry == "2")
+query <- "Disturbance History"
+query_message <- paste0("Entry = ", data$Entry, ". ", "UV3 = ", data$UV3, ". ", "Disturbance Desc") 
+values_data <- data$Disturbance_Desc
+values_valid <- c("RX", "WF-Supp", "WFU", "WF")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Disturbance02 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>%
+  filter(Entry == "3")
+query <- "Disturbance History"
+query_message <- paste0("Entry = ", data$Entry, ". ", "UV4 = ", data$UV4, ". ", "Disturbance Desc") 
+values_data <- data$Disturbance_Desc
+values_valid <- c("RX", "WF-Supp", "WFU", "WF")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Disturbance03 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>%
+  filter(Entry == "4")
+query <- "Disturbance History"
+query_message <- paste0("Entry = ", data$Entry, ". ", "UV5 = ", data$UV5, ". ", "Disturbance Desc") 
+values_data <- data$Disturbance_Desc
+values_valid <- c("RX", "WF-Supp", "WFU", "WF")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Disturbance04 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>%
+  filter(Entry == "5")
+query <- "Disturbance History"
+query_message <- paste0("Entry = ", data$Entry, ". ", "UV6 = ", data$UV6, ". ", "Disturbance Desc") 
+values_data <- data$Disturbance_Desc
+values_valid <- c("RX", "WF-Supp", "WFU", "WF")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Disturbance05 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>%
+  filter(Entry == "6")
+query <- "Disturbance History"
+query_message <- paste0("Entry = ", data$Entry, ". ", "UV7 = ", data$UV7, ". ", "Disturbance Desc") 
+values_data <- data$Disturbance_Desc
+values_valid <- c("RX", "WF-Supp", "WFU", "WF")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Disturbance06 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>%
+  filter(Entry == "7")
+query <- "Disturbance History"
+query_message <- paste0("Entry = ", data$Entry, ". ", "UV8 = ", data$UV8, ". ", "Disturbance Desc") 
+values_data <- data$Disturbance_Desc
+values_valid <- c("RX", "WF-Supp", "WFU", "WF")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Disturbance07 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+#### Combine Disturbance Errors
+
+```{r}
+# Combine
+errors_Disturbance <- unique(rbind(errors_Disturbance01, errors_Disturbance02, errors_Disturbance03, errors_Disturbance04, errors_Disturbance05, errors_Disturbance06, errors_Disturbance07))
+
+remove(errors_Disturbance01, errors_Disturbance02, errors_Disturbance03, errors_Disturbance04, errors_Disturbance05, errors_Disturbance06, errors_Disturbance07)
+
+if(nrow(errors_Disturbance) > 1) {
+  errors_Disturbance <- errors_Disturbance %>%
+    filter(Error != "No Error")
+} else {
+  errors_Disturbance <- errors_Disturbance}
+```
+
+## Monitoring Status
+
+[Problem:]{.underline} Metadata Report does not have a Monitoring Status assigned to a plot. Monitoring Status does not match between Metadata Report and Sample Event Report.
+
+[Procedure:]{.underline}
+
+-   Check that MonStatus is not blank
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all
+query <- "MonStatus"
+query_message <- "Monitoring Status" 
+values_data <- data$MonStatus
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_MonStatus1 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+-   Compare unique MonStatus between both the Sample Event Report and Metadata Report. Isolate differences between reports.
+
+```{r}
+# Compare MonStatus between Sample Event Report and Metadata Report, isolate differences
+data_temp1 <- SampleEventReport_all %>% 
+  select(AdministrationUnit_Name, Macroplot, SampleEventDate, MonStatus) %>% 
+  unique()
+
+data_temp2 <- MetadataReport_all %>% 
+  select(AdministrationUnit_Name, Macroplot, SampleEventDate, MonStatus) %>% 
+  filter(!is.na(SampleEventDate)) %>% 
+  unique()
+
+data_temp <- setdiff(data_temp1, data_temp2) %>% 
+  mutate(MonStatusError = MonStatus) %>% 
+  filter(MonStatus != "") %>% 
+  select(!MonStatus)
+remove(data_temp1, data_temp2)
+
+# Set parameters 
+data <- merge(MetadataReport_all, data_temp, by = c("AdministrationUnit_Name", "Macroplot", "SampleEventDate"), all = T)
+data$MonStatusError[is.na(data$MonStatusError)] <- ""
+data <- data %>% 
+  filter(MonStatusError != "")
+query <- "MonStatus"
+query_message <- paste0("MetadataReport MonStatus = ", data$MonStatus, ". ", "SampleEventReport MonStatus") 
+values_data <- data$MonStatusError
+values_valid <- data$MonStatus
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_MonStatus2 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+#### Combine MonStatus Errors
+
+```{r}
+# Combine
+errors_MonStatus <- unique(rbind(errors_MonStatus1, errors_MonStatus2))
+
+remove(errors_MonStatus1, errors_MonStatus2)
+
+if(nrow(errors_MonStatus) > 1) {
+  errors_MonStatus <- errors_MonStatus %>%
+    filter(Error != "No Error")
+} else {
+  errors_MonStatus <- errors_MonStatus}
+```
+
+## Project Unit
+
+[Problem:]{.underline} Project Unit info is missing
+
+[Procedure:]{.underline}
+
+-   Check that UV1 field is not blank
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all
+data$UV1[is.na(data$UV1)] <- ""
+query <- "Project Unit (UV1)"
+query_message <- paste0("UV1") 
+values_data <- data$UV1
+values_valid <- ""
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_ProjectUnit <- qaqc_meta(data, query, query_message, values_check)
+```
+
+## Visited
+
+[Problem:]{.underline} Visited = N
+
+[Procedure:]{.underline}
+
+-   Check that Visited = Y
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all
+query <- "Visited"
+query_message <- paste0("MonStatus = ", data$MonStatus, ". ", "Protocol = ", data$Protocols, ". ", "Visited") 
+values_data <- data$Visited
+values_valid <- "Y"
+values_check <- values_data == values_valid
+
+# Identify errors
+errors_Visited <- qaqc_meta(data, query, query_message, values_check)
+```
+
+# ALL ERRORS
+
+```{r}
+errors_all <- rbind(errors_Disturbance, errors_blank, errors_MonStatus, errors_blank, errors_ProjectUnit, errors_blank, errors_Visited)
+```
+
+```{r}
+# Create conditional formatting rules
+errors_all_cf <- errors_all %>% 
+  mutate(Color = ifelse(SavedQuery == "", NA, "Color"))
+
+# Add conditional formating to ouput
+errors_all <- condformat(errors_all_cf[1:(nrow(errors_all_cf)), 1:8]) %>%
+  rule_fill_discrete(columns = 1:7,
+                     expression = (errors_all_cf$Color),
+                     colours = c("Color"="#C6E0B4"),
+                     na.value = "#FFFFFF") %>%
+  select(!c("Color"))
+```
+
+```{r}
+# Table of results for quick check
+#kable(errors_all, "pipe")
+
+# Save as CSV or XLSX 
+path_errors
+# write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
+#write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
+# condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
+condformat2excel(errors_all, paste0(path_errors, "errors_metadata_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+```
