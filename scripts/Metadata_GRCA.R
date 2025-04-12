@@ -489,42 +489,45 @@ WACA_MacroplotReport_MetaData$UV2[WACA_MacroplotReport_MetaData$UV2==""] <- NA
 
 #### 01 Disturbance
 
-# add add relevant columns
 GRCA_Disturbance01 <- GRCA_MacroplotReport_MetaData %>%
+  # filter for relevant columns
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV2)) %>%
   filter(!is.na(UV2)) %>%
+  # add relevant columns
   separate(UV2, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
+  # trim white space
   mutate(across(where(is.character), str_trim)) %>%
-  mutate(Entry = 1)
-
-# specific edits
-GRCA_Disturbance01 <- GRCA_Disturbance01 %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "SC03", "Tipover East", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "SC03", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "SC03", "12/22/17", DisturbanceDate),
-         Severity = ifelse(Macroplot == "SC03", "(POST read '18)", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "SC16", "Tipover East", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "SC16", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "SC16", "12/22/17", DisturbanceDate),
-         Severity = ifelse(Macroplot == "SC16", "(POST read '18)", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 06", "NW 1,3,5", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIAB 06", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIAB 06", "11/9/2007", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIAB 06", "Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 24", "NW 1,3,5", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIAB 24", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIAB 24", "11/10/2007", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIAB 24", "Moderate/Low Severity", Severity)) %>%
-  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc))
-
-# edit date column
-GRCA_Disturbance01 <- GRCA_Disturbance01 %>%
+  # create Entry column
+  mutate(Entry = 1) %>%
+  # edit date column
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
+  # remove unnecessary columns
   select(!c(Month, Day, UV2, Disturbance_Info)) %>%
+  # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
+
+# # specific edits
+# GRCA_Disturbance01 <- GRCA_Disturbance01 %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "SC03", "Tipover East", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "SC03", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "SC03", "12/22/17", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "SC03", "(POST read '18)", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "SC16", "Tipover East", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "SC16", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "SC16", "12/22/17", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "SC16", "(POST read '18)", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 06", "NW 1,3,5", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIAB 06", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIAB 06", "11/9/2007", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIAB 06", "Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 24", "NW 1,3,5", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIAB 24", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIAB 24", "11/10/2007", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIAB 24", "Moderate/Low Severity", Severity)) %>%
+#   mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc))
 
 ##############################################
 
@@ -542,6 +545,7 @@ IM_Disturbance01 <- IM_MacroplotReport_MetaData %>%
   # edit Date column
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
+  # remove unnecessary columns
   select(!c(Month, Day, UV2, Disturbance_Info)) %>%
   # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
@@ -563,6 +567,7 @@ WACA_Disturbance01 <- WACA_MacroplotReport_MetaData %>%
   # edit Date column
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
+  # remove unnecessary columns
   select(!c(Month, Day, UV2, Disturbance_Info)) %>%
   # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
@@ -573,48 +578,49 @@ WACA_Disturbance01 <- WACA_MacroplotReport_MetaData %>%
 
 #### 02 Disturbance
 
-# add add relevant columns
 GRCA_Disturbance02 <- GRCA_MacroplotReport_MetaData %>%
+  # filter for relevant columns
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV3)) %>%
   filter(!is.na(UV3)) %>%
+  # add relevant columns
   separate(UV3, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
+  # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # create Entry column
   mutate(Entry = 2) %>%
-  select(!c("Disturbance_Info"))
-
-# specific edits
-GRCA_Disturbance02 <-GRCA_Disturbance02 %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 07", "NW 1,3,5", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIAB 07", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIAB 07", "11/10/2007", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIAB 07", "Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 25", "NW 1,3,5", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIAB 25", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIAB 25", "11/10/2007", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIAB 25", "Moderate/Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIPN 01", "NW 1,3,5", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIPN 01", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIPN 01", "11/10/2007", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIPN 01", "Moderate/Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIPN 02", "NW 1,3,5", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIPN 02", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIPN 02", "11/10/2007", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIPN 02", "Moderate/Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 24", "Watson 2,3,4", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIPO 24", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIPO 24", "10/14/2011", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIPO 24", "Low Severity", Severity)) %>%
-  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
-  select(!c("UV3"))
-
-# edit date column
-GRCA_Disturbance02 <- GRCA_Disturbance02 %>%
+  # edit Date column
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
-  select(!c("Month", "Day")) %>%
+  # remove unnecessary columns
+  select(!c(Month, Day, UV3, Disturbance_Info)) %>%
+  # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
+
+# # specific edits
+# GRCA_Disturbance02 <-GRCA_Disturbance02 %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 07", "NW 1,3,5", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIAB 07", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIAB 07", "11/10/2007", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIAB 07", "Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIAB 25", "NW 1,3,5", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIAB 25", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIAB 25", "11/10/2007", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIAB 25", "Moderate/Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIPN 01", "NW 1,3,5", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIPN 01", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIPN 01", "11/10/2007", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIPN 01", "Moderate/Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIPN 02", "NW 1,3,5", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIPN 02", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIPN 02", "11/10/2007", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIPN 02", "Moderate/Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 24", "Watson 2,3,4", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIPO 24", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIPO 24", "10/14/2011", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIPO 24", "Low Severity", Severity)) %>%
+#   mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc))
 
 ##############################################
 ##############################################
@@ -623,42 +629,44 @@ GRCA_Disturbance02 <- GRCA_Disturbance02 %>%
 
 # add add relevant columns
 GRCA_Disturbance03 <- GRCA_MacroplotReport_MetaData %>%
+  # filter for relevant columns
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV4)) %>%
   filter(!is.na(UV4)) %>%
+  # add relevant columns
   separate(UV4, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
+  # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # create Entry column
   mutate(Entry = 3) %>%
-  select(!c("Disturbance_Info"))
-
-# specific edits
-GRCA_Disturbance03 <- GRCA_Disturbance03 %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 17", "Watson 2,3,4", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIPO 17", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIPO 17", "10/14/2011", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIPO 17", "Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 20", "Watson 2,3,4", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIPO 20", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIPO 20", "10/14/2011", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIPO 20", "Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 21", "Watson 2,3,4", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIPO 21", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIPO 21", "10/14/2011", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIPO 21", "Low Severity", Severity)) %>%
-  mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 22", "Watson 2,3,4", Disturbance_Name),
-         Disturbance_Desc = ifelse(Macroplot == "PIPO 22", "Rx", Disturbance_Desc),
-         DisturbanceDate = ifelse(Macroplot == "PIPO 22", "10/14/2011", DisturbanceDate),
-         Severity = ifelse(Macroplot == "PIPO 22", "Low Severity", Severity)) %>%
-  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
-  select(!c("UV4"))
-
-# edit date column
-GRCA_Disturbance03 <- GRCA_Disturbance03 %>%
+  # edit Date column
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
-  select(!c("Month", "Day")) %>%
+  # remove unnecessary columns
+  select(!c(Month, Day, UV4, Disturbance_Info)) %>%
+  # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
+
+# # specific edits
+# GRCA_Disturbance03 <- GRCA_Disturbance03 %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 17", "Watson 2,3,4", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIPO 17", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIPO 17", "10/14/2011", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIPO 17", "Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 20", "Watson 2,3,4", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIPO 20", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIPO 20", "10/14/2011", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIPO 20", "Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 21", "Watson 2,3,4", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIPO 21", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIPO 21", "10/14/2011", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIPO 21", "Low Severity", Severity)) %>%
+#   mutate(Disturbance_Name = ifelse(Macroplot == "PIPO 22", "Watson 2,3,4", Disturbance_Name),
+#          Disturbance_Desc = ifelse(Macroplot == "PIPO 22", "Rx", Disturbance_Desc),
+#          DisturbanceDate = ifelse(Macroplot == "PIPO 22", "10/14/2011", DisturbanceDate),
+#          Severity = ifelse(Macroplot == "PIPO 22", "Low Severity", Severity)) %>%
+#   mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc))
 
 ##############################################
 ##############################################
@@ -666,18 +674,22 @@ GRCA_Disturbance03 <- GRCA_Disturbance03 %>%
 #### 04 Disturbance
 
 GRCA_Disturbance04 <- GRCA_MacroplotReport_MetaData %>%
+  # filter for relevant columns
   select(c(Park, PlotType_Name, Macroplot, Disturbance_Type, UV5)) %>%
   filter(!is.na(UV5)) %>%
-  # add add relevant columns
+  # add relevant columns
   separate(UV5, sep = ": ", into = c("Entry", "Disturbance_Info"), remove = FALSE) %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
+  # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # create Entry column
   mutate(Entry = 4) %>%
-  select(!c("Disturbance_Info", "UV5")) %>%
-  # edit date column
+  # edit Date column
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
-  select(!c("Month", "Day")) %>%
+  # remove unnecessary columns
+  select(!c(Month, Day, UV4, Disturbance_Info)) %>%
+  # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
 
