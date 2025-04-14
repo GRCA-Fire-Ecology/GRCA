@@ -137,75 +137,10 @@ qaqc_meta <- function(data, query, query_message, values_check) {
 
 ```{r load data, include=FALSE}
 ## Load Data
-GRCA_SampleEventReport <- read.csv(paste0(path_data, "GRCA_SampleEventReport.csv"))
-IM_SampleEventReport <- read.csv(paste0(path_data, "I&M_SampleEventReport.csv"))
-WACA_SampleEventReport <- read.csv(paste0(path_data, "WACA_SampleEventReport.csv"))
-
+SampleEventReport_all <- read.csv(paste0(path_dataclean, "all_SampleEventReport.csv"))
 MetadataReport_all <- read.csv(paste0(path_dataclean, "all_MetadataReport.csv"))
-```
-
-### Prep Data
-
-```{r}
-IM_SampleEventReport <- IM_SampleEventReport %>%
-  # edit Macroplot column
-  separate(MacroPlot_Name, sep = "_", into = c("Park", "MacroPlot_Name"), remove = F) %>%
-  select(!Park)
-
-##############################################
-
-WACA_SampleEventReport <- WACA_SampleEventReport %>%
-  # edit Macroplot and ProjectUnit_Name columns
-  mutate(MacroPlot_Name = ifelse(MacroPlot_Name == "B:FPIED1D02:01", "PIED 01",
-                            ifelse(MacroPlot_Name == "B:FPIED1D02:02", "PIED 02", MacroPlot_Name))) %>%
-  mutate(ProjectUnit_Name = ifelse(ProjectUnit_Name == "FPIED1D02", "PIED", ProjectUnit_Name))
-```
-
-### Combine
-
-```{r}
-SampleEventReport_all <- rbind(GRCA_SampleEventReport, IM_SampleEventReport, WACA_SampleEventReport)
-
-remove(GRCA_SampleEventReport, IM_SampleEventReport, WACA_SampleEventReport)
-```
-
-### Clean Data
-
-```{r}
-#### Sample Event Report
-
-SampleEventReport_all <- SampleEventReport_all %>%
-
-  # remove trailing/leading whitespace
-  mutate(across(where(is.character), str_trim)) %>%
-
-  # separate Date columns into Date and Time columns
-  separate(SampleEvent_Date, sep = " ", into = c("SampleEventDate", "SampleEventTime")) %>%
-  # reformate Date columns
-  mutate(SampleEventDate = as.Date(SampleEventDate, "%m/%d/%Y")) %>%
-  # separate Date columns into Year, Month, and Day columns
-  separate(SampleEventDate, sep = "-", into = c("SampleEventDate_Year", "SampleEventDate_Month", "SampleEventDate_Day"), remove = FALSE) %>%
-  # remove unnecessary Date columns
-  select(!c(SampleEventTime, SampleEventDate_Month, SampleEventDate_Day)) %>%
-
-  # make column names match those in MacroplotReport
-  mutate(Macroplot = MacroPlot_Name,
-         LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
-         MonStatus = MonitoringStatus_Name) %>%
-  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
-```
-
-```{r}
-MetadataReport_all <- MetadataReport_all %>% 
-  # reformate Date column
-  mutate(SampleEventDate = as.Date(SampleEventDate)) %>% 
-  # edit Disturbance_Desc column
-  mutate(Disturbance_Desc = ifelse(Disturbance_Desc %in% c(" RX", "  RX", " Rx"), "RX",
-                                   ifelse(Disturbance_Desc == " WFU", "WFU",
-                                          ifelse(Disturbance_Desc == " WF", "WF",
-                                                 ifelse(Disturbance_Desc == " WF-Supp", "WF-Supp", Disturbance_Desc))))) %>% 
-  # remove weird column (need to fix this in export)
-  select(!X)
+all_MonStatus <- read.csv(paste0(path_dataclean, "all_MonStatus.csv"))
+all_DisturbanceHistory <- read.csv(paste0(path_dataclean, "all_DisturbanceHistory.csv"))
 ```
 
 # Metadata Report
@@ -333,7 +268,7 @@ if(nrow(errors_Disturbance) > 1) {
 
 ## Monitoring Status
 
-[Problem:]{.underline} Metadata Report does not have a Monitoring Status assigned to a plot. Monitoring Status does not match between Metadata Report and Sample Event Report.
+[Problem:]{.underline} Metadata Report does not have a Monitoring Status assigned to a plot. Monitoring Status does not match between Metadata Report and Sample Event Report. Monitoring Status does not match standard values.
 
 [Procedure:]{.underline}
 
@@ -349,7 +284,7 @@ values_valid <- ""
 values_check <- values_data != values_valid
 
 # Identify errors
-errors_MonStatus1 <- qaqc_meta(data, query, query_message, values_check)
+errors_MonStatus_Missing <- qaqc_meta(data, query, query_message, values_check)
 ```
 
 -   Compare unique MonStatus between both the Sample Event Report and Metadata Report. Isolate differences between reports.
@@ -383,16 +318,42 @@ values_valid <- data$MonStatus
 values_check <- values_data == values_valid
 
 # Identify errors
-errors_MonStatus2 <- qaqc_meta(data, query, query_message, values_check)
+errors_MonStatus_SampleEvent <- qaqc_meta(data, query, query_message, values_check)
+```
+
+-   Check that MonStatus matches expected values
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all
+data$MonStatus[is.na(data$MonStatus)] <- ""
+query <- "MonStatus"
+query_message <- "Monitoring Status" 
+values_data <- data$MonStatus
+values_valid <- c("", "Measurement_1", "Measurement_2", "Measurement_3", "Measurement_4",
+                       "Pre", "PR01", "PR02", "PR03", "PR04", "PR05",
+                       "02Pre", "02PR01", "02PR02", 
+                       "01Post",
+                       "01Year1", "01Year2", "01Year5", "01Year10", "01Year20",
+                       "02Post",
+                       "02Year1", "02Year2", "02Year5", "02Year10", "02Year20",
+                       "03Post",
+                       "03Year1", "03Year2", "03Year5", "03Year10", "03Year20",
+                       "04Post",
+                       "04Year1", "04Year2", "04Year5", "04Year10", "04Year20")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_MonStatus_OffCycle <- qaqc_meta(data, query, query_message, values_check)
 ```
 
 #### Combine MonStatus Errors
 
 ```{r}
 # Combine
-errors_MonStatus <- unique(rbind(errors_MonStatus1, errors_MonStatus2))
+errors_MonStatus <- unique(rbind(errors_MonStatus_Missing, errors_MonStatus_SampleEvent, errors_MonStatus_OffCycle))
 
-remove(errors_MonStatus1, errors_MonStatus2)
+remove(errors_MonStatus_Missing, errors_MonStatus_SampleEvent, errors_MonStatus_OffCycle)
 
 if(nrow(errors_MonStatus) > 1) {
   errors_MonStatus <- errors_MonStatus %>%
@@ -423,6 +384,238 @@ values_check <- values_data != values_valid
 errors_ProjectUnit <- qaqc_meta(data, query, query_message, values_check)
 ```
 
+## Protocols
+
+[Problem:]{.underline} Incorrect protocols are used
+
+[Procedure:]{.underline}
+
+-   Check that protocols match expected values
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(AdministrationUnit_Name == "WACA",
+         PlotType_Name == "FMH")
+query <- "Protocols"
+query_message <- paste0("Park = ", data$Park, ". ", "Protocol") 
+values_data <- data$Protocols
+values_valid <- c("Surface Fuels",
+                  "Post Burn Severity",
+                  "Trees (metric)",
+                  #"TreeCover2(metric)",
+                  "Density - Belts (metric)",
+                  "Cover - Species Composition (metric)",
+                  "Cover - Points (metric)")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Protocols_WACA <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(AdministrationUnit_Name == "GRCA",
+         PlotType_Name == "FMH")
+query <- "Protocols"
+query_message <- paste0("Park = ", data$Park, ". ", "Protocol") 
+values_data <- data$Protocols
+values_valid <- c("Surface Fuels",
+                  "Post Burn Severity",
+                  "Trees - Individuals (metric)",
+                  "Density - Quadrats (metric)",
+                  "Density - Belts (metric)",
+                  "Cover - Species Composition (metric)",
+                  "Cover - Points (metric)")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Protocols_FMH <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(AdministrationUnit_Name == "GRCA",
+         PlotType_Name == "RAP")
+query <- "Protocols"
+query_message <- paste0("Park = ", data$Park, ". ", "Protocol") 
+values_data <- data$Protocols
+values_valid <- c("Surface Fuels",
+                  "Post Burn Severity",
+                  "Trees - Individuals (metric)",
+                  "Density - Quadrats (metric)",
+                  "Cover - Species Composition (metric)")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Protocols_RAP <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(AdministrationUnit_Name == "GRCA",
+         PlotType_Name == "Meadow")
+query <- "Protocols"
+query_message <- paste0("Park = ", data$Park, ". ", "Protocol") 
+values_data <- data$Protocols
+values_valid <- c("Surface Fuels",
+                  "Post Burn Severity",
+                  "Trees - Individuals (metric)",
+                  "Density - Quadrats (metric)",
+                  "Density - Belts (metric)",
+                  "Cover - Species Composition (metric)",
+                  "Cover - Points (metric)")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Protocols_Meadow <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(AdministrationUnit_Name == "SCP I&M",
+         PlotType_Name == "I&M")
+query <- "Protocols"
+query_message <- paste0("Park = ", data$Park, ". ", "Protocol") 
+values_data <- data$Protocols
+values_valid <- c("Surface Fuels",
+                  "Post Burn Severity",
+                  "Trees - Individuals (metric)",
+                  "Trees - Saplings (Diameter Class) (metric)",
+                  "Density - Quadrats (metric)",
+                  "Cover/Frequency (metric)")
+values_check <- values_data %in% values_valid
+
+# Identify errors
+errors_Protocols_IM <- qaqc_meta(data, query, query_message, values_check)
+```
+
+#### Combine Protocols Errors
+
+```{r}
+# Combine
+errors_Protocols <- unique(rbind(errors_Protocols_WACA, errors_Protocols_FMH, errors_Protocols_Meadow, errors_Protocols_RAP, errors_Protocols_IM))
+
+remove(errors_Protocols_WACA, errors_Protocols_FMH, errors_Protocols_Meadow, errors_Protocols_RAP, errors_Protocols_IM)
+
+if(nrow(errors_Protocols) > 1) {
+  errors_Protocols <- errors_Protocols %>%
+    filter(Error != "No Error")
+} else {
+  errors_Protocols <- errors_Protocols}
+```
+
+## Time Since
+
+[Problem:]{.underline} Time since disturbance does not match when comparing Sample Event Date to Disturbance Date.
+
+[Procedure:]{.underline}
+
+-   Check that TimeSince matches expected year
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(TimeSince == "0")
+query <- "Time Since Disturbance"
+query_message <- paste0("MonStatus = ", data$MonStatus, ". ", "Fire year") 
+values_data <- data$SampleEventDate_Year
+values_valid <- data$DisturbanceDate_Year
+values_check <- (values_data - values_valid <= 1) %>% replace_na(TRUE)
+
+# Identify errors
+errors_TimeSince_Post <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(TimeSince == "1")
+query <- "Time Since Disturbance"
+query_message <- paste0("MonStatus = ", data$MonStatus, ". ", "Fire year") 
+values_data <- data$SampleEventDate_Year
+values_valid <- data$DisturbanceDate_Year
+values_check <- (values_data - values_valid == 1) %>% replace_na(TRUE)
+
+# Identify errors
+errors_TimeSince_Year1 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(TimeSince == "2")
+query <- "Time Since Disturbance"
+query_message <- paste0("MonStatus = ", data$MonStatus, ". ", "Fire year") 
+values_data <- data$SampleEventDate_Year
+values_valid <- data$DisturbanceDate_Year
+values_check <- (values_data - values_valid == 2) %>% replace_na(TRUE)
+
+# Identify errors
+errors_TimeSince_Year2 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(TimeSince == "5")
+query <- "Time Since Disturbance"
+query_message <- paste0("MonStatus = ", data$MonStatus, ". ", "Fire year") 
+values_data <- data$SampleEventDate_Year
+values_valid <- data$DisturbanceDate_Year
+values_check <- (values_data - values_valid == 5) %>% replace_na(TRUE)
+
+# Identify errors
+errors_TimeSince_Year5 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(TimeSince == "10")
+query <- "Time Since Disturbance"
+query_message <- paste0("MonStatus = ", data$MonStatus, ". ", "Fire year") 
+values_data <- data$SampleEventDate_Year
+values_valid <- data$DisturbanceDate_Year
+values_check <- (values_data - values_valid == 10) %>% replace_na(TRUE)
+
+# Identify errors
+errors_TimeSince_Year10 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+```{r}
+# Set parameters 
+data <- MetadataReport_all %>% 
+  filter(TimeSince == "20")
+query <- "Time Since Disturbance"
+query_message <- paste0("MonStatus = ", data$MonStatus, ". ", "Fire year") 
+values_data <- data$SampleEventDate_Year
+values_valid <- data$DisturbanceDate_Year
+values_check <- (values_data - values_valid == 20) %>% replace_na(TRUE)
+
+# Identify errors
+errors_TimeSince_Year20 <- qaqc_meta(data, query, query_message, values_check)
+```
+
+#### Combine TimeSince Errors
+
+```{r}
+# Combine
+errors_TimeSince <- unique(rbind(errors_TimeSince_Post, errors_TimeSince_Year1, errors_TimeSince_Year2, errors_TimeSince_Year5, errors_TimeSince_Year10, errors_TimeSince_Year20))
+
+remove(errors_TimeSince_Post, errors_TimeSince_Year1, errors_TimeSince_Year2, errors_TimeSince_Year5, errors_TimeSince_Year10, errors_TimeSince_Year20)
+
+if(nrow(errors_TimeSince) > 1) {
+  errors_TimeSince <- errors_TimeSince %>%
+    filter(Error != "No Error")
+} else {
+  errors_TimeSince <- errors_TimeSince}
+```
+
 ## Visited
 
 [Problem:]{.underline} Visited = N
@@ -447,7 +640,7 @@ errors_Visited <- qaqc_meta(data, query, query_message, values_check)
 # ALL ERRORS
 
 ```{r}
-errors_all <- rbind(errors_Disturbance, errors_blank, errors_MonStatus, errors_blank, errors_ProjectUnit, errors_blank, errors_Visited)
+errors_all <- rbind(errors_Disturbance, errors_blank, errors_MonStatus, errors_blank, errors_ProjectUnit, errors_blank, errors_TimeSince, errors_blank, errors_Visited)
 ```
 
 ```{r}
