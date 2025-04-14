@@ -1,0 +1,120 @@
+---
+title: "FFI Database Summary"
+subtitle: "Grand Canyon"
+output: 
+  html_document:
+    toc: true
+    toc-float: true
+    code_download: true
+date: "`r Sys.Date()`"
+---
+
+# Purpose
+
+### Setup
+
+```{r}
+## Markdown Options
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+## Install packages (if needed)
+
+# install.packages("tidyverse")
+# install.packages("kableExtra")
+# install.packages("ggplot2")
+```
+
+```{r}
+## Load Packages
+
+# "here" helps you easily find and reference your working directory
+library(here)
+# "tidyverse" has lots of useful functions for data cleaning
+library(tidyverse)
+# "kableExtra" is used to produce formatted tables
+library(kableExtra)
+library(ggplot2)
+```
+
+```{r}
+## Adjust File Paths
+
+# Identify working directory
+here()
+
+# Adjust File Paths
+path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+```
+
+### Load Data
+
+Load in the Metadata Report. This Metadta Report was created by combining Macroplot Reports and Sample Event Reports from each Admin Unit, which can be downloaded via the Utilities menu on the Project Management tab on the FFI Remote App Server.
+
+```{r}
+# Load in data
+Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+```
+
+### Clean Data
+
+```{r}
+# Reformat date column
+Trees_all <- Trees_all %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+```
+
+### Filter Data
+
+```{r}
+# Ensure blanks in Visited column are NA 
+Trees_all$Visited[Trees_all$Visited==""] <- NA
+# Trees data
+Trees_data <- Trees_all %>%   
+  filter(is.na(Visited))
+```
+
+# Trees
+
+```{r}
+graph_Trees_data <- Trees_data %>% 
+    mutate(SubFrac = factor(SubFrac),
+         TagNo = factor(TagNo),
+         Status = factor(Status),
+         CrwnCl = factor(CrwnCl, levels = c("X", "",
+                                            "SC", "I", "C", "D",
+                                            "RS", "LBS", "CS", "BAD", 
+                                            "BBD", "CUS", "DD")))
+```
+
+### Status
+
+```{r}
+graph_Trees_data %>% 
+  filter(MacroPlot.Name == "PIAB 03") %>% 
+  arrange(Date) %>% 
+  ggplot(aes(x = Year, y = TagNo)) +
+  geom_line(aes(group = TagNo, color = Status), size = 1) +
+  geom_point(aes(fill = Status), shape = 21, size = 3) +
+  theme_light() +
+  scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange")) +
+  scale_color_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
+  # scale_color_manual(values=c('darkgrey', 'darkgrey',
+  #                             'forestgreen', 'forestgreen', 'forestgreen', 'forestgreen',
+  #                             'darkorange', 'darkorange', 'darkorange',
+  #                             'red', 'red', 'red')) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
