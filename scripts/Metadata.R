@@ -38,23 +38,44 @@ path_output <- paste0(here(), "/output/")
 # GRCA
 GRCA_MacroplotReport <- read.csv(paste0(path_data, "GRCA_MacroplotReport.csv"))
 GRCA_SampleEventReport <- read.csv(paste0(path_data, "GRCA_SampleEventReport.csv"))
-#GRCA_ProjectUnitReport <- read.csv(paste0(path_data, "GRCA_ProjectUnitAssignmentReport.csv"))
+GRCA_ProjectUnitReport <- read.csv(paste0(path_data, "GRCA_ProjectUnitAssignmentReport.csv"))
 
 # I&M
 IM_MacroplotReport <- read.csv(paste0(path_data, "I&M_MacroplotReport.csv"))
 IM_SampleEventReport <- read.csv(paste0(path_data, "I&M_SampleEventReport.csv"))
-#IM_ProjectUnitReport <- read.csv(paste0(path_data, "I&M_ProjectUnitAssignmentReport.csv"))
+IM_ProjectUnitReport <- read.csv(paste0(path_data, "I&M_ProjectUnitAssignmentReport.csv"))
 
 # WACA
 WACA_MacroplotReport <- read.csv(paste0(path_data, "WACA_MacroplotReport.csv"))
 WACA_SampleEventReport <- read.csv(paste0(path_data, "WACA_SampleEventReport.csv"))
-#WACA_ProjectUnitReport <- read.csv(paste0(path_data, "WACA_ProjectUnitAssignmentReport.csv"))
+WACA_ProjectUnitReport <- read.csv(paste0(path_data, "WACA_ProjectUnitAssignmentReport.csv"))
 
 ##############################################
 ##############################################
 ##############################################
 
 ### Clean Data
+
+##############################################
+##############################################
+
+#### Project Unit Report
+
+IM_ProjectUnitReport <- IM_ProjectUnitReport %>%
+
+  # edit Macroplot column
+  separate(Macroplot, sep = "_", into = c("Park", "Macroplot"), remove = F) %>%
+  select(!Park)
+
+##############################################
+
+WACA_ProjectUnitReport <- WACA_ProjectUnitReport %>%
+
+  # edit Macroplot and ProjectUnit_Name columns
+  mutate(Macroplot = ifelse(Macroplot == "B:FPIED1D02:01", "PIED 01",
+                            ifelse(Macroplot == "B:FPIED1D02:02", "PIED 02", Macroplot))) %>%
+  mutate(ProjectUnit = ifelse(ProjectUnit == "FPIED1D02", "PIED", ProjectUnit))
+
 
 ##############################################
 ##############################################
@@ -78,8 +99,9 @@ GRCA_SampleEventReport <- GRCA_SampleEventReport %>%
   # make column names match those in MacroplotReport
   mutate(Macroplot = MacroPlot_Name,
          LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
-         MonStatus = MonitoringStatus_Name) %>%
-  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name))
+         MonStatus = MonitoringStatus_Name,
+         ProjectUnit = ProjectUnit_Name) %>%
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name, ProjectUnit_Name))
 
 ##############################################
 
@@ -100,8 +122,9 @@ IM_SampleEventReport <- IM_SampleEventReport %>%
   # make column names match those in MacroplotReport
   mutate(Macroplot = MacroPlot_Name,
          LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
-         MonStatus = MonitoringStatus_Name) %>%
-  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name)) %>%
+         MonStatus = MonitoringStatus_Name,
+         ProjectUnit = ProjectUnit_Name) %>%
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name, ProjectUnit_Name)) %>%
 
   # edit Macroplot column
   separate(Macroplot, sep = "_", into = c("Park", "Macroplot"), remove = F) %>%
@@ -126,13 +149,14 @@ WACA_SampleEventReport <- WACA_SampleEventReport %>%
   # make column names match those in MacroplotReport
   mutate(Macroplot = MacroPlot_Name,
          LegacyMonitoringStatus = SampleEvent_LegacyMonitoringStatus,
-         MonStatus = MonitoringStatus_Name) %>%
-  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name)) %>%
+         MonStatus = MonitoringStatus_Name,
+         ProjectUnit = ProjectUnit_Name) %>%
+  select(!c(MacroPlot_Name, SampleEvent_LegacyMonitoringStatus, MonitoringStatus_Name, ProjectUnit_Name)) %>%
 
   # edit Macroplot and ProjectUnit_Name columns
   mutate(Macroplot = ifelse(Macroplot == "B:FPIED1D02:01", "PIED 01",
                             ifelse(Macroplot == "B:FPIED1D02:02", "PIED 02", Macroplot))) %>%
-  mutate(ProjectUnit_Name = ifelse(ProjectUnit_Name == "FPIED1D02", "PIED", ProjectUnit_Name))
+  mutate(ProjectUnit = ifelse(ProjectUnit == "FPIED1D02", "PIED", ProjectUnit))
 
 ##############################################
 ##############################################
@@ -211,29 +235,6 @@ WACA_MacroplotReport <- WACA_MacroplotReport %>%
 ##############################################
 
 ### Filter Data
-
-##############################################
-##############################################
-
-#### Sample Event Report
-
-#The Sample Event Report contains multiple project units, and each plot can be assigned to any project unit. To reduce duplicates, select only the core project units.
-
-GRCA_SampleEventReport_merge <- GRCA_SampleEventReport %>%
-  filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>%
-  filter(!ProjectUnit_Name %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>%
-  select(!c(Multi_PU, SampleEventDate_Year, LegacyMonitoringStatus))
-
-##############################################
-
-IM_SampleEventReport_merge <- IM_SampleEventReport %>%
-  filter(!ProjectUnit_Name %in% c("z2014 + 2017_Slopes RX")) %>%
-  select(!c(Multi_PU, SampleEventDate_Year, LegacyMonitoringStatus))
-
-##############################################
-
-WACA_SampleEventReport_merge <- WACA_SampleEventReport %>%
-  select(!c(Multi_PU, SampleEventDate_Year, LegacyMonitoringStatus))
 
 ##############################################
 ##############################################
@@ -688,7 +689,7 @@ GRCA_Disturbance04 <- GRCA_MacroplotReport_MetaData %>%
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
   # remove unnecessary columns
-  select(!c(Month, Day, UV4, Disturbance_Info)) %>%
+  select(!c(Month, Day, UV5, Disturbance_Info)) %>%
   # reorder columns
   relocate(DisturbanceDate_Year, .after = DisturbanceDate) %>%
   relocate(Disturbance_Type, .before = Disturbance_Name)
@@ -721,7 +722,12 @@ all_DisturbanceHistory <- all_DisturbanceHistory %>%
                                                      ifelse(Severity %in% c("Moderate/High Severity", "Mod-High Severity"), "Mod/High",
                                                             ifelse(Severity %in% c("High Severity"), "High",
                                                                    ifelse(Severity %in% c("Unburned"), "Unburned", NA))))))) %>%
-  select(!Severity)
+  select(!Severity) %>%
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc %in% c(" RX", "  RX", " Rx"), "RX",
+                                   ifelse(Disturbance_Desc == " WFU", "WFU",
+                                          ifelse(Disturbance_Desc == " WF", "WF",
+                                                 ifelse(Disturbance_Desc == " WF-Supp", "WF-Supp", Disturbance_Desc)))))
 
 ##############################################
 ##############################################
@@ -729,17 +735,11 @@ all_DisturbanceHistory <- all_DisturbanceHistory %>%
 
 ## Merge
 
+#### Merge MacroplotReport_Metadata and MacroplotReport_SampleEvents for each admin unit
+
 # GRCA merge metadata and sample events
 GRCA_MacroplotReport_all <- merge(GRCA_MacroplotReport_MetaData, GRCA_MacroplotReport_SampleEvents, by = c("Macroplot")) %>%
   select(!MonStatusOrd)
-
-# GRCA merge Macroplot Report and Sample Event Report
-GRCA_MetadataReport <- merge(GRCA_MacroplotReport_all, GRCA_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>%
-  relocate(AdministrationUnit_Name, .before = Park) %>%
-  relocate(ProjectUnit_Name, .before = Purpose) %>%
-  relocate(Macroplot, .after = MetaData) %>%
-  relocate(SampleEventDate, .before = SampleEventDate_Year) %>%
-  relocate(MonStatus, .after = LegacyMonStatus)
 
 ##############################################
 
@@ -747,30 +747,54 @@ GRCA_MetadataReport <- merge(GRCA_MacroplotReport_all, GRCA_SampleEventReport_me
 IM_MacroplotReport_all <- merge(IM_MacroplotReport_MetaData, IM_MacroplotReport_SampleEvents, by = c("Macroplot")) %>%
   select(!MonStatusOrd)
 
-# I&M merge Macroplot Report and Sample Event Report
-IM_MetadataReport <- merge(IM_MacroplotReport_all, IM_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>%
-  relocate(AdministrationUnit_Name, .before = Park) %>%
-  relocate(ProjectUnit_Name, .before = Purpose) %>%
-  relocate(Macroplot, .after = MetaData) %>%
-  relocate(SampleEventDate, .before = SampleEventDate_Year) %>%
-  relocate(MonStatus, .after = LegacyMonStatus)
-
 ##############################################
 
 # WACA merge metadata and sample events
 WACA_MacroplotReport_all <- merge(WACA_MacroplotReport_MetaData, WACA_MacroplotReport_SampleEvents, by = c("Macroplot")) %>%
   select(!MonStatusOrd)
 
-# WACA merge Macroplot Report and Sample Event Report
-WACA_MetadataReport <- merge(WACA_MacroplotReport_all, WACA_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>%
+
+##############################################
+##############################################
+
+#### Merge all admin units
+
+# Macroplot Report
+all_MacroplotReport <- rbind(GRCA_MacroplotReport_all, IM_MacroplotReport_all, WACA_MacroplotReport_all)
+
+##############################################
+
+# Sample Event Report
+all_SampleEventReport <- rbind(GRCA_SampleEventReport, IM_SampleEventReport, WACA_SampleEventReport)
+
+##############################################
+
+# Project Unit Report
+all_ProjectUnitReport <- rbind(GRCA_ProjectUnitReport, IM_ProjectUnitReport, WACA_ProjectUnitReport)
+
+##############################################
+##############################################
+
+#### Merge Macroplot Report and Sample Event Report
+
+# Filter Sample Event Report for merging
+all_SampleEventReport_merge <- all_SampleEventReport %>%
+  filter(!ProjectUnit %in% c("z2014 + 2017_Slopes RX", "z2017_Tipover East RX", "z2017_Slopes RX", "zHiSevMSO", "zSRIMRx2024Spring_Latest")) %>%
+  filter(!ProjectUnit %in% c("ALL_FMH", "ALL_RAP_NRim", "ALL_RAP_SRim")) %>%
+  select(!c(Multi_PU, SampleEventDate_Year, LegacyMonitoringStatus))
+
+# Merge for Metadata
+all_MetadataReport <- merge(all_MacroplotReport, all_SampleEventReport_merge, by = c("Macroplot", "SampleEventDate", "MonStatus")) %>%
   relocate(AdministrationUnit_Name, .before = Park) %>%
-  relocate(ProjectUnit_Name, .before = Purpose) %>%
+  relocate(ProjectUnit, .before = Purpose) %>%
   relocate(Macroplot, .after = MetaData) %>%
   relocate(SampleEventDate, .before = SampleEventDate_Year) %>%
   relocate(MonStatus, .after = LegacyMonStatus)
 
-# merge all admin units
-all_MetadataReport <- rbind(GRCA_MetadataReport, IM_MetadataReport, WACA_MetadataReport)
+##############################################
+##############################################
+
+#### Merge Metadata report with monitoring status summary and disturbance history summary
 
 # merge monitoring status summary
 all_MetadataReport <- merge(all_MetadataReport, all_MonStatus, by = c("MonStatus"), all = T) %>%
@@ -789,6 +813,11 @@ all_MetadataReport <- merge(all_MetadataReport, all_DisturbanceHistory, by = c("
 ##############################################
 ##############################################
 
-## Save file
+## Save files
 
-write.csv(all_MetadataReport, paste0(path_output, "all_MetadataReport.csv"))
+write.csv(all_MonStatus, paste0(path_dataclean, "all_MonStatus.csv"), row.names = FALSE)
+write.csv(all_DisturbanceHistory, paste0(path_dataclean, "all_DisturbanceHistory.csv"), row.names = FALSE)
+write.csv(all_MacroplotReport, paste0(path_dataclean, "all_MacroplotReport.csv"), row.names = FALSE)
+write.csv(all_SampleEventReport, paste0(path_dataclean, "all_SampleEventReport.csv"), row.names = FALSE)
+write.csv(all_ProjectUnitReport, paste0(path_dataclean, "all_ProjectUnitReport.csv"), row.names = FALSE)
+write.csv(all_MetadataReport, paste0(path_dataclean, "all_MetadataReport.csv"), row.names = FALSE)
