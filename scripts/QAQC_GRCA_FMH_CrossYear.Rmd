@@ -36,7 +36,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 # tidyverse and dplyr have lots of useful functions for data cleaning
 library(tidyverse)
 library(dplyr)
-library(plyr)
+#library(plyr)
 # janitor has functions to find duplicates
 library(janitor)
 # EnvStats is needed for the rosnerTest() function
@@ -70,10 +70,10 @@ path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
 
 ```{r}
 # Blank data frame
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "TagNo" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 
 # QAQC function
-qaqc <- function(data, query, query_message, values_check) {
+qaqc_CrossYear <- function(data, query, query_message, values_check) {
   
   # Check if there is data to QAQC
   if(nrow(data) == 0) {
@@ -101,7 +101,7 @@ qaqc <- function(data, query, query_message, values_check) {
     # NA values are treated as "false" (missing data is not valid)
     filter(!(values_check %>% replace_na(FALSE))) %>%   
     # Select relevant columns to view errors
-    select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+    select("SavedQuery", "MacroPlot.Name", "Date", "TagNo", "Error", "Fixed", "Explanation", "Queryers")
   
   # Next, check if there are duplicate errors
   errors_temp <- errors %>% 
@@ -204,13 +204,13 @@ FuelsFine_header <- FuelsFine_all %>%
 # Trees
 #####
 # Ensure blanks in Visited column are NA 
-Trees_all$Visited[Trees_all$Visited==""] <- NA  
+Trees_all$Visited[Trees_all$Visited==""] <- NA
 # Trees data
 Trees_data <- Trees_all %>%   
   filter(is.na(Visited))  
 # Trees headers
-Trees_header <- Trees_all %>%   
-  filter(!is.na(Visited))
+# Trees_header <- Trees_all %>%   
+#   filter(!is.na(Visited))
 ```
 
 # PROTOCOL - SURFACE FUELS
@@ -235,29 +235,124 @@ This code conducts quality control checks on tree data within the "Trees - Indiv
 
 It checks for errors in:
 
+### Create Cross Year columns in dataframe
+
+```{r}
+# NOTE: must use dplyr instead of plyr
+
+data_temp <- Trees_data %>% 
+  select(TagNo, MacroPlot.Name, Date, SubFrac, Status, DBH) %>% 
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(Status_Count = n_distinct(unique(Status))) %>% 
+  ungroup() %>% 
+  arrange(TagNo, MacroPlot.Name, Date, SubFrac)
+```
+
+```{r}
+# add min death date to data_temp
+data_temp_Status_AllDead <- data_temp %>% 
+  filter(Status_Count == 1 & Status == "D")
+data_temp_Status_SomeDead <- data_temp %>% 
+  filter(Status_Count > 1)
+data_temp_Status <- rbind(data_temp_Status_AllDead, data_temp_Status_SomeDead)
+
+data_temp_MinDeadDate <- data_temp_Status %>% 
+  filter(Status == "D") %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MinDeadDate = min(Date)) %>% 
+  select(TagNo, MacroPlot.Name, SubFrac, MinDeadDate) %>% 
+  unique()
+
+data_temp_Status_merge <- merge(data_temp_Status, data_temp_MinDeadDate, all = T)
+```
+
+```{r}
+# add DBH changes to data_temp
+data_temp_DBH <- data_temp %>% 
+  filter(Status == "D",
+         !is.na(DBH)) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MinDBH = min(DBH),
+         DBHDiff = DBH - MinDBH) %>% 
+  ungroup()
+
+data_temp_MinDBHDate <- data_temp_DBH %>% 
+  filter(DBH == MinDBH) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MinDBHDate = min(Date)) %>% 
+  select(TagNo, MacroPlot.Name, SubFrac, MinDBHDate) %>% 
+  unique()
+
+data_temp_DBH_merge <- merge(data_temp_DBH, data_temp_MinDBHDate, all = T)
+```
+
+```{r}
+data_temp_merge <- merge(data_temp_Status_merge, data_temp_DBH_merge, all = T)
+data_temp <- merge(data_temp, data_temp_merge, all = T)
+```
+
 ### Trees Completeness
 
 (tree info not updated, old data exists)
 
-### Trees CBH Decrease
+### Trees CBH
 
-### Trees DBH Decrease
-
-### Trees Height Decrease
-
-### Trees Status Change
+#### Live CBH Decrease
 
 ```{r}
-Trees_data %>% 
-  filter(MacroPlot.Purpose == "PIAB",
-         MacroPlot.Name == "PIAB 20") %>% 
-  mutate(SubFrac = factor(SubFrac),
+
+```
+
+### Trees DBH
+
+#### Dead DBH Increase
+
+```{r}
+# Set parameters 
+data <- data_temp %>% 
+  filter(Status == "D",
+         !is.na(DBH),
+         DBH > MinDBH,
+         DBHDiff >= 1)
+
+query <- "Trees Dead DBH Increase" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Min DBH = ", data$MinDBH, " on date")
+values_data <- data$MinDBHDate
+values_valid <- data$Date
+values_check <- values_data >= values_valid
+
+# Identify errors
+errors_Trees_DeadDBHIncrease <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, TagNo, Date) %>% 
+  select(!TagNo)
+# Dead DBH should not be increasing. Ok if decreases...
+```
+
+#### Live DBH Decrease
+
+```{r}
+
+```
+
+### Trees Height
+
+#### Live Height Decrease
+
+```{r}
+graph_Trees_data <- Trees_data %>% 
+    mutate(SubFrac = factor(SubFrac),
          TagNo = factor(TagNo),
          Status = factor(Status),
          CrwnCl = factor(CrwnCl, levels = c("X", "",
                                             "SC", "I", "C", "D",
                                             "RS", "LBS", "CS", "BAD", 
-                                            "BBD", "CUS", "DD"))) %>% 
+                                            "BBD", "CUS", "DD")))
+```
+
+```{r}
+graph_Trees_data %>% 
+  filter(MacroPlot.Name == "PIAB 03") %>% 
   arrange(Date) %>% 
   ggplot(aes(x = Year, y = TagNo)) +
   geom_line(aes(group = TagNo, color = Status), size = 1) +
@@ -279,4 +374,47 @@ Trees_data %>%
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
 ```
 
-### Trees TagNo Change
+### Trees Status
+
+#### Dead to Live
+
+[Problem:]{.underline} Trees which were recorded Dead in a prior year are recorded Live
+
+[Procedure:]{.underline}
+
+-   Filter for Status = L. Check that sample data is not greater than the death date.
+
+```{r}
+# Set parameters 
+data <- data_temp %>% 
+  filter(Status == "L")
+query <- "Trees Dead to Live" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "Death date")
+values_data <- data$MinDeadDate
+values_valid <- data$Date
+values_check <- (values_data >= values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_Trees_DtoL <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, TagNo, Date) %>% 
+  select(!TagNo)
+```
+
+#### 
+
+#### 
+
+#### Combine Cross Year Errors
+
+```{r}
+# Combine
+errors_Trees_CrossYear <- unique(rbind())
+
+remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
+
+if(nrow(errors_Trees_CrossYear) > 1) {
+  errors_Trees_CrossYear <- errors_Trees_CrossYear %>%
+    filter(Error != "No Error")
+} else {
+  errors_Trees_CrossYear <- errors_Trees_CrossYear}
+```
