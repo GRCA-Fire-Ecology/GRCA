@@ -63,14 +63,15 @@ path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/
 path_errors_name <- "2023 GRCA FMH PIED QAQC Errors"
 
 path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
+#path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
 ```
 
 ### Create Function
 
 ```{r}
 # Blank data frame
-errors_blank <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "TagNo" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "TagNo" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
 # QAQC function
 qaqc_CrossYear <- function(data, query, query_message, values_check) {
@@ -147,6 +148,8 @@ Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -158,6 +161,8 @@ FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -169,6 +174,8 @@ Trees_all <- Trees_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 ```
@@ -240,20 +247,196 @@ It checks for errors in:
 ```{r}
 # NOTE: must use dplyr instead of plyr
 
-data_temp <- Trees_data %>% 
-  select(TagNo, MacroPlot.Name, Date, SubFrac, Status, DBH) %>% 
-  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
+Trees_data_CrossYear <- Trees_data
+```
+
+#### CBH Columns
+
+-   MaxCBH = What is the tallest recorded CBH of each individual **live** tree? (Dead trees do not have CBH)
+
+-   MaxCBHDate = What date was the tallest CBH recorded?
+
+-   MaxCBHDiff = What is the size difference between the tallest recorded CBH, and the sample event CBH?
+
+```{r}
+data_temp_CBH <- Trees_data_CrossYear %>% 
+  filter(Status == "L",
+         !is.na(LiCrBHt)) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MaxCBH = max(LiCrBHt),
+         MaxCBHDiff = MaxCBH - LiCrBHt) %>% 
+  ungroup() %>% 
+  arrange(TagNo, MacroPlot.Name, Date, SubFrac)
+
+data_temp_MaxCBHDate <- data_temp_CBH %>% 
+  filter(LiCrBHt == MaxCBH) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MaxCBHDate = max(Date)) %>% 
+  select(TagNo, MacroPlot.Name, SubFrac, MaxCBHDate) %>% 
+  unique()
+
+data_temp_merge_CBH <- merge(data_temp_CBH, data_temp_MaxCBHDate, all = T)
+remove(data_temp_CBH, data_temp_MaxCBHDate)
+```
+
+#### DBH Columns
+
+-   MinDBH = What is the smallest recorded DBH of each individual **dead** tree?
+
+-   MinDBHDate = What date was the smallest DBH recorded?
+
+-   MinDBHDiff = What is the size difference between the smallest recorded DBH, and the sample event DBH?
+
+-   MaxDBH = What is the largest recorded DBH of each individual **live** tree?
+
+-   MaxDBHDate = What date was the largest DBH recorded?
+
+-   MaxDBHDiff = What is the size difference between the largest recorded DBH, and the sample event DBH?
+
+```{r}
+data_temp_DBH <- Trees_data_CrossYear %>% 
+  filter(Status == "D",
+         !is.na(DBH)) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MinDBH = min(DBH),
+         MinDBHDiff = DBH - MinDBH) %>% 
+  ungroup() %>% 
+  arrange(TagNo, MacroPlot.Name, Date, SubFrac)
+
+data_temp_MinDBHDate <- data_temp_DBH %>% 
+  filter(DBH == MinDBH) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MinDBHDate = min(Date)) %>% 
+  select(TagNo, MacroPlot.Name, SubFrac, MinDBHDate) %>% 
+  unique()
+
+data_temp_merge_DeadDBH <- merge(data_temp_DBH, data_temp_MinDBHDate, all = T)
+
+############################################################################################
+
+data_temp_DBH <- Trees_data_CrossYear %>% 
+  filter(Status == "L",
+         !is.na(DBH)) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MaxDBH = max(DBH),
+         MaxDBHDiff = MaxDBH - DBH) %>% 
+  ungroup() %>% 
+  arrange(TagNo, MacroPlot.Name, Date, SubFrac)
+
+data_temp_MaxDBHDate <- data_temp_DBH %>% 
+  filter(DBH == MaxDBH) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MaxDBHDate = max(Date)) %>% 
+  select(TagNo, MacroPlot.Name, SubFrac, MaxDBHDate) %>% 
+  unique()
+
+data_temp_merge_LiveDBH <- merge(data_temp_DBH, data_temp_MaxDBHDate, all = T)
+
+############################################################################################
+
+data_temp_merge_DBH <- merge(data_temp_merge_DeadDBH, data_temp_merge_LiveDBH, all = T)
+remove(data_temp_merge_DeadDBH, data_temp_merge_LiveDBH, data_temp_DBH, data_temp_MinDBHDate, data_temp_MaxDBHDate)
+```
+
+#### Height Columns
+
+-   MinHeight= What is the shortest recorded Height of each individual **dead** tree?
+
+-   MinHeightDate = What date was the shortest Height recorded?
+
+-   MinHeightDiff = What is the size difference between the shortest recorded Height, and the sample event Height?
+
+-   MaxHeight = What is the tallest recorded Height of each individual **live** tree?
+
+-   MaxHeightDate = What date was the tallest Height recorded?
+
+-   MaxHeightDiff = What is the size difference between the tallest recorded Height, and the sample event Height?
+
+```{r}
+data_temp_Height <- Trees_data_CrossYear %>% 
+  filter(Status == "D",
+         !is.na(Ht)) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MinHeight = min(Ht),
+         MinHeightDiff = Ht - MinHeight) %>% 
+  ungroup() %>% 
+  arrange(TagNo, MacroPlot.Name, Date, SubFrac)
+
+data_temp_MinHeightDate <- data_temp_Height %>% 
+  filter(Ht == MinHeight) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MinHeightDate = min(Date)) %>% 
+  select(TagNo, MacroPlot.Name, SubFrac, MinHeightDate) %>% 
+  unique()
+
+data_temp_merge_DeadHeight <- merge(data_temp_Height, data_temp_MinHeightDate, all = T)
+
+############################################################################################
+
+data_temp_Height <- Trees_data_CrossYear %>% 
+  filter(Status == "L",
+         !is.na(Ht)) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MaxHeight = max(Ht),
+         MaxHeightDiff = MaxHeight - Ht) %>% 
+  ungroup() %>% 
+  arrange(TagNo, MacroPlot.Name, Date, SubFrac)
+
+data_temp_MaxHeightDate <- data_temp_Height %>% 
+  filter(Ht == MaxHeight) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(MaxHeightDate = max(Date)) %>% 
+  select(TagNo, MacroPlot.Name, SubFrac, MaxHeightDate) %>% 
+  unique()
+
+data_temp_merge_LiveHeight <- merge(data_temp_Height, data_temp_MaxHeightDate, all = T)
+
+############################################################################################
+
+data_temp_merge_Height <- merge(data_temp_merge_DeadHeight, data_temp_merge_LiveHeight, all = T)
+remove(data_temp_merge_DeadHeight, data_temp_merge_LiveHeight, data_temp_Height, data_temp_MinHeightDate, data_temp_MaxHeightDate)
+```
+
+#### Species Columns
+
+-   Species_Count = How many unique species have been recorded for each individual tree? Count \> 1 means that the tree has changed species.
+
+```{r}
+Trees_data_CrossYear_Species <- Trees_data_CrossYear %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(Species_Count = n_distinct(unique(Species.Symbol))) %>% 
+  ungroup() %>% 
+  arrange(TagNo, MacroPlot.Name, Date, SubFrac)
+
+data_temp_Species <- Trees_data_CrossYear_Species %>% 
+  filter(Species_Count > 1) %>% 
+  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
+  mutate(Species_Change = ifelse(duplicated(Species.Symbol), "N", "Y")) %>% 
+  filter(Species_Change == "Y") %>% 
+  #select(TagNo, MacroPlot.Name, SubFrac, Species_Change) %>% 
+  unique()
+
+data_temp_merge_Species <- data_temp_Species
+remove(Trees_data_CrossYear_Species, data_temp_Species)
+```
+
+#### Status Columns
+
+-   Status_Count = How many unique statuses have been recorded for each individual tree? Count of 1 means that the tree has been alive or dead for the entirety of data collection. Count of 2 means that the tree has been both alive and dead.
+
+-   MinDeadDate = What date was the tree first recorded as Dead?
+
+```{r}
+Trees_data_CrossYear_Status <- Trees_data_CrossYear %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
   mutate(Status_Count = n_distinct(unique(Status))) %>% 
   ungroup() %>% 
   arrange(TagNo, MacroPlot.Name, Date, SubFrac)
-```
 
-```{r}
 # add min death date to data_temp
-data_temp_Status_AllDead <- data_temp %>% 
+data_temp_Status_AllDead <- Trees_data_CrossYear_Status %>% 
   filter(Status_Count == 1 & Status == "D")
-data_temp_Status_SomeDead <- data_temp %>% 
+data_temp_Status_SomeDead <- Trees_data_CrossYear_Status %>% 
   filter(Status_Count > 1)
 data_temp_Status <- rbind(data_temp_Status_AllDead, data_temp_Status_SomeDead)
 
@@ -264,32 +447,27 @@ data_temp_MinDeadDate <- data_temp_Status %>%
   select(TagNo, MacroPlot.Name, SubFrac, MinDeadDate) %>% 
   unique()
 
-data_temp_Status_merge <- merge(data_temp_Status, data_temp_MinDeadDate, all = T)
+data_temp_merge_Status <- merge(data_temp_Status, data_temp_MinDeadDate, all = T)
+remove(Trees_data_CrossYear_Status, data_temp_Status_AllDead, data_temp_Status_SomeDead, data_temp_Status, data_temp_MinDeadDate)
 ```
 
-```{r}
-# add DBH changes to data_temp
-data_temp_DBH <- data_temp %>% 
-  filter(Status == "D",
-         !is.na(DBH)) %>% 
-  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
-  mutate(MinDBH = min(DBH),
-         DBHDiff = DBH - MinDBH) %>% 
-  ungroup()
-
-data_temp_MinDBHDate <- data_temp_DBH %>% 
-  filter(DBH == MinDBH) %>% 
-  group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
-  mutate(MinDBHDate = min(Date)) %>% 
-  select(TagNo, MacroPlot.Name, SubFrac, MinDBHDate) %>% 
-  unique()
-
-data_temp_DBH_merge <- merge(data_temp_DBH, data_temp_MinDBHDate, all = T)
-```
+#### Combine Columns
 
 ```{r}
-data_temp_merge <- merge(data_temp_Status_merge, data_temp_DBH_merge, all = T)
-data_temp <- merge(data_temp, data_temp_merge, all = T)
+# data_temp_merge_CBH
+# data_temp_merge_DBH
+# data_temp_merge_Height
+# data_temp_merge_Species
+# data_temp_merge_Status
+
+data_temp_merge1 <- merge(data_temp_merge_CBH, data_temp_merge_DBH, all = T)
+data_temp_merge2 <- merge(data_temp_merge1, data_temp_merge_Height, all = T)
+data_temp_merge3 <- merge(data_temp_merge2, data_temp_merge_Species, all = T)
+data_temp_merge4 <- merge(data_temp_merge3, data_temp_merge_Status, all = T)
+
+Trees_data_CrossYear <- merge(Trees_data_CrossYear, data_temp_merge4, all = T)
+
+remove(data_temp_merge_CBH, data_temp_merge_DBH, data_temp_merge_Height, data_temp_merge_Species, data_temp_merge_Status, data_temp_merge1, data_temp_merge2, data_temp_merge3, data_temp_merge4)
 ```
 
 ### Trees Completeness
@@ -300,22 +478,72 @@ data_temp <- merge(data_temp, data_temp_merge, all = T)
 
 #### Live CBH Decrease
 
+[Problem:]{.underline} Live trees have Crown Base Height (CBH) which decreases over time.
+
+[Procedure:]{.underline}
+
+-   
+
 ```{r}
 
 ```
 
 ### Trees DBH
 
-#### Dead DBH Increase
+#### Live DBH Decrease
+
+[Problem:]{.underline} Live trees have DBH which decreases over time.
+
+[Procedure:]{.underline}
+
+-   We are concerned with live trees which decrease in DBH while they are still alive.
+
+    -   Filter for live trees which have a DBH smaller than the maximum DBH.
+
+    -   Filter to exclude a certain threshold where the difference in DBH is not a concern.
+
+    -   Ensure that the sample date is *earlier* than the date with the largest recorded DBH (**MaxDBHDate**).
 
 ```{r}
 # Set parameters 
-data <- data_temp %>% 
+data <- Trees_data_CrossYear %>% 
+  filter(Status == "L",
+         !is.na(DBH),
+         MaxDBH > DBH,
+         MaxDBHDiff >= 5)
+query <- "Trees Live DBH Decrease" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Max DBH = ", data$MaxDBH, " on date")
+values_data <- data$MaxDBHDate
+values_valid <- data$Date
+values_check <- values_data >= values_valid
+
+# Identify errors
+errors_Trees_LiveDBHDecrease <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, TagNo, Date) %>% 
+  select(!TagNo)
+```
+
+#### Dead DBH Increase
+
+[Problem:]{.underline} Dead trees have DBH which increases over time.
+
+[Procedure:]{.underline}
+
+-   We are concerned with dead trees which increase DBH post-death.
+
+    -   Filter for dead trees which have a DBH greater than the minimum DBH.
+
+    -   Filter to exclude a certain threshold where the difference in DBH is not a concern.
+
+    -   Ensure that the sample date is *earlier* than the date with the smallest recorded DBH (**MinDBHDate**).
+
+```{r}
+# Set parameters 
+data <- Trees_data_CrossYear %>% 
   filter(Status == "D",
          !is.na(DBH),
          DBH > MinDBH,
-         DBHDiff >= 1)
-
+         MinDBHDiff >= 1)
 query <- "Trees Dead DBH Increase" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Min DBH = ", data$MinDBH, " on date")
 values_data <- data$MinDBHDate
@@ -326,59 +554,94 @@ values_check <- values_data >= values_valid
 errors_Trees_DeadDBHIncrease <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
   arrange(MacroPlot.Name, TagNo, Date) %>% 
   select(!TagNo)
-# Dead DBH should not be increasing. Ok if decreases...
 ```
 
-#### Live DBH Decrease
+#### Combine DBH Errors
 
 ```{r}
+# Combine
+errors_Trees_CrossYear_DBH <- unique(rbind())
 
+remove()
+
+if(nrow(errors_Trees_CrossYear_DBH) > 1) {
+  errors_Trees_CrossYear_DBH <- errors_Trees_CrossYear_DBH %>%
+    filter(Error != "No Error")
+} else {
+  errors_Trees_CrossYear_DBH <- errors_Trees_CrossYear_DBH}
 ```
 
 ### Trees Height
 
 #### Live Height Decrease
 
-```{r}
-graph_Trees_data <- Trees_data %>% 
-    mutate(SubFrac = factor(SubFrac),
-         TagNo = factor(TagNo),
-         Status = factor(Status),
-         CrwnCl = factor(CrwnCl, levels = c("X", "",
-                                            "SC", "I", "C", "D",
-                                            "RS", "LBS", "CS", "BAD", 
-                                            "BBD", "CUS", "DD")))
-```
+[Problem:]{.underline} Live trees have Height which decreases over time.
+
+[Procedure:]{.underline}
+
+-   
 
 ```{r}
-graph_Trees_data %>% 
-  filter(MacroPlot.Name == "PIAB 03") %>% 
-  arrange(Date) %>% 
-  ggplot(aes(x = Year, y = TagNo)) +
-  geom_line(aes(group = TagNo, color = Status), size = 1) +
-  geom_point(aes(fill = Status), shape = 21, size = 3) +
-  theme_light() +
-  scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange")) +
-  scale_color_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
-  # scale_color_manual(values=c('darkgrey', 'darkgrey',
-  #                             'forestgreen', 'forestgreen', 'forestgreen', 'forestgreen',
-  #                             'darkorange', 'darkorange', 'darkorange',
-  #                             'red', 'red', 'red')) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
-        axis.title = element_text(size = 12, face="bold"),
-        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
-        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
-        axis.text.y = element_text(size = 5),
-        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+#### Dead Height Increase
+
+[Problem:]{.underline} Dead trees have Height which increases over time.
+
+[Procedure:]{.underline}
+
+-   
+
+```{r}
+
+```
+
+#### Combine Height Errors
+
+```{r}
+# Combine
+errors_Trees_CrossYear_Height <- unique(rbind())
+
+remove()
+
+if(nrow(errors_Trees_CrossYear_Height) > 1) {
+  errors_Trees_CrossYear_Height <- errors_Trees_CrossYear_Height %>%
+    filter(Error != "No Error")
+} else {
+  errors_Trees_CrossYear_Height <- errors_Trees_CrossYear_Height}
+```
+
+### Trees Species
+
+[Problem:]{.underline} Trees change species over time.
+
+[Procedure:]{.underline}
+
+-   
+
+#### Species Change
+
+```{r}
+# Set parameters 
+data <- Trees_data_CrossYear
+query <- "Trees Species Change" 
+query_message <- paste0("Tag ", data$TagNo, ". ", "Species = ", data$Species.Symbol, ". ", "Species Change")
+values_data <- data$Species_Change
+values_valid <- "Y"
+values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_Trees_Species <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, TagNo, Date) %>% 
+  select(!TagNo)
 ```
 
 ### Trees Status
 
 #### Dead to Live
 
-[Problem:]{.underline} Trees which were recorded Dead in a prior year are recorded Live
+[Problem:]{.underline} Trees change status from D to L over time.
 
 [Procedure:]{.underline}
 
@@ -386,7 +649,7 @@ graph_Trees_data %>%
 
 ```{r}
 # Set parameters 
-data <- data_temp %>% 
+data <- Trees_data_CrossYear %>% 
   filter(Status == "L")
 query <- "Trees Dead to Live" 
 query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "Death date")
@@ -400,21 +663,8 @@ errors_Trees_DtoL <- qaqc_CrossYear(data, query, query_message, values_check) %>
   select(!TagNo)
 ```
 
-#### 
-
-#### 
-
-#### Combine Cross Year Errors
+# ALL ERRORS
 
 ```{r}
-# Combine
-errors_Trees_CrossYear <- unique(rbind())
 
-remove(errors_Trees_DD_DBH, errors_Trees_DD_Ht, errors_Trees_DD_LiCrBHt)
-
-if(nrow(errors_Trees_CrossYear) > 1) {
-  errors_Trees_CrossYear <- errors_Trees_CrossYear %>%
-    filter(Error != "No Error")
-} else {
-  errors_Trees_CrossYear <- errors_Trees_CrossYear}
 ```
