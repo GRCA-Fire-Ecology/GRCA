@@ -60,7 +60,6 @@ getwd()
 # Load in data. Change file path based on user name!
 path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
 path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
-path_errors_name <- "2023 GRCA FMH PIED QAQC Errors"
 
 path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
 #path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
@@ -70,7 +69,7 @@ path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/202
 
 ```{r}
 # Blank data frame
-errors_blank <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "TagNo" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+errors_blank <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "Monitoring.Status" = "", "TagNo" = "", "Status" = "", "DBH" = "", "Ht" = "", "CrwnCl" = "", "LiCrBHt" = "", "Species.Symbol" = "", "Comment" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
   mutate(Date = as.Date(Date))
 
 # QAQC function
@@ -102,7 +101,7 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
     # NA values are treated as "false" (missing data is not valid)
     filter(!(values_check %>% replace_na(FALSE))) %>%   
     # Select relevant columns to view errors
-    select("SavedQuery", "MacroPlot.Name", "Date", "TagNo", "Error", "Fixed", "Explanation", "Queryers")
+    select("SavedQuery", "MacroPlot.Name", "Date", "Monitoring.Status", "TagNo", "Status", "DBH", "Ht", "CrwnCl", "LiCrBHt", "Species.Symbol", "Comment", "Error", "Fixed", "Explanation", "Queryers")
   
   # Next, check if there are duplicate errors
   errors_temp <- errors %>% 
@@ -191,9 +190,7 @@ Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 # Fuels1000 data
 Fuels1000_data <- Fuels1000_all %>%
   filter(is.na(Visited))
-# Fuels1000 headers
-Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited))
+
 
 #####
 # FuelsFine
@@ -203,9 +200,7 @@ FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
 # FuelsFine data
 FuelsFine_data <- FuelsFine_all %>%   
   filter(is.na(Visited))  
-# FuelsFine headers 
-FuelsFine_header <- FuelsFine_all %>%   
-  filter(!is.na(Visited))
+
 
 #####
 # Trees
@@ -213,11 +208,8 @@ FuelsFine_header <- FuelsFine_all %>%
 # Ensure blanks in Visited column are NA 
 Trees_all$Visited[Trees_all$Visited==""] <- NA
 # Trees data
-Trees_data <- Trees_all %>%   
+Trees_data_CrossYear <- Trees_all %>%   
   filter(is.na(Visited))  
-# Trees headers
-# Trees_header <- Trees_all %>%   
-#   filter(!is.na(Visited))
 ```
 
 # PROTOCOL - SURFACE FUELS
@@ -253,7 +245,7 @@ It checks for errors in:
 -   MaxCBHDiff = What is the size difference between the tallest recorded CBH, and the sample event CBH?
 
 ```{r}
-data_temp_CBH <- Trees_data %>% 
+data_temp_CBH <- Trees_data_CrossYear %>% 
   filter(Status == "L",
          !is.na(LiCrBHt)) %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
@@ -288,7 +280,7 @@ remove(data_temp_CBH, data_temp_MaxCBHDate)
 -   MaxDBHDiff = What is the size difference between the largest recorded DBH, and the sample event DBH?
 
 ```{r}
-data_temp_DBH <- Trees_data %>% 
+data_temp_DBH <- Trees_data_CrossYear %>% 
   filter(Status == "D",
          !is.na(DBH)) %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
@@ -308,7 +300,7 @@ data_temp_merge_DeadDBH <- merge(data_temp_DBH, data_temp_MinDBHDate, all = T)
 
 ############################################################################################
 
-data_temp_DBH <- Trees_data %>% 
+data_temp_DBH <- Trees_data_CrossYear %>% 
   filter(Status == "L",
          !is.na(DBH)) %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
@@ -347,7 +339,7 @@ remove(data_temp_merge_DeadDBH, data_temp_merge_LiveDBH, data_temp_DBH, data_tem
 -   MaxHeightDiff = What is the size difference between the tallest recorded Height, and the sample event Height?
 
 ```{r}
-data_temp_Height <- Trees_data %>% 
+data_temp_Height <- Trees_data_CrossYear %>% 
   filter(Status == "D",
          !is.na(Ht)) %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
@@ -367,7 +359,7 @@ data_temp_merge_DeadHeight <- merge(data_temp_Height, data_temp_MinHeightDate, a
 
 ############################################################################################
 
-data_temp_Height <- Trees_data %>% 
+data_temp_Height <- Trees_data_CrossYear %>% 
   filter(Status == "L",
          !is.na(Ht)) %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
@@ -396,7 +388,7 @@ remove(data_temp_merge_DeadHeight, data_temp_merge_LiveHeight, data_temp_Height,
 -   Species_Count = How many unique species have been recorded for each individual tree? Count \> 1 means that the tree has changed species.
 
 ```{r}
-Trees_data_CrossYear_Species <- Trees_data %>% 
+Trees_data_CrossYear_Species <- Trees_data_CrossYear %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
   mutate(Species_Count = n_distinct(unique(Species.Symbol))) %>% 
   ungroup() %>% 
@@ -421,7 +413,7 @@ remove(Trees_data_CrossYear_Species, data_temp_Species)
 -   MinDeadDate = What date was the tree first recorded as Dead?
 
 ```{r}
-Trees_data_CrossYear_Status <- Trees_data %>% 
+Trees_data_CrossYear_Status <- Trees_data_CrossYear %>% 
   group_by(TagNo, MacroPlot.Name, SubFrac) %>% 
   mutate(Status_Count = n_distinct(unique(Status))) %>% 
   ungroup() %>% 
@@ -467,20 +459,19 @@ remove(Trees_data_CrossYear_Status, data_temp_Status_AllDead, data_temp_Status_S
 
 ```{r}
 # Set parameters 
-data <- merge(Trees_data, data_temp_merge_CBH, all = T) %>% 
+data <- merge(Trees_data_CrossYear, data_temp_merge_CBH, all = T) %>% 
   filter(Status == "L", !is.na(LiCrBHt),
          # set threshold of concern
          MaxCBHDiff >= 5)
 query <- "Trees Live CBH Decrease" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "CBH = ", data$LiCrBHt, ". ", "Max CBH = ", data$MaxCBH, " on date")
+query_message <- paste0("LiCrBHt (CBH) = ", data$LiCrBHt, ". ", "Max CBH = ", data$MaxCBH, " on date")
 values_data <- data$MaxCBHDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
 errors_Trees_CrossYear_CBH <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date) %>% 
-  select(!TagNo)
+  arrange(MacroPlot.Name, TagNo, Date)
 ```
 
 ### Trees DBH
@@ -497,20 +488,19 @@ errors_Trees_CrossYear_CBH <- qaqc_CrossYear(data, query, query_message, values_
 
 ```{r}
 # Set parameters 
-data <- merge(Trees_data, data_temp_merge_DBH, all = T) %>% 
+data <- merge(Trees_data_CrossYear, data_temp_merge_DBH, all = T) %>% 
   filter(Status == "L", !is.na(DBH),
          # set threshold of concern
          MaxDBHDiff >= 5)
 query <- "Trees Live DBH Decrease" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Max DBH = ", data$MaxDBH, " on date")
+query_message <- paste0("Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Max DBH = ", data$MaxDBH, " on date")
 values_data <- data$MaxDBHDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
 errors_Trees_LiveDBHDecrease <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date) %>% 
-  select(!TagNo)
+  arrange(MacroPlot.Name, TagNo, Date)
 ```
 
 #### Dead DBH Increase
@@ -525,20 +515,19 @@ errors_Trees_LiveDBHDecrease <- qaqc_CrossYear(data, query, query_message, value
 
 ```{r}
 # Set parameters 
-data <- merge(Trees_data, data_temp_merge_DBH, all = T) %>% 
+data <- merge(Trees_data_CrossYear, data_temp_merge_DBH, all = T) %>% 
   filter(Status == "D", !is.na(DBH),
          # set threshold of concern
          MinDBHDiff >= 5)
 query <- "Trees Dead DBH Increase" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Min DBH = ", data$MinDBH, " on date")
+query_message <- paste0("Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Min DBH = ", data$MinDBH, " on date")
 values_data <- data$MinDBHDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
 errors_Trees_DeadDBHIncrease <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date) %>% 
-  select(!TagNo)
+  arrange(MacroPlot.Name, TagNo, Date)
 ```
 
 #### Combine DBH Errors
@@ -570,20 +559,19 @@ if(nrow(errors_Trees_CrossYear_DBH) > 1) {
 
 ```{r}
 # Set parameters 
-data <- merge(Trees_data, data_temp_merge_Height, all = T) %>% 
+data <- merge(Trees_data_CrossYear, data_temp_merge_Height, all = T) %>% 
   filter(Status == "L", !is.na(Ht),
          # set threshold of concern
          MaxHeightDiff >= 5)
 query <- "Trees Live Height Decrease" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "Height = ", data$Ht, ". ", "Max Height = ", data$MaxHeight, " on date")
+query_message <- paste0("Status = ", data$Status, ". ", "Height = ", data$Ht, ". ", "Max Height = ", data$MaxHeight, " on date")
 values_data <- data$MaxHeightDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
 errors_Trees_LiveHeightDecrease <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date) %>% 
-  select(!TagNo)
+  arrange(MacroPlot.Name, TagNo, Date)
 ```
 
 #### Dead Height Increase
@@ -598,20 +586,19 @@ errors_Trees_LiveHeightDecrease <- qaqc_CrossYear(data, query, query_message, va
 
 ```{r}
 # Set parameters 
-data <- merge(Trees_data, data_temp_merge_Height, all = T) %>% 
+data <- merge(Trees_data_CrossYear, data_temp_merge_Height, all = T) %>% 
   filter(Status == "D", !is.na(Ht),
          # set threshold of concern
          MinHeightDiff >= 5)
 query <- "Trees Dead Height Increase" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "Height = ", data$Ht, ". ", "Min Height = ", data$MinHeight, " on date")
+query_message <- paste0("Status = ", data$Status, ". ", "Height = ", data$Ht, ". ", "Min Height = ", data$MinHeight, " on date")
 values_data <- data$MinHeightDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
 errors_Trees_DeadHeightIncrease <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date) %>% 
-  select(!TagNo)
+  arrange(MacroPlot.Name, TagNo, Date)
 ```
 
 #### Combine Height Errors
@@ -641,17 +628,16 @@ if(nrow(errors_Trees_CrossYear_Height) > 1) {
 
 ```{r}
 # Set parameters 
-data <- merge(Trees_data, data_temp_merge_Species, all = T)
+data <- merge(Trees_data_CrossYear, data_temp_merge_Species, all = T)
 query <- "Trees Species Change" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Species = ", data$Species.Symbol, ". ", "Species Change")
+query_message <- paste0("Species = ", data$Species.Symbol, ". ", "Species Change")
 values_data <- data$Species_Change
 values_valid <- "Y"
 values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
 errors_Trees_CrossYear_Species <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date) %>% 
-  select(!TagNo)
+  arrange(MacroPlot.Name, TagNo, Date)
 ```
 
 ### Trees Status
@@ -666,18 +652,17 @@ errors_Trees_CrossYear_Species <- qaqc_CrossYear(data, query, query_message, val
 
 ```{r}
 # Set parameters 
-data <- merge(Trees_data, data_temp_merge_Status, all = T) %>% 
+data <- merge(Trees_data_CrossYear, data_temp_merge_Status, all = T) %>% 
   filter(Status == "L")
 query <- "Trees Dead to Live" 
-query_message <- paste0("Tag ", data$TagNo, ". ", "Status = ", data$Status, ". ", "Death date")
+query_message <- paste0("Status = ", data$Status, ". ", "Death date")
 values_data <- data$MinDeadDate
 values_valid <- data$Date
 values_check <- (values_data >= values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
 errors_Trees_CrossYear_Status <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date) %>% 
-  select(!TagNo)
+  arrange(MacroPlot.Name, TagNo, Date)
 ```
 
 # ALL ERRORS
