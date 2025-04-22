@@ -69,7 +69,7 @@ path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/202
 
 ```{r}
 # Blank data frame
-errors_blank <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "Monitoring.Status" = "", "TagNo" = "", "Status" = "", "DBH" = "", "Ht" = "", "CrwnCl" = "", "LiCrBHt" = "", "Species.Symbol" = "", "Comment" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+errors_blank_CrossYear <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "Monitoring.Status" = "", "TagNo" = "", "Status" = "", "DBH" = "", "Ht" = "", "CrwnCl" = "", "LiCrBHt" = "", "Species.Symbol" = "", "Comment" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
   mutate(Date = as.Date(Date))
 
 # QAQC function
@@ -78,7 +78,7 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
   # Check if there is data to QAQC
   if(nrow(data) == 0) {
   # If there is no data, default to "No Error" data frame
-  errors <- errors_blank %>%
+  errors <- errors_blank_CrossYear %>%
     mutate(SavedQuery = query,
            Error = "No Error")
   # If there is data, perform error check
@@ -117,7 +117,7 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
   # Check if there are no errors
   if (nrow(errors) == 0) {  
     # If there are no errors, default to "No Error" data frame
-    errors <- errors_blank %>%
+    errors <- errors_blank_CrossYear %>%
       mutate(SavedQuery = query,
              Error = "No Error")
     # If there are errors, keep error log you just created
@@ -445,6 +445,48 @@ remove(Trees_data_CrossYear_Status, data_temp_Status_AllDead, data_temp_Status_S
 
 -   need to think through this... get dupes?
 
+```{r}
+data_temp <- Trees_data_CrossYear %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  filter(Status == "L") %>% 
+  mutate(Tree_Count = n_distinct(unique(TagNo))) %>%
+  get_dupes(MacroPlot.Name, QTR, SubFrac, TagNo, Status, DBH, Ht, CrwnCl, LiCrBHt, CharHt, ScorchHt, CrScPct, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5) %>%
+  ungroup()
+
+data_temp1 <- Trees_data_CrossYear %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+    filter(Status == "L") %>% 
+  mutate(Tree_Count = n_distinct(unique(TagNo))) %>%
+  get_dupes(MacroPlot.Name, QTR, SubFrac, TagNo, Status, DBH, Ht, CrwnCl, LiCrBHt, CharHt, ScorchHt, CrScPct, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5) %>%
+  ungroup() %>% 
+  select(MacroPlot.Name, Date, Tree_Count, dupe_count) %>% 
+  arrange(MacroPlot.Name, Date) %>% 
+  unique()
+
+
+data_temp <- merge(data_temp1, data_temp2, by = c("MacroPlot.Name", "Date"), all.x = T)
+
+
+# Set parameters 
+data <- merge(Trees_data, data_temp, all.x = T) %>% 
+  group_by(MacroPlot.Name, Date) %>% 
+  filter(Status == "L") %>% 
+  mutate(Tree_Count = n_distinct(unique(TagNo))) %>%
+  get_dupes(MacroPlot.Name, QTR, SubFrac, TagNo, Status, DBH, Ht, CrwnCl, LiCrBHt, CharHt, ScorchHt, CrScPct, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5) %>%
+  ungroup()
+data$dupe_count[is.na(data$dupe_count)] <- 0
+query <- "Trees Duplicates" 
+query_message <- paste0("Duplicates")
+values_data <- data$dupe_count
+values_valid <- data$Tree_Count
+values_check <- values_data != values_valid
+
+# Identify errors
+errors_Trees_Duplicate <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, TagNo, Date)
+
+```
+
 ### Trees CBH
 
 #### Live CBH Decrease
@@ -455,7 +497,7 @@ remove(Trees_data_CrossYear_Status, data_temp_Status_AllDead, data_temp_Status_S
 
 -   Filter for Status = L. Filter to exclude a certain threshold where the difference in CBH is not a concern. Remaining entries should include all CBHs that are smaller than the maximum CBH.
 
--   We are concerned with live trees which decrease in CBH over time. Ensure that the sample event date is *earlier* than the date with the tallest recorded CBH (**MaxCBHDate**).
+-   We are concerned with live trees which decrease in CBH over time. Ensure that each sample event date is *earlier* than the date with the tallest recorded CBH (**MaxCBHDate**).
 
 ```{r}
 # Set parameters 
@@ -484,7 +526,7 @@ errors_Trees_CrossYear_CBH <- qaqc_CrossYear(data, query, query_message, values_
 
 -   Filter for Status = L. Filter to exclude a certain threshold where the difference in DBH is not a concern. Remaining entries should include all DBHs that are smaller than the maximum DBH.
 
--   We are concerned with live trees which decrease in DBH while they are still alive. Ensure that the sample event date is *earlier* than the date with the largest recorded DBH (**MaxDBHDate**).
+-   We are concerned with live trees which decrease in DBH while they are still alive. Ensure that each sample event date is *earlier* than the date with the largest recorded DBH (**MaxDBHDate**).
 
 ```{r}
 # Set parameters 
@@ -511,7 +553,7 @@ errors_Trees_LiveDBHDecrease <- qaqc_CrossYear(data, query, query_message, value
 
 -   Filter for Status = D. Filter to exclude a certain threshold where the difference in DBH is not a concern. Remaining entries should include all DBHs that are larger than the minimum DBH.
 
--   We are concerned with dead trees which increase DBH post-death. Ensure that the sample event date is *earlier* than the date with the smallest recorded DBH (**MinDBHDate**).
+-   We are concerned with dead trees which increase DBH post-death. Ensure that each sample event date is *earlier* than the date with the smallest recorded DBH (**MinDBHDate**).
 
 ```{r}
 # Set parameters 
@@ -555,7 +597,7 @@ if(nrow(errors_Trees_CrossYear_DBH) > 1) {
 
 -   Filter for Status = L. Filter to exclude a certain threshold where the difference in Height is not a concern. Remaining entries should include all Heights that are shorter than the maximum Height.
 
--   We are concerned with live trees which decrease in Height over time. Ensure that the sample event date is *earlier* than the date with the tallest recorded Height (**MaxHeightDate**).
+-   We are concerned with live trees which decrease in Height over time. Ensure that each sample event date is *earlier* than the date with the tallest recorded Height (**MaxHeightDate**).
 
 ```{r}
 # Set parameters 
@@ -582,7 +624,7 @@ errors_Trees_LiveHeightDecrease <- qaqc_CrossYear(data, query, query_message, va
 
 -   Filter for Status = D. Filter to exclude a certain threshold where the difference in Height is not a concern. Remaining entries should include all Heights that are taller than the minimum Height.
 
--   We are concerned with dead trees which increase in Height over time. Ensure that the sample event date is *earlier* than the date with the shortest recorded Height (**MinHeightDate**).
+-   We are concerned with dead trees which increase in Height over time. Ensure that each sample event date is *earlier* than the date with the shortest recorded Height (**MinHeightDate**).
 
 ```{r}
 # Set parameters 
