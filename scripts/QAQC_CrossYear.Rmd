@@ -24,10 +24,12 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ### Install Packages (if needed)
 
 ```{r}
+# install.packages("here")
 # install.packages("tidyverse")
 # install.packages("Rtools")
 # install.packages("janitor")
 # install.packages("condformat")
+# install.packages("knitr")
 ```
 
 ### Load Packages

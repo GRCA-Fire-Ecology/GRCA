@@ -80,10 +80,38 @@ Trees_data <- Trees_all %>%
   filter(is.na(Visited))
 ```
 
+### Isolate Problematic Tree Tags
+
+```{r}
+#unique(Trees_data_CrossYear$MacroPlot.Name)
+target_plot <- "PIAB 15"
+```
+
+```{r}
+plot_CBH <- errors_Trees_CrossYear_CBH %>% 
+  filter(MacroPlot.Name == target_plot)
+plot_DBH <- errors_Trees_CrossYear_DBH %>% 
+  filter(MacroPlot.Name == target_plot)
+plot_Height <- errors_Trees_CrossYear_Height %>% 
+  filter(MacroPlot.Name == target_plot)
+plot_Species <- errors_Trees_CrossYear_Species %>% 
+  filter(MacroPlot.Name == target_plot)
+plot_Status <- errors_Trees_CrossYear_Status %>% 
+  filter(MacroPlot.Name == target_plot)
+
+badtags_CBH <- unique(plot_CBH$TagNo)
+badtags_DBH <- unique(plot_DBH$TagNo)
+badtags_Height <- unique(plot_Height$TagNo)
+badtags_Species <- unique(plot_Species$TagNo)
+badtags_Status <- unique(plot_Status$TagNo)
+
+badtags <- unique(c(badtags_CBH, badtags_DBH, badtags_Height, badtags_Species, badtags_Status))
+```
+
 # Trees
 
 ```{r}
-graph_Trees_data <- Trees_data %>% 
+graph_Trees_data <- Trees_data_CrossYear %>% 
     mutate(SubFrac = factor(SubFrac),
          TagNo = factor(TagNo),
          Status = factor(Status),
@@ -93,11 +121,102 @@ graph_Trees_data <- Trees_data %>%
                                             "BBD", "CUS", "DD")))
 ```
 
+### CBH
+
+```{r}
+graph_Trees_data %>% 
+  filter(MacroPlot.Name == target_plot,
+         TagNo %in% c(badtags_CBH)) %>% 
+  arrange(Date) %>% 
+  ggplot(aes(x = Year, y = LiCrBHt)) +
+  geom_line(aes(group = TagNo, color = TagNo), size = 1) +
+  geom_point(aes(fill = Status), shape = 21, size = 3) +
+  scale_fill_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
+  #facet_wrap(~SubFrac) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+### DBH
+
+```{r}
+graph_Trees_data %>% 
+  filter(MacroPlot.Name == target_plot,
+         TagNo %in% c(badtags_DBH)) %>% 
+  arrange(Date) %>% 
+  ggplot(aes(x = Year, y = DBH)) +
+  geom_line(aes(group = TagNo, color = TagNo), size = 1) +
+  geom_point(aes(fill = Status), shape = 21, size = 3) +
+  scale_fill_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
+  facet_wrap(~Status) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+### Height
+
+```{r}
+graph_Trees_data %>% 
+  filter(MacroPlot.Name == target_plot,
+         TagNo %in% c(badtags_Height)) %>% 
+  arrange(Date) %>% 
+  ggplot(aes(x = Year, y = Ht)) +
+  geom_line(aes(group = TagNo, color = TagNo), size = 1) +
+  geom_point(aes(fill = Status), shape = 21, size = 3) +
+  scale_fill_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
+  facet_wrap(~Status) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
+### Species
+
+```{r}
+graph_Trees_data %>% 
+  filter(MacroPlot.Name == target_plot,
+         TagNo %in% c(badtags_Species)) %>% 
+  arrange(Date) %>% 
+  ggplot(aes(x = Year, y = TagNo)) +
+  geom_line(aes(group = TagNo, color = Species.Symbol), size = 1) +
+  geom_point(aes(fill = Species.Symbol), shape = 21, size = 3) +
+  theme_light() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
+        axis.title = element_text(size = 12, face="bold"),
+        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
+        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
+        axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+```
+
 ### Status
 
 ```{r}
 graph_Trees_data %>% 
-  filter(MacroPlot.Name == "PIAB 03") %>% 
+  filter(MacroPlot.Name == target_plot,
+         TagNo %in% c(badtags_Status)) %>% 
   arrange(Date) %>% 
   ggplot(aes(x = Year, y = TagNo)) +
   geom_line(aes(group = TagNo, color = Status), size = 1) +
@@ -105,10 +224,6 @@ graph_Trees_data %>%
   theme_light() +
   scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange")) +
   scale_color_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
-  # scale_color_manual(values=c('darkgrey', 'darkgrey',
-  #                             'forestgreen', 'forestgreen', 'forestgreen', 'forestgreen',
-  #                             'darkorange', 'darkorange', 'darkorange',
-  #                             'red', 'red', 'red')) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
         plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
