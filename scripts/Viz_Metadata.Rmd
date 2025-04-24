@@ -50,8 +50,9 @@ here()
 
 # Adjust File Paths
 path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
-path_dataclean <- paste0(here(), "/output/data_clean")
+path_dataclean <- paste0(here(), "/output/data_clean/")
 path_scripts <- paste0(here(), "/scripts/")
+path_graphs <- paste0(here(), "/output/graphs/")
 # path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
 ```
 
@@ -76,7 +77,7 @@ all_MetadataReport <- all_MetadataReport %>%
   mutate(PlotType_Name = factor(PlotType_Name)) %>% 
   mutate(Type = factor(Type)) %>% 
   mutate(Park_Unit = factor(Park_Unit)) %>% 
-  mutate(ProjectUnit_Name = factor(ProjectUnit_Name)) %>% 
+  mutate(ProjectUnit = factor(ProjectUnit)) %>% 
   mutate(Purpose = factor(Purpose)) %>% 
   mutate(Burn_Unit = factor(Burn_Unit)) %>% 
   mutate(MetaData = factor(MetaData)) %>% 
@@ -94,7 +95,8 @@ all_MetadataReport <- all_MetadataReport %>%
   #mutate(Disturbance_Type = factor()) %>% 
   #mutate(Disturbance_Name = factor()) %>% 
   #mutate(Disturbance_Desc = factor()) %>% 
-  #mutate(Disturbance_Year = as.numeric()) %>% 
+  mutate(DisturbanceDate = as.Date(DisturbanceDate)) %>% 
+  #mutate(DisturbanceDate_Year = as.numeric()) %>% 
   mutate(Disturbance_Severity = factor(Disturbance_Severity, levels = c("Unburned", "Low", "Low/Mod", "Mod", "Mod/High", "High")))
 ```
 
@@ -114,7 +116,7 @@ all_MetadataReport$TimeSince %>% table(exclude = NULL)
 ## Summarise projects and events by park
 program_summ <- all_MetadataReport %>%
   summarise(`Parks` = n_distinct(AdministrationUnit_Name),
-            `Projects` = n_distinct(ProjectUnit_Name),
+            `Projects` = n_distinct(ProjectUnit),
             `Number of Plots` = n_distinct(Macroplot),
             `Monitoring Statuses` = n_distinct(MonStatus),
             `Visit Dates` = n_distinct(SampleEventDate),
@@ -164,7 +166,7 @@ The table below summarizes current and past projects in `r target_park`.
 # uses 'target park' variable designated above
 target_park_summ <- all_MetadataReport %>%
   filter(Park == target_park) %>% 
-  group_by(`Project Name` = ProjectUnit_Name) %>%
+  group_by(`Project Name` = ProjectUnit) %>%
   summarise(`Plot Type` = unique(PlotType_Name),
             `First Visit` = min(as.numeric(SampleEventDate_Year)),
             `Latest Visit` = max(as.numeric(SampleEventDate_Year)),
@@ -233,7 +235,7 @@ The table below summarizes all projects with plots sampled within the following 
 target_year_summ <- all_MetadataReport %>%
   filter(SampleEventDate_Year %in% target_year) %>% 
   group_by(`Park` = Park,
-           `Project Name` = ProjectUnit_Name) %>%
+           `Project Name` = ProjectUnit) %>%
   summarise(`Plot Type` = unique(PlotType_Name),
             `Start Date` = as.character(min(SampleEventDate)),
             `End Date` = as.character(max(SampleEventDate)),
@@ -273,7 +275,7 @@ protocol_use_summ <- all_MetadataReport %>%
   summarise(`First Use` = min(as.numeric(SampleEventDate_Year)),
             `Latest Use` = max(as.numeric(SampleEventDate_Year)),
             `Number of Plots` = n_distinct(Macroplot),
-            `Number of Projects` = n_distinct(ProjectUnit_Name),
+            `Number of Projects` = n_distinct(ProjectUnit),
             `Number of Monitoring Statuses` = n_distinct(MonStatus),
             `Number of Parks` = n_distinct(AdministrationUnit_Name)) %>% 
   arrange(desc(`Number of Plots`))
@@ -324,6 +326,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_All WACA.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 ## GRCA
@@ -353,6 +357,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_blank(),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_All I&M.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 ### All RAP
@@ -380,6 +386,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_blank(),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_All RAP.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 ### All FMH
@@ -408,6 +416,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_All FMH.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 #### Summarize
@@ -476,6 +486,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_PIED.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 #### PIPO
@@ -514,6 +526,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_PIPO.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 #### PIPN
@@ -551,6 +565,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_PIPN.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 #### PIAB
@@ -588,6 +604,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_PIAB.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 #### PIEN
@@ -625,6 +643,8 @@ graph_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Sample Event History_PIEN.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 ### Fires
@@ -643,6 +663,7 @@ graph_fires_MetadataReport <- graph_MetadataReport %>%
 ```{r}
 graph_fires_MetadataReport %>% 
   filter(Park_Unit == "North") %>% 
+  mutate(DisturbanceDate = as.Date(DisturbanceDate)) %>% 
   ggplot(aes(x = DisturbanceDate, y = Burn_Unit, label = Disturbance_Desc)) +
   geom_line(aes(group = Burn_Unit)) +
   #geom_point(aes(size  = n_macroplot), shape = "\U1F525") +
@@ -655,6 +676,7 @@ graph_fires_MetadataReport %>%
        fill = "Severity",
        size = "Number of Plots") +
   scale_fill_manual(values=c('yellowgreen', "yellow", 'orange', "red", "darkred","grey")) +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
@@ -663,11 +685,14 @@ graph_fires_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 8),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Fire History_North Rim.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```
 
 ```{r}
 graph_fires_MetadataReport %>% 
   filter(Park_Unit == "South") %>% 
+  mutate(DisturbanceDate = as.Date(DisturbanceDate)) %>% 
   ggplot(aes(x = DisturbanceDate, y = Burn_Unit, label = Disturbance_Desc)) +
   geom_line(aes(group = Burn_Unit)) +
   #geom_point(aes(size  = n_macroplot), shape = "\U1F525") +
@@ -680,6 +705,7 @@ graph_fires_MetadataReport %>%
        fill = "Severity",
        size = "Number of Plots") +
   scale_fill_manual(values=c('yellowgreen', "yellow", 'orange', "red", "darkred","grey")) +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
@@ -688,4 +714,6 @@ graph_fires_MetadataReport %>%
         axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
         axis.text.y = element_text(size = 8),
         axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+
+ggsave(path = path_graphs, filename = "Fire History_South Rim.jpg", width = 8, height = 6, unit = "in", dpi = 300)
 ```

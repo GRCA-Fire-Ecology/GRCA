@@ -3,10 +3,8 @@
 ### Setup
 
 ## Install packages (if needed)
-
+# install.packages("here")
 # install.packages("tidyverse")
-# install.packages("kableExtra")
-# install.packages("ggplot2")
 
 
 ## Load Packages
@@ -15,9 +13,6 @@
 library(here)
 # "tidyverse" has lots of useful functions for data cleaning
 library(tidyverse)
-# "kableExtra" is used to produce formatted tables
-library(kableExtra)
-library(ggplot2)
 
 
 ### Adjust File Paths
@@ -499,9 +494,11 @@ GRCA_Disturbance01 <- GRCA_MacroplotReport_MetaData %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
   # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
   # create Entry column
   mutate(Entry = 1) %>%
-  # edit date column
+  # edit Date column
   mutate(DisturbanceDate = parse_date_time(DisturbanceDate, orders = c("mdy", "my", "y"))) %>%
   separate(DisturbanceDate, sep = "-", into = c("DisturbanceDate_Year", "Month", "Day"), remove = F) %>%
   # remove unnecessary columns
@@ -541,6 +538,8 @@ IM_Disturbance01 <- IM_MacroplotReport_MetaData %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
   # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
   # create Entry column
   mutate(Entry = 1) %>%
   # edit Date column
@@ -563,6 +562,8 @@ WACA_Disturbance01 <- WACA_MacroplotReport_MetaData %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
   # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
   # create Entry column
   mutate(Entry = 1) %>%
   # edit Date column
@@ -588,6 +589,8 @@ GRCA_Disturbance02 <- GRCA_MacroplotReport_MetaData %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
   # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
   # create Entry column
   mutate(Entry = 2) %>%
   # edit Date column
@@ -638,6 +641,8 @@ GRCA_Disturbance03 <- GRCA_MacroplotReport_MetaData %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
   # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
   # create Entry column
   mutate(Entry = 3) %>%
   # edit Date column
@@ -683,6 +688,8 @@ GRCA_Disturbance04 <- GRCA_MacroplotReport_MetaData %>%
   separate(Disturbance_Info, sep = ",", into = c("Disturbance_Name", "Disturbance_Desc", "DisturbanceDate", "Severity"), remove = FALSE) %>%
   # trim white space
   mutate(across(where(is.character), str_trim)) %>%
+  # edit Disturbance_Desc column
+  mutate(Disturbance_Desc = ifelse(Disturbance_Desc == "Rx", "RX", Disturbance_Desc)) %>%
   # create Entry column
   mutate(Entry = 4) %>%
   # edit Date column
@@ -815,9 +822,9 @@ all_MetadataReport <- merge(all_MetadataReport, all_DisturbanceHistory, by = c("
 
 ## Save files
 
-write.csv(all_MonStatus, paste0(path_dataclean, "all_MonStatus.csv"), row.names = FALSE)
-write.csv(all_DisturbanceHistory, paste0(path_dataclean, "all_DisturbanceHistory.csv"), row.names = FALSE)
-write.csv(all_MacroplotReport, paste0(path_dataclean, "all_MacroplotReport.csv"), row.names = FALSE)
-write.csv(all_SampleEventReport, paste0(path_dataclean, "all_SampleEventReport.csv"), row.names = FALSE)
-write.csv(all_ProjectUnitReport, paste0(path_dataclean, "all_ProjectUnitReport.csv"), row.names = FALSE)
-write.csv(all_MetadataReport, paste0(path_dataclean, "all_MetadataReport.csv"), row.names = FALSE)
+write.csv(all_MonStatus, paste0(path_output, "data_clean/", "all_MonStatus.csv"), row.names = FALSE)
+write.csv(all_DisturbanceHistory, paste0(path_output, "data_clean/", "all_DisturbanceHistory.csv"), row.names = FALSE)
+write.csv(all_MacroplotReport, paste0(path_output, "data_clean/", "all_MacroplotReport.csv"), row.names = FALSE)
+write.csv(all_SampleEventReport, paste0(path_output, "data_clean/", "all_SampleEventReport.csv"), row.names = FALSE)
+write.csv(all_ProjectUnitReport, paste0(path_output, "data_clean/", "all_ProjectUnitReport.csv"), row.names = FALSE)
+write.csv(all_MetadataReport, paste0(path_output, "data_clean/", "all_MetadataReport.csv"), row.names = FALSE)

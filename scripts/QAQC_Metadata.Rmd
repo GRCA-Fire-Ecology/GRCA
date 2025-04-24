@@ -27,6 +27,8 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = F
 ```{r install packages, include=FALSE}
 ## Install packages (if needed)
 
+# install.packages("knitr")
+# install.packages("here")
 # install.packages("tidyverse")
 # install.packages("Rtools")
 # install.packages("janitor")
@@ -36,6 +38,8 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = F
 ```{r load packages, include=FALSE}
 ## Load Packages
 
+# knitr is used to create output files from R Markdown
+library(knitr)
 # "here" helps you easily find and reference your working directory
 library(here)
 # tidyverse and dplyr have lots of useful functions for data cleaning
@@ -44,14 +48,10 @@ library(dplyr)
 library(plyr)
 # janitor has functions to find duplicates
 library(janitor)
-# EnvStats is needed for the rosnerTest() function
-library(EnvStats)
 # writexl is used to create excel output files
 library(writexl)
 # condformat is used to format excel output files
 library(condformat)
-# knitr is used to create output files from R Markdown
-library(knitr)
 ```
 
 ### Adjust File Paths
@@ -66,10 +66,10 @@ path_dataclean <- paste0(here(), "/output/data_clean/")
 path_errors <- paste0(here(), "/output/errors/")
 path_errors_name <- "Metadata QAQC Errors"
 
-path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
-path_dataclean <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/data_clean/"
-path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
-path_errors_name <- "Metadata QAQC Errors"
+# path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
+# path_dataclean <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/data_clean/"
+# path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
+# path_errors_name <- "Metadata QAQC Errors"
 ```
 
 ### Create Function
