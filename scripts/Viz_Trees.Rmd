@@ -91,9 +91,6 @@ Trees_data_CrossYear <- Trees_all %>%
 ```{r}
 graph_Trees_data <- Trees_data_CrossYear %>% 
   mutate(Status = ifelse(CrwnCl == "DD", "DD", Status)) %>% 
-  mutate(DBH = (ifelse(is.na(DBH), 0 , DBH)),
-         LiCrBHt = ifelse(is.na(LiCrBHt), 0, LiCrBHt),
-         Ht = ifelse(is.na(Ht), 0, Ht)) %>% 
   mutate(SubFrac = factor(SubFrac),
          TagNo = factor(TagNo),
          Status = factor(Status, levels = c("L", "D", "DD")),
@@ -107,8 +104,10 @@ graph_Trees_data <- Trees_data_CrossYear %>%
 
 ```{r}
 ##################################################################################
-#unique(Trees_data_CrossYear$MacroPlot.Name)
-target_plot <- "PIAB 15"
+# unique(errors_Trees_CrossYear$MacroPlot.Name)
+# plots_2025 <- c("PIPO 02", "PIPO 03", "PIPO 09", "PIPO 13", "PIPO 14", "PIPO 19", "PIPO 39", "PIPN 05", "PIPN 12", "PIEN 16")
+plots_2025_errors <- c("PIPO 09", "PIPO 14", "PIPO 19", "PIPO 39", "PIPN 05", "PIEN 16")
+target_plot <- "PIEN 16"
 ##################################################################################
 
 
@@ -152,8 +151,7 @@ graph_Trees_data %>%
   geom_point(aes(fill = Status, size = DBH), shape = 21) +
   scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
   scale_color_manual(values=c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
+  labs(title = target_plot) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
@@ -176,8 +174,7 @@ graph_Trees_data %>%
   geom_line(aes(group = TagNo, color = Species.Symbol), size = 1) +
   geom_point(aes(fill = Status), shape = 21, size = 3) +
   scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
+  labs(title = target_plot) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
@@ -197,14 +194,14 @@ Live trees should only increase DBH. Dead trees should only decrease DBH.
 graph_Trees_data %>% 
   filter(MacroPlot.Name == target_plot,
          TagNo %in% c(badtags_DBH),
+         !is.na(DBH),
          Status != "DD") %>% 
   arrange(Date) %>% 
   ggplot(aes(x = Year, y = DBH)) +
   geom_line(aes(group = TagNo, color = TagNo), size = 1) +
   geom_point(aes(fill = Status), shape = 21, size = 3) +
   scale_fill_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
+  labs(title = target_plot) +
   #facet_wrap(~Status) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -225,14 +222,14 @@ Live trees should only increase in height. Dead trees should only decrease in he
 graph_Trees_data %>% 
   filter(MacroPlot.Name == target_plot,
          TagNo %in% c(badtags_Height),
+         !is.na(Ht),
          Status != "DD") %>% 
   arrange(Date) %>% 
   ggplot(aes(x = Year, y = Ht)) +
   geom_line(aes(group = TagNo, color = TagNo), size = 1) +
   geom_point(aes(fill = Status), shape = 21, size = 3) +
   scale_fill_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
+  labs(title = target_plot) +
   #facet_wrap(~Status) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -253,14 +250,14 @@ Live trees should only increase crown base height
 graph_Trees_data %>% 
   filter(MacroPlot.Name == target_plot,
          TagNo %in% c(badtags_CBH),
+         !is.na(LiCrBHt),
          Status == "L") %>% 
   arrange(Date) %>% 
   ggplot(aes(x = Year, y = LiCrBHt)) +
   geom_line(aes(group = TagNo, color = TagNo), size = 1) +
   geom_point(aes(fill = Status), shape = 21, size = 3) +
   scale_fill_manual(values=c("L" = "forestgreen")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
+  labs(title = target_plot) +
   theme_light() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(size = 20, face="bold", hjust = 0.5),
