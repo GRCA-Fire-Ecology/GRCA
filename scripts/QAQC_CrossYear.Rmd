@@ -57,23 +57,25 @@ library(knitr)
 Make sure to update file paths to be specific for your data.
 
 ```{r}
-# Identify working directory (specifically user name)
+# Identify working directory
 here()
 
-# Load in data. Change file path based on user name!
-path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_errors <- paste0(here(), "/output/errors/")
+# Load in data.
+path_data_FMH <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+path_data_RAP_N <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/North Rim/2025-02-10/"
+path_data_RAP_S <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/South Rim/2025-02-10/"
+path_data_IM_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-03-20/"
+path_data_IM_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
+path_data_WACA <- "X:/FFI Data Management/Exports from FFI/WACA/2025-02-04/"
 
-path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-#path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
+path_errors <- paste0(here(), "/output/errors/")
 ```
 
 ### Create Function
 
 ```{r}
 # Blank data frame
-errors_blank_CrossYear <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "Monitoring.Status" = "", "TagNo" = "", "Status" = "", "DBH" = "", "Ht" = "", "CrwnCl" = "", "LiCrBHt" = "", "Species.Symbol" = "", "Comment" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
-  mutate(Date = as.Date(Date))
+errors_blank_CrossYear <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "TagNo" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 
 # QAQC function
 qaqc_CrossYear <- function(data, query, query_message, values_check) {
@@ -104,11 +106,11 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
     # NA values are treated as "false" (missing data is not valid)
     filter(!(values_check %>% replace_na(FALSE))) %>%   
     # Select relevant columns to view errors
-    select("SavedQuery", "MacroPlot.Name", "Date", "Monitoring.Status", "TagNo", "Status", "DBH", "Ht", "CrwnCl", "LiCrBHt", "Species.Symbol", "Comment", "Error", "Fixed", "Explanation", "Queryers")
+    select("SavedQuery", "MacroPlot.Name", "TagNo", "Error", "Fixed", "Explanation", "Queryers")
   
   # Next, check if there are duplicate errors
   errors_temp <- errors %>% 
-    get_dupes(SavedQuery,MacroPlot.Name, Date, Error)
+    get_dupes(SavedQuery,MacroPlot.Name, Error)
   # Merge duplicate errors
   errors <- unique(merge(errors, errors_temp, all = T))
   # If duplicate errors exist, add number of duplicates to error message
@@ -133,46 +135,113 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
 ### Load Data
 
 ```{r}
-# # Load in data
-# Fuels1000_all <- read.csv(paste0(path_data, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
-# FuelsFine_all <- read.csv(paste0(path_data, "Surface Fuels - Fine_XPT.csv"), quote = "")
-Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+# Load in data
+Fuels1000_all <- read.csv(paste0(path_data_FMH, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+FuelsFine_all <- read.csv(paste0(path_data_FMH, "Surface Fuels - Fine_XPT.csv"), quote = "")
+
+Trees_all_FMH <- read.csv(paste0(path_data_FMH, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+Trees_all_RAP_N <- read.csv(paste0(path_data_RAP_N, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+Trees_all_RAP_S <- read.csv(paste0(path_data_RAP_S, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+Trees_all_IM_M <- read.csv(paste0(path_data_IM_M, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+Trees_all_IM_P <- read.csv(paste0(path_data_IM_P, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+Trees_all_WACA <- read.csv(paste0(path_data_WACA, "Trees - Individuals (metric)_XPT.csv"), quote = "")
+```
+
+### Merge Data
+
+```{r}
+Trees_all_RAP <- rbind(Trees_all_RAP_N, Trees_all_RAP_S)
+Trees_all_IM <- rbind(Trees_all_IM_M, Trees_all_IM_P)
+
+# Remove extra data
+remove(Trees_all_RAP_N, Trees_all_RAP_S, Trees_all_IM_M, Trees_all_IM_P)
 ```
 
 ### Clean Data
 
 ```{r}
-# #####
-# # Fuels1000
-# #####
-# # Reformat date column
-# Fuels1000_all <- Fuels1000_all %>%
-#   # Separate Date column
-#   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-#   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-#   # Reformat Date column
-#   mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
-#   # Remove Month, Day, and Time columns
-#   select(!c("Month", "Day", "Time"))
-# 
-# #####
-# # FuelsFine
-# #####
-# # Reformat date column
-# FuelsFine_all <- FuelsFine_all %>%
-#   # Separate Date column
-#   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-#   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
-#   # Reformat Date column
-#   mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
-#   # Remove Month, Day, and Time columns
-#   select(!c("Month", "Day", "Time"))
+#####
+# Fuels1000
+#####
+# Reformat date column
+Fuels1000_all <- Fuels1000_all %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+#####
+# FuelsFine
+#####
+# Reformat date column
+FuelsFine_all <- FuelsFine_all %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
 
 #####
 # Trees
 #####
+
+##################################################################################
+# FMH
+
 # Reformat date column
-Trees_all <- Trees_all %>%
+Trees_all_FMH <- Trees_all_FMH %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+##################################################################################
+# RAP
+
+# Reformat date column
+Trees_all_RAP <- Trees_all_RAP %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+##################################################################################
+# I&M
+
+#####
+# Trees
+#####
+# Clean up data frame
+Trees_all_IM <- Trees_all_IM %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>% 
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time")) %>% 
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+##################################################################################
+# WACA
+
+# Reformat date column
+Trees_all_WACA <- Trees_all_WACA %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
@@ -184,25 +253,34 @@ Trees_all <- Trees_all %>%
 
 ### Filter Data
 
+#### Select Dataset
+
 ```{r}
-# #####
-# # Fuels1000
-# #####
-# # Ensure blanks in Visited column are NA
-# Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
-# # Fuels1000 data
-# Fuels1000_data <- Fuels1000_all %>%
-#   filter(is.na(Visited))
-# 
-# 
-# #####
-# # FuelsFine
-# #####
-# # Ensure blanks in Visited column are NA 
-# FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
-# # FuelsFine data
-# FuelsFine_data <- FuelsFine_all %>%   
-#   filter(is.na(Visited))  
+# Select dataset of interest
+Trees_all <- Trees_all_IM
+
+path_errors_name <- "GRCA FMH QAQC Tree Errors"
+```
+
+```{r}
+#####
+# Fuels1000
+#####
+# Ensure blanks in Visited column are NA
+Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
+# Fuels1000 data
+Fuels1000_data <- Fuels1000_all %>%
+  filter(is.na(Visited))
+
+
+#####
+# FuelsFine
+#####
+# Ensure blanks in Visited column are NA
+FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
+# FuelsFine data
+FuelsFine_data <- FuelsFine_all %>%
+  filter(is.na(Visited))
 
 
 #####
@@ -229,13 +307,109 @@ It checks for errors in: Fuel Slope consistency across years, Fuel Azimuth consi
 
 ### Fuel Slope
 
+#### Fuels 1000
+
+```{r}
+# Find data with multiple slopes
+Fuels1000_data_Slope <- Fuels1000_data %>% 
+  group_by(MacroPlot.Name, Transect) %>% 
+  mutate(Slope_Count = n_distinct(unique(Slope))) %>% 
+  ungroup() %>% 
+  arrange(MacroPlot.Name, Date, Transect)
+
+data_temp <- Fuels1000_data_Slope %>% 
+  filter(Slope_Count > 1) %>%
+  group_by(MacroPlot.Name, Transect) %>% 
+  mutate(Slope_Change = ifelse(duplicated(Slope), "N", "Y")) %>%
+  filter(Slope_Change == "Y") %>%
+  unique()
+
+remove(Fuels1000_data_Slope)
+
+# Set parameters 
+data <- merge(Fuels1000_data, data_temp, all = T)
+query <- "Fuel 1000 Slope" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Slope = ", data$Slope, ". ", "Conflicting slopes")
+values_data <- data$Slope_Count
+values_valid <- 1
+values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_Fuels1000_Slope_CrossYear <- qaqc(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, Error)
+```
+
+#### Fuels Fine
+
+```{r}
+# Find data with multiple slopes
+FuelsFine_data_Slope <- FuelsFine_data %>% 
+  group_by(MacroPlot.Name, Transect) %>% 
+  mutate(Slope_Count = n_distinct(unique(Slope))) %>% 
+  ungroup() %>% 
+  arrange(MacroPlot.Name, Date, Transect)
+
+data_temp <- FuelsFine_data_Slope %>% 
+  filter(Slope_Count > 1) %>%
+  group_by(MacroPlot.Name, Transect) %>% 
+  mutate(Slope_Change = ifelse(duplicated(Slope), "N", "Y")) %>%
+  filter(Slope_Change == "Y") %>%
+  unique()
+
+remove(FuelsFine_data_Slope)
+
+# Set parameters 
+data <- merge(FuelsFine_data, data_temp, all = T)
+query <- "Fuel Fine Slope" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Slope = ", data$Slope, ". ", "Conflicting slopes")
+values_data <- data$Slope_Count
+values_valid <- 1
+values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_FuelsFine_Slope_CrossYear <- qaqc(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, Error)
+```
+
 ### Fuel Azimuth
+
+```{r}
+# Find data with multiple azimuths
+FuelsFine_data_Azimuth <- FuelsFine_data %>% 
+  group_by(MacroPlot.Name, Transect) %>% 
+  mutate(Azimuth_Count = n_distinct(unique(Azimuth))) %>% 
+  ungroup() %>% 
+  arrange(MacroPlot.Name, Date, Transect)
+
+data_temp <- FuelsFine_data_Azimuth %>% 
+  filter(Azimuth_Count > 1) %>%
+  group_by(MacroPlot.Name, Transect) %>% 
+  mutate(AzimuthDiff = max(Azimuth  - min(Azimuth)),
+         Azimuth_Change = ifelse(duplicated(Azimuth), "N", "Y")) %>%
+  filter(Azimuth_Change == "Y") %>%
+  unique()
+
+remove(FuelsFine_data_Azimuth)
+
+# Set parameters 
+data <- merge(FuelsFine_data, data_temp, all = T) %>% 
+  filter(AzimuthDiff >= 25)
+query <- "Fuel Fine Azimuth" 
+query_message <- paste0("Transect = ", data$Transect, ". ", "Azimuth = ", data$Azimuth, ". ", "Conflicting azimuths")
+values_data <- data$Azimuth_Count
+values_valid <- 1
+values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_FuelsFine_Azimuth_CrossYear <- qaqc(data, query, query_message, values_check) %>% 
+  arrange(MacroPlot.Name, Error)
+```
 
 # PROTOCOL - TREES
 
 This code conducts quality control checks on tree data within the "Trees - Individuals (metric)" data set.
 
-It checks for errors in:
+It checks for illogical changes over time in: CBH, DBH, Height, Species, and Status
 
 ### Add Columns
 
@@ -479,20 +653,19 @@ data <- merge(Trees_data_CrossYear, data_temp_merge_CBH, all = T) %>%
   filter(Status == "L", !is.na(LiCrBHt),
          # set threshold of concern
          MaxCBHDiff >= 5)
-query <- "Trees Live CBH Decrease" 
-query_message <- paste0("LiCrBHt (CBH) = ", data$LiCrBHt, ". ", "Max CBH = ", data$MaxCBH, " on date")
+query <- "Trees CBH" 
+query_message <- paste0("LiCrBHt (CBH) decreases over time. ", "Max CBH = ", data$MaxCBH, " on date")
 values_data <- data$MaxCBHDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_CBH <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date)
+errors_Trees_CrossYear_CBH <- qaqc_CrossYear(data, query, query_message, values_check)
 ```
 
 ### Trees DBH
 
-#### Live DBH Decrease
+#### DBH Live Decrease
 
 [Problem:]{.underline} Live trees have DBH which decreases over time.
 
@@ -508,18 +681,17 @@ data <- merge(Trees_data_CrossYear, data_temp_merge_DBH, all = T) %>%
   filter(Status == "L", !is.na(DBH),
          # set threshold of concern
          MaxDBHDiff >= 5)
-query <- "Trees Live DBH Decrease" 
-query_message <- paste0("Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Max DBH = ", data$MaxDBH, " on date")
+query <- "Trees DBH" 
+query_message <- paste0("Status = ", data$Status, ". ", "DBH decreases over time. ", "Max DBH = ", data$MaxDBH, " on date")
 values_data <- data$MaxDBHDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_DBH_Live <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date)
+errors_Trees_CrossYear_DBH_Live <- qaqc_CrossYear(data, query, query_message, values_check)
 ```
 
-#### Dead DBH Increase
+#### DBH Dead Increase
 
 [Problem:]{.underline} Dead trees have DBH which increases over time.
 
@@ -535,20 +707,19 @@ data <- merge(Trees_data_CrossYear, data_temp_merge_DBH, all = T) %>%
   filter(Status == "D", !is.na(DBH),
          # set threshold of concern
          MinDBHDiff >= 5)
-query <- "Trees Dead DBH Increase" 
-query_message <- paste0("Status = ", data$Status, ". ", "DBH = ", data$DBH, ". ", "Min DBH = ", data$MinDBH, " on date")
+query <- "Trees DBH" 
+query_message <- paste0("Status = ", data$Status, ". ", "DBH increases over time. ", "Min DBH = ", data$MinDBH, " on date")
 values_data <- data$MinDBHDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_DBH_Dead <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date)
+errors_Trees_CrossYear_DBH_Dead <- qaqc_CrossYear(data, query, query_message, values_check)
 ```
 
 ### Trees Height
 
-#### Live Height Decrease
+#### Height Live Decrease
 
 [Problem:]{.underline} Live trees have Height which decreases over time.
 
@@ -564,18 +735,17 @@ data <- merge(Trees_data_CrossYear, data_temp_merge_Height, all = T) %>%
   filter(Status == "L", !is.na(Ht),
          # set threshold of concern
          MaxHeightDiff >= 5)
-query <- "Trees Live Height Decrease" 
-query_message <- paste0("Status = ", data$Status, ". ", "Height = ", data$Ht, ". ", "Max Height = ", data$MaxHeight, " on date")
+query <- "Trees Height" 
+query_message <- paste0("Status = ", data$Status, ". ", "Height decreases over time. ", "Max Height = ", data$MaxHeight, " on date")
 values_data <- data$MaxHeightDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_Height_Live <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date)
+errors_Trees_CrossYear_Height_Live <- qaqc_CrossYear(data, query, query_message, values_check)
 ```
 
-#### Dead Height Increase
+#### Height Dead Increase
 
 [Problem:]{.underline} Dead trees have Height which increases over time.
 
@@ -591,15 +761,14 @@ data <- merge(Trees_data_CrossYear, data_temp_merge_Height, all = T) %>%
   filter(Status == "D", !is.na(Ht),
          # set threshold of concern
          MinHeightDiff >= 5)
-query <- "Trees Dead Height Increase" 
-query_message <- paste0("Status = ", data$Status, ". ", "Height = ", data$Ht, ". ", "Min Height = ", data$MinHeight, " on date")
+query <- "Trees Height" 
+query_message <- paste0("Status = ", data$Status, ". ", "Height increases over time. ", "Min Height = ", data$MinHeight, " on date")
 values_data <- data$MinHeightDate
 values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_Height_Dead <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date)
+errors_Trees_CrossYear_Height_Dead <- qaqc_CrossYear(data, query, query_message, values_check)
 ```
 
 ### Trees Species
@@ -615,20 +784,31 @@ errors_Trees_CrossYear_Height_Dead <- qaqc_CrossYear(data, query, query_message,
 ```{r}
 # Set parameters 
 data <- merge(Trees_data_CrossYear, data_temp_merge_Species, all = T)
-query <- "Trees Species Change" 
-query_message <- paste0("Species = ", data$Species.Symbol, ". ", "Species Change")
+query <- "Trees Species" 
+query_message <- paste0("Species = ", data$Species.Symbol, ". ", "Earliest date = ", data$Date, ". ", "Species change")
 values_data <- data$Species_Change
 values_valid <- "Y"
 values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_Trees_CrossYear_Species <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date)
+errors_Trees_CrossYear_Species_1 <- qaqc_CrossYear(data, query, query_message, values_check)
+
+# Consolidate duplicate species errors into one row
+errors_Trees_CrossYear_Species <- errors_Trees_CrossYear_Species_1 %>% 
+  separate(Error, sep = ". Species change = Y", into = c("Error")) %>% 
+  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
+  arrange(MacroPlot.Name, TagNo, Date) %>% 
+  group_by(SavedQuery, MacroPlot.Name, TagNo) %>% 
+  summarize(
+    Error = paste(Error, collapse = "; "),
+    Fixed = "",
+    Explanation = "",
+    Queryers = "")
 ```
 
 ### Trees Status
 
-#### Dead to Live
+#### Status Dead to Live
 
 [Problem:]{.underline} Trees change status from D to L over time.
 
@@ -640,23 +820,45 @@ errors_Trees_CrossYear_Species <- qaqc_CrossYear(data, query, query_message, val
 # Set parameters 
 data <- merge(Trees_data_CrossYear, data_temp_merge_Status, all = T) %>% 
   filter(Status == "L")
-query <- "Trees Status Dead to Live" 
+query <- "Trees Status" 
 query_message <- paste0("Status = ", data$Status, ". ", "Death date")
 values_data <- data$MinDeadDate
 values_valid <- data$Date
 values_check <- (values_data >= values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_Trees_CrossYear_Status <- qaqc_CrossYear(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, TagNo, Date)
+errors_Trees_CrossYear_Status <- qaqc_CrossYear(data, query, query_message, values_check)
 ```
 
 # ALL ERRORS
 
 ```{r}
-errors_Trees_CrossYear <- rbind(errors_Trees_CrossYear_CBH, errors_blank_CrossYear, errors_Trees_CrossYear_DBH_Live, errors_blank_CrossYear, errors_Trees_CrossYear_DBH_Dead, errors_blank_CrossYear, errors_Trees_CrossYear_Height_Live, errors_blank_CrossYear, errors_Trees_CrossYear_Height_Dead, errors_blank_CrossYear, errors_Trees_CrossYear_Species, errors_blank_CrossYear, errors_Trees_CrossYear_Status)
+errors_Trees_CrossYear <- rbind(errors_Trees_CrossYear_CBH, errors_Trees_CrossYear_DBH_Live, errors_Trees_CrossYear_DBH_Dead, errors_Trees_CrossYear_Height_Live, errors_Trees_CrossYear_Height_Dead, errors_Trees_CrossYear_Species, errors_Trees_CrossYear_Status) %>% 
+  arrange(MacroPlot.Name, TagNo, desc(SavedQuery))
 
-remove(errors_Trees_CrossYear_CBH, errors_Trees_CrossYear_DBH_Live, errors_Trees_CrossYear_DBH_Dead, errors_Trees_CrossYear_Height_Live, errors_Trees_CrossYear_Height_Dead, errors_Trees_CrossYear_Species,  errors_Trees_CrossYear_Status)
+remove(errors_Trees_CrossYear_CBH, errors_Trees_CrossYear_DBH_Live, errors_Trees_CrossYear_DBH_Dead, errors_Trees_CrossYear_Height_Live, errors_Trees_CrossYear_Height_Dead, errors_Trees_CrossYear_Species, errors_Trees_CrossYear_Species_1, errors_Trees_CrossYear_Status)
+```
+
+```{r}
+# Formatting
+
+# Add blank rows between each tag number
+errors_Trees_CrossYear_blanks <- errors_Trees_CrossYear[1, ]
+for (i in 2:nrow(errors_Trees_CrossYear)) {
+  if (errors_Trees_CrossYear[i, "TagNo"] != errors_Trees_CrossYear[i - 1, "TagNo"]) {
+    errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_blank_CrossYear, errors_Trees_CrossYear[i, ])
+  } else {
+    errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_Trees_CrossYear[i, ])
+  }
+}
+
+# Add conditional formating to ouput
+errors_Trees_CrossYear_blanks <- condformat(errors_Trees_CrossYear_blanks[1:(nrow(errors_Trees_CrossYear_blanks)), 1:7]) %>%
+  rule_fill_discrete(columns = 1:7,
+                     expression = SavedQuery != "",
+                     colours = c("TRUE" = "#C6E0B4"),
+                     na.value = "#FFFFFF")
+print(errors_Trees_CrossYear_blanks)
 ```
 
 ```{r}
@@ -666,190 +868,7 @@ remove(errors_Trees_CrossYear_CBH, errors_Trees_CrossYear_DBH_Live, errors_Trees
 # Save as CSV or XLSX 
 path_errors
 
-write_xlsx(errors_Trees_CrossYear, paste0(path_errors, "errors_CrossYear.xlsx"))
-```
-
-# Data Viz - Trees
-
-```{r}
-graph_Trees_data <- Trees_data_CrossYear %>% 
-  mutate(Status = ifelse(CrwnCl == "DD", "DD", Status)) %>% 
-  mutate(DBH = (ifelse(is.na(DBH), 0 , DBH)),
-         LiCrBHt = ifelse(is.na(LiCrBHt), 0, LiCrBHt),
-         Ht = ifelse(is.na(Ht), 0, Ht)) %>% 
-  mutate(SubFrac = factor(SubFrac),
-         TagNo = factor(TagNo),
-         Status = factor(Status, levels = c("L", "D", "DD")),
-         CrwnCl = factor(CrwnCl, levels = c("X", "",
-                                            "SC", "I", "C", "D",
-                                            "RS", "LBS", "CS", "BAD", 
-                                            "BBD", "CUS", "DD")))
-```
-
-### Isolate Problematic Tree Tags
-
-```{r}
-#unique(Trees_data_CrossYear$MacroPlot.Name)
-target_plot <- "PIAB 15"
-```
-
-```{r}
-badtags_CBH <- errors_Trees_CrossYear %>% 
-  filter(grepl("CBH", errors_Trees_CrossYear$SavedQuery)) %>% 
-  filter(MacroPlot.Name == target_plot)
-badtags_CBH <- unique(badtags_CBH$TagNo)
-
-badtags_DBH <- errors_Trees_CrossYear %>% 
-  filter(grepl("DBH", errors_Trees_CrossYear$SavedQuery)) %>% 
-  filter(MacroPlot.Name == target_plot)
-badtags_DBH <- unique(badtags_DBH$TagNo)
-
-badtags_Height <- errors_Trees_CrossYear %>% 
-  filter(grepl("Height", errors_Trees_CrossYear$SavedQuery)) %>% 
-  filter(MacroPlot.Name == target_plot)
-badtags_Height <- unique(badtags_Height$TagNo)
-
-badtags_Species <- errors_Trees_CrossYear %>% 
-  filter(grepl("Species", errors_Trees_CrossYear$SavedQuery)) %>% 
-  filter(MacroPlot.Name == target_plot)
-badtags_Species <- unique(badtags_Species$TagNo)
-
-badtags_Status <- errors_Trees_CrossYear %>% 
-  filter(grepl("Status", errors_Trees_CrossYear$SavedQuery)) %>% 
-  filter(MacroPlot.Name == target_plot)
-badtags_Status <- unique(badtags_Status$TagNo)
-```
-
-## Graphs: [`r target_plot`]{style="color:red"}
-
-### Status
-
-```{r}
-graph_Trees_data %>% 
-  filter(MacroPlot.Name == target_plot,
-         TagNo %in% c(badtags_Status)) %>% 
-  arrange(Date) %>% 
-  ggplot(aes(x = Year, y = TagNo)) +
-  geom_line(aes(group = TagNo, color = Status), size = 1) +
-  geom_point(aes(fill = Status, size = DBH), shape = 21) +
-  scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
-  scale_color_manual(values=c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
-  theme_light() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
-        axis.title = element_text(size = 12, face="bold"),
-        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
-        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
-        axis.text.y = element_text(size = 5),
-        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
-```
-
-### Species
-
-```{r}
-graph_Trees_data %>% 
-  filter(MacroPlot.Name == target_plot,
-         TagNo %in% c(badtags_Species)) %>% 
-  arrange(Date) %>% 
-  ggplot(aes(x = Year, y = TagNo)) +
-  geom_line(aes(group = TagNo, color = Species.Symbol), size = 1) +
-  geom_point(aes(fill = Status), shape = 21, size = 3) +
-  scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
-  theme_light() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
-        axis.title = element_text(size = 12, face="bold"),
-        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
-        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
-        axis.text.y = element_text(size = 5),
-        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
-```
-
-### DBH
-
-Live trees should only increase DBH. Dead trees should only decrease DBH.
-
-```{r}
-graph_Trees_data %>% 
-  filter(MacroPlot.Name == target_plot,
-         TagNo %in% c(badtags_DBH),
-         Status != "DD") %>% 
-  arrange(Date) %>% 
-  ggplot(aes(x = Year, y = DBH)) +
-  geom_line(aes(group = TagNo, color = TagNo), size = 1) +
-  geom_point(aes(fill = Status), shape = 21, size = 3) +
-  scale_fill_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
-  facet_wrap(~Status) +
-  theme_light() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
-        axis.title = element_text(size = 12, face="bold"),
-        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
-        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
-        axis.text.y = element_text(size = 5),
-        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
-```
-
-### Height
-
-Live trees should only increase in height. Dead trees should only decrease in height.
-
-```{r}
-graph_Trees_data %>% 
-  filter(MacroPlot.Name == target_plot,
-         TagNo %in% c(badtags_Height),
-         Status != "DD") %>% 
-  arrange(Date) %>% 
-  ggplot(aes(x = Year, y = Ht)) +
-  geom_line(aes(group = TagNo, color = TagNo), size = 1) +
-  geom_point(aes(fill = Status), shape = 21, size = 3) +
-  scale_fill_manual(values=c("L" = "forestgreen", "D" = "darkorange")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
-  facet_wrap(~Status) +
-  theme_light() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
-        axis.title = element_text(size = 12, face="bold"),
-        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
-        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
-        axis.text.y = element_text(size = 5),
-        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
-```
-
-### CBH
-
-Live trees should only increase crown base height
-
-```{r}
-graph_Trees_data %>% 
-  filter(MacroPlot.Name == target_plot,
-         TagNo %in% c(badtags_CBH),
-         Status == "L") %>% 
-  arrange(Date) %>% 
-  ggplot(aes(x = Year, y = LiCrBHt)) +
-  geom_line(aes(group = TagNo, color = TagNo), size = 1) +
-  geom_point(aes(fill = Status), shape = 21, size = 3) +
-  scale_fill_manual(values=c("L" = "forestgreen")) +
-  labs(title = target_plot,
-       caption = "0 values represent missing data") +
-  theme_light() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.title = element_text(size = 20, face="bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 12, face="italic", hjust = 0.5),
-        axis.title = element_text(size = 12, face="bold"),
-        axis.title.y = element_text(margin = unit(c(0,4,0,0), "mm")),
-        axis.title.x = element_text(margin = unit(c(4,0,0,0), "mm")),
-        axis.text.y = element_text(size = 5),
-        axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust=1))
+#write_xlsx(errors_Trees_CrossYear, paste0(path_errors, "errors_CrossYear.xlsx"))
+# Formatted
+condformat2excel(errors_Trees_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
