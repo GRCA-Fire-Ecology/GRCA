@@ -57,7 +57,7 @@ path_errors <- paste0(here(), "/output/errors/")
 ```{r}
 # Load in data
 Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
-errors_Trees_CrossYear <- read_excel(paste0(path_errors, "errors_CrossYear.xlsx"))
+errors_Trees_CrossYear <- read_excel(paste0(path_errors, "errors_CrossYear_formatted.xlsx"))
 ```
 
 ### Clean Data
@@ -104,10 +104,10 @@ graph_Trees_data <- Trees_data_CrossYear %>%
 
 ```{r}
 ##################################################################################
-# unique(errors_Trees_CrossYear$MacroPlot.Name)
+#unique(errors_Trees_CrossYear$MacroPlot.Name)
 # plots_2025 <- c("PIPO 02", "PIPO 03", "PIPO 09", "PIPO 13", "PIPO 14", "PIPO 19", "PIPO 39", "PIPN 05", "PIPN 12", "PIEN 16")
-plots_2025_errors <- c("PIPO 09", "PIPO 14", "PIPO 19", "PIPO 39", "PIPN 05", "PIEN 16")
-target_plot <- "PIEN 16"
+#plots_2025_errors <- c("PIPO 09", "PIPO 14", "PIPO 19", "PIPO 39", "PIPN 05", "PIEN 16")
+target_plot <- "PIAB 03"
 ##################################################################################
 
 
@@ -148,7 +148,7 @@ graph_Trees_data %>%
   arrange(Date) %>% 
   ggplot(aes(x = Year, y = TagNo)) +
   geom_line(aes(group = TagNo, color = Status), size = 1) +
-  geom_point(aes(fill = Status, size = DBH), shape = 21) +
+  geom_point(aes(fill = Status), shape = 21, size = 3) +
   scale_fill_manual(values = c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
   scale_color_manual(values=c("L" = "forestgreen", "D" = "darkorange", "DD" = "red")) +
   labs(title = target_plot) +
