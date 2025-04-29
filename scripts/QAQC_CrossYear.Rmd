@@ -24,18 +24,17 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ### Install Packages (if needed)
 
 ```{r}
-# install.packages("here")
 # install.packages("tidyverse")
 # install.packages("Rtools")
 # install.packages("janitor")
 # install.packages("condformat")
 # install.packages("knitr")
+# install.packages("here")
 ```
 
 ### Load Packages
 
 ```{r}
-library(here)
 # tidyverse and dplyr have lots of useful functions for data cleaning
 library(tidyverse)
 library(dplyr)
@@ -50,40 +49,86 @@ library(writexl)
 library(condformat)
 # knitr is used to create output files from R Markdown
 library(knitr)
-```
-
-### Adjust File Paths
-
-Make sure to update file paths to be specific for your data.
-
-```{r}
-# Identify working directory
-here()
-
-# Load in data.
-path_data_FMH <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_data_RAP_N <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/North Rim/2025-02-10/"
-path_data_RAP_S <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/South Rim/2025-02-10/"
-path_data_IM_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-03-20/"
-path_data_IM_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
-path_data_WACA <- "X:/FFI Data Management/Exports from FFI/WACA/2025-02-04/"
-
-path_errors <- paste0(here(), "/output/errors/")
+# here is useful for easily finding the working directory of any project
+library(here)
 ```
 
 ### Create Function
 
+Fuels
+
 ```{r}
 # Blank data frame
-errors_blank_CrossYear <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "TagNo" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_fuels <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Transect" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
 
 # QAQC function
-qaqc_CrossYear <- function(data, query, query_message, values_check) {
+qaqc_fuels <- function(data, query, query_message, values_check) {
   
   # Check if there is data to QAQC
   if(nrow(data) == 0) {
   # If there is no data, default to "No Error" data frame
-  errors <- errors_blank_CrossYear %>%
+  errors <- errors_blank_fuels %>%
+    mutate(SavedQuery = query,
+           Error = "No Error")
+  # If there is data, perform error check
+} else {
+  
+  # Use relevant dataset to look for errors
+  errors <- data %>%  
+    # Add columns relevant to error checking
+           # Populate the "SavedQuery" column with the query name
+    mutate("SavedQuery" = query, 
+           # Populate the "Error" column with the query message and relevant data
+           "Error" = paste(query_message, "=", values_data),
+           # Create a blank "Fixed" column
+           "Fixed" = "",
+           # Create a blank "Explanation" column
+           "Explanation" = "",
+           # Create a blank "Queryers" column
+           "Queryers" = "") %>%   
+    # Filter for data which is "false" (data does not match valid conditions)
+    # NA values are treated as "false" (missing data is not valid)
+    filter(!(values_check %>% replace_na(FALSE))) %>%   
+    # Select relevant columns to view errors
+    select("SavedQuery", "MacroPlot.Name", "Transect", "Error", "Fixed", "Explanation", "Queryers")
+  
+  # Next, check if there are duplicate errors
+  errors_temp <- errors %>% 
+    get_dupes(SavedQuery, MacroPlot.Name, Error)
+  # Merge duplicate errors
+  errors <- unique(merge(errors, errors_temp, all = T))
+  # If duplicate errors exist, add number of duplicates to error message
+  errors <- errors %>% 
+    mutate(Error = ifelse(is.na(dupe_count), Error, paste0("(x", dupe_count, ") ", Error))) %>% 
+    select(!"dupe_count")
+}
+  
+  # Check if there are no errors
+  if (nrow(errors) == 0) {  
+    # If there are no errors, default to "No Error" data frame
+    errors <- errors_blank_fuels %>%
+      mutate(SavedQuery = query,
+             Error = "No Error")
+    # If there are errors, keep error log you just created
+  } else {   
+    errors <- errors
+  }
+}
+```
+
+Trees
+
+```{r}
+# Blank data frame
+errors_blank_trees <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "TagNo" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+
+# QAQC function
+qaqc_trees <- function(data, query, query_message, values_check) {
+  
+  # Check if there is data to QAQC
+  if(nrow(data) == 0) {
+  # If there is no data, default to "No Error" data frame
+  errors <- errors_blank_trees %>%
     mutate(SavedQuery = query,
            Error = "No Error")
   # If there is data, perform error check
@@ -110,7 +155,7 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
   
   # Next, check if there are duplicate errors
   errors_temp <- errors %>% 
-    get_dupes(SavedQuery,MacroPlot.Name, Error)
+    get_dupes(SavedQuery, MacroPlot.Name, Error)
   # Merge duplicate errors
   errors <- unique(merge(errors, errors_temp, all = T))
   # If duplicate errors exist, add number of duplicates to error message
@@ -122,7 +167,7 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
   # Check if there are no errors
   if (nrow(errors) == 0) {  
     # If there are no errors, default to "No Error" data frame
-    errors <- errors_blank_CrossYear %>%
+    errors <- errors_blank_trees %>%
       mutate(SavedQuery = query,
              Error = "No Error")
     # If there are errors, keep error log you just created
@@ -132,13 +177,47 @@ qaqc_CrossYear <- function(data, query, query_message, values_check) {
 }
 ```
 
+### Adjust File Paths
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
+# Identify working directory.
+here()
+
+# Load in data.
+path_data_FMH <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+path_data_RAP_N <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/North Rim/2025-02-10/"
+path_data_RAP_S <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/South Rim/2025-02-10/"
+path_data_IM_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-03-20/"
+path_data_IM_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
+path_data_WACA <- "X:/FFI Data Management/Exports from FFI/WACA/2025-02-04/"
+
+path_errors <- paste0(here(), "/output/errors/")
+```
+
 ### Load Data
 
 ```{r}
 # Load in data
-Fuels1000_all <- read.csv(paste0(path_data_FMH, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
-FuelsFine_all <- read.csv(paste0(path_data_FMH, "Surface Fuels - Fine_XPT.csv"), quote = "")
 
+# Fuels 1000
+Fuels1000_all_FMH <- read.csv(paste0(path_data_FMH, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+Fuels1000_all_RAP_N <- read.csv(paste0(path_data_RAP_N, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+Fuels1000_all_RAP_S <- read.csv(paste0(path_data_RAP_S, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+Fuels1000_all_IM_M <- read.csv(paste0(path_data_IM_M, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+Fuels1000_all_IM_P <- read.csv(paste0(path_data_IM_P, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+Fuels1000_all_WACA <- read.csv(paste0(path_data_WACA, "Surface Fuels - 1000Hr_XPT.csv"), quote = "")
+
+# Fuels Fine
+FuelsFine_all_FMH <- read.csv(paste0(path_data_FMH, "Surface Fuels - Fine_XPT.csv"), quote = "")
+FuelsFine_all_RAP_N <- read.csv(paste0(path_data_RAP_N, "Surface Fuels - Fine_XPT.csv"), quote = "")
+FuelsFine_all_RAP_S <- read.csv(paste0(path_data_RAP_S, "Surface Fuels - Fine_XPT.csv"), quote = "")
+FuelsFine_all_IM_M <- read.csv(paste0(path_data_IM_M, "Surface Fuels - Fine_XPT.csv"), quote = "")
+FuelsFine_all_IM_P <- read.csv(paste0(path_data_IM_P, "Surface Fuels - Fine_XPT.csv"), quote = "")
+FuelsFine_all_WACA <- read.csv(paste0(path_data_WACA, "Surface Fuels - Fine_XPT.csv"), quote = "")
+
+# Trees
 Trees_all_FMH <- read.csv(paste0(path_data_FMH, "Trees - Individuals (metric)_XPT.csv"), quote = "")
 Trees_all_RAP_N <- read.csv(paste0(path_data_RAP_N, "Trees - Individuals (metric)_XPT.csv"), quote = "")
 Trees_all_RAP_S <- read.csv(paste0(path_data_RAP_S, "Trees - Individuals (metric)_XPT.csv"), quote = "")
@@ -150,11 +229,20 @@ Trees_all_WACA <- read.csv(paste0(path_data_WACA, "Trees - Individuals (metric)_
 ### Merge Data
 
 ```{r}
+# Fuels 1000
+Fuels1000_all_RAP <- rbind(Fuels1000_all_RAP_N, Fuels1000_all_RAP_S)
+Fuels1000_all_IM <- rbind(Fuels1000_all_IM_M, Fuels1000_all_IM_P)
+
+# Fuels Fine
+FuelsFine_all_RAP <- rbind(FuelsFine_all_RAP_N, FuelsFine_all_RAP_S)
+FuelsFine_all_IM <- rbind(FuelsFine_all_IM_M, FuelsFine_all_IM_P)
+
+# Trees
 Trees_all_RAP <- rbind(Trees_all_RAP_N, Trees_all_RAP_S)
 Trees_all_IM <- rbind(Trees_all_IM_M, Trees_all_IM_P)
 
 # Remove extra data
-remove(Trees_all_RAP_N, Trees_all_RAP_S, Trees_all_IM_M, Trees_all_IM_P)
+remove(Fuels1000_all_RAP_N, Fuels1000_all_RAP_S, Fuels1000_all_IM_M, Fuels1000_all_IM_P, FuelsFine_all_RAP_N, FuelsFine_all_RAP_S, FuelsFine_all_IM_M, FuelsFine_all_IM_P, Trees_all_RAP_N, Trees_all_RAP_S, Trees_all_IM_M, Trees_all_IM_P)
 ```
 
 ### Clean Data
@@ -163,8 +251,12 @@ remove(Trees_all_RAP_N, Trees_all_RAP_S, Trees_all_IM_M, Trees_all_IM_P)
 #####
 # Fuels1000
 #####
+
+##################################################################################
+# FMH
+
 # Reformat date column
-Fuels1000_all <- Fuels1000_all %>%
+Fuels1000_all_FMH <- Fuels1000_all_FMH %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
@@ -173,11 +265,11 @@ Fuels1000_all <- Fuels1000_all %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
-#####
-# FuelsFine
-#####
+##################################################################################
+# RAP
+
 # Reformat date column
-FuelsFine_all <- FuelsFine_all %>%
+Fuels1000_all_RAP <- Fuels1000_all_RAP %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
   separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
@@ -185,6 +277,100 @@ FuelsFine_all <- FuelsFine_all %>%
   mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
+
+##################################################################################
+# I&M
+
+# Clean up data frame
+Fuels1000_all_IM <- Fuels1000_all_IM %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time")) %>% 
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+##################################################################################
+# WACA
+
+# Reformat date column
+Fuels1000_all_WACA <- Fuels1000_all_WACA %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+
+#####
+# FuelsFine
+#####
+
+##################################################################################
+# FMH
+
+# Reformat date column
+FuelsFine_all_FMH <- FuelsFine_all_FMH %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+##################################################################################
+# RAP
+
+# Reformat date column
+FuelsFine_all_RAP <- FuelsFine_all_RAP %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
+##################################################################################
+# I&M
+
+# Clean up data frame
+FuelsFine_all_IM <- FuelsFine_all_IM %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time")) %>% 
+  # Add Monitoring Type
+  separate(MacroPlot.Name, sep = "_", into = c("Park", "Plot"), remove = FALSE) %>%
+  separate(Plot, sep = "(?=[[:digit:]])", into = c("MonitoringType", "PlotNumber"), remove = FALSE) %>%
+  select(!c("Park", "PlotNumber")) %>% 
+  mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
+
+##################################################################################
+# WACA
+
+# Reformat date column
+FuelsFine_all_WACA <- FuelsFine_all_WACA %>%
+  # Separate Date column
+  separate(Date, sep = " ", into = c("Date", "Time")) %>%
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  # Remove Month, Day, and Time columns
+  select(!c("Month", "Day", "Time"))
+
 
 #####
 # Trees
@@ -219,9 +405,6 @@ Trees_all_RAP <- Trees_all_RAP %>%
 ##################################################################################
 # I&M
 
-#####
-# Trees
-#####
 # Clean up data frame
 Trees_all_IM <- Trees_all_IM %>%
   # Separate Date column
@@ -257,7 +440,11 @@ Trees_all_WACA <- Trees_all_WACA %>%
 
 ```{r}
 # Select dataset of interest
-Trees_all <- Trees_all_IM
+# _FMH, _RAP, _IM, _WACA
+
+Fuels1000_all <- Fuels1000_all_FMH
+FuelsFine_all <- FuelsFine_all_FMH
+Trees_all <- Trees_all_FMH
 
 path_errors_name <- "GRCA FMH QAQC Tree Errors"
 ```
@@ -269,7 +456,7 @@ path_errors_name <- "GRCA FMH QAQC Tree Errors"
 # Ensure blanks in Visited column are NA
 Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 # Fuels1000 data
-Fuels1000_data <- Fuels1000_all %>%
+Fuels1000_data_CrossYear <- Fuels1000_all %>%
   filter(is.na(Visited))
 
 
@@ -279,7 +466,7 @@ Fuels1000_data <- Fuels1000_all %>%
 # Ensure blanks in Visited column are NA
 FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
 # FuelsFine data
-FuelsFine_data <- FuelsFine_all %>%
+FuelsFine_data_CrossYear <- FuelsFine_all %>%
   filter(is.na(Visited))
 
 
@@ -311,7 +498,7 @@ It checks for errors in: Fuel Slope consistency across years, Fuel Azimuth consi
 
 ```{r}
 # Find data with multiple slopes
-Fuels1000_data_Slope <- Fuels1000_data %>% 
+Fuels1000_data_Slope <- Fuels1000_data_CrossYear %>% 
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Slope_Count = n_distinct(unique(Slope))) %>% 
   ungroup() %>% 
@@ -327,23 +514,22 @@ data_temp <- Fuels1000_data_Slope %>%
 remove(Fuels1000_data_Slope)
 
 # Set parameters 
-data <- merge(Fuels1000_data, data_temp, all = T)
+data <- merge(Fuels1000_data_CrossYear, data_temp, all = T)
 query <- "Fuel 1000 Slope" 
-query_message <- paste0("Transect = ", data$Transect, ". ", "Slope = ", data$Slope, ". ", "Conflicting slopes")
+query_message <- paste0("Slope = ", data$Slope, ". ", "Conflicting slopes")
 values_data <- data$Slope_Count
 values_valid <- 1
 values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_Fuels1000_Slope_CrossYear <- qaqc(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, Error)
+errors_Fuels1000_Slope_CrossYear <- qaqc_fuels(data, query, query_message, values_check)
 ```
 
 #### Fuels Fine
 
 ```{r}
 # Find data with multiple slopes
-FuelsFine_data_Slope <- FuelsFine_data %>% 
+FuelsFine_data_Slope <- FuelsFine_data_CrossYear %>% 
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Slope_Count = n_distinct(unique(Slope))) %>% 
   ungroup() %>% 
@@ -359,7 +545,7 @@ data_temp <- FuelsFine_data_Slope %>%
 remove(FuelsFine_data_Slope)
 
 # Set parameters 
-data <- merge(FuelsFine_data, data_temp, all = T)
+data <- merge(FuelsFine_data_CrossYear, data_temp, all = T)
 query <- "Fuel Fine Slope" 
 query_message <- paste0("Transect = ", data$Transect, ". ", "Slope = ", data$Slope, ". ", "Conflicting slopes")
 values_data <- data$Slope_Count
@@ -367,15 +553,14 @@ values_valid <- 1
 values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_FuelsFine_Slope_CrossYear <- qaqc(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, Error)
+errors_FuelsFine_Slope_CrossYear <- qaqc_fuels(data, query, query_message, values_check)
 ```
 
 ### Fuel Azimuth
 
 ```{r}
 # Find data with multiple azimuths
-FuelsFine_data_Azimuth <- FuelsFine_data %>% 
+FuelsFine_data_Azimuth <- FuelsFine_data_CrossYear %>% 
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Azimuth_Count = n_distinct(unique(Azimuth))) %>% 
   ungroup() %>% 
@@ -392,17 +577,16 @@ data_temp <- FuelsFine_data_Azimuth %>%
 remove(FuelsFine_data_Azimuth)
 
 # Set parameters 
-data <- merge(FuelsFine_data, data_temp, all = T) %>% 
+data <- merge(FuelsFine_data_CrossYear, data_temp, all = T) %>% 
   filter(AzimuthDiff >= 25)
 query <- "Fuel Fine Azimuth" 
-query_message <- paste0("Transect = ", data$Transect, ". ", "Azimuth = ", data$Azimuth, ". ", "Conflicting azimuths")
+query_message <- paste0("Azimuth = ", data$Azimuth, ". ", "Conflicting azimuths")
 values_data <- data$Azimuth_Count
 values_valid <- 1
 values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_FuelsFine_Azimuth_CrossYear <- qaqc(data, query, query_message, values_check) %>% 
-  arrange(MacroPlot.Name, Error)
+errors_FuelsFine_Azimuth_CrossYear <- qaqc_fuels(data, query, query_message, values_check)
 ```
 
 # PROTOCOL - TREES
@@ -660,7 +844,7 @@ values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_CBH <- qaqc_CrossYear(data, query, query_message, values_check)
+errors_Trees_CrossYear_CBH <- qaqc_trees(data, query, query_message, values_check)
 ```
 
 ### Trees DBH
@@ -688,7 +872,7 @@ values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_DBH_Live <- qaqc_CrossYear(data, query, query_message, values_check)
+errors_Trees_CrossYear_DBH_Live <- qaqc_trees(data, query, query_message, values_check)
 ```
 
 #### DBH Dead Increase
@@ -714,7 +898,7 @@ values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_DBH_Dead <- qaqc_CrossYear(data, query, query_message, values_check)
+errors_Trees_CrossYear_DBH_Dead <- qaqc_trees(data, query, query_message, values_check)
 ```
 
 ### Trees Height
@@ -742,7 +926,7 @@ values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_Height_Live <- qaqc_CrossYear(data, query, query_message, values_check)
+errors_Trees_CrossYear_Height_Live <- qaqc_trees(data, query, query_message, values_check)
 ```
 
 #### Height Dead Increase
@@ -768,7 +952,7 @@ values_valid <- data$Date
 values_check <- values_data >= values_valid
 
 # Identify errors
-errors_Trees_CrossYear_Height_Dead <- qaqc_CrossYear(data, query, query_message, values_check)
+errors_Trees_CrossYear_Height_Dead <- qaqc_trees(data, query, query_message, values_check)
 ```
 
 ### Trees Species
@@ -791,7 +975,7 @@ values_valid <- "Y"
 values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_Trees_CrossYear_Species_1 <- qaqc_CrossYear(data, query, query_message, values_check)
+errors_Trees_CrossYear_Species_1 <- qaqc_trees(data, query, query_message, values_check)
 
 # Consolidate duplicate species errors into one row
 errors_Trees_CrossYear_Species <- errors_Trees_CrossYear_Species_1 %>% 
@@ -827,7 +1011,7 @@ values_valid <- data$Date
 values_check <- (values_data >= values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_Trees_CrossYear_Status <- qaqc_CrossYear(data, query, query_message, values_check)
+errors_Trees_CrossYear_Status <- qaqc_trees(data, query, query_message, values_check)
 ```
 
 # ALL ERRORS
@@ -870,5 +1054,5 @@ path_errors
 
 #write_xlsx(errors_Trees_CrossYear, paste0(path_errors, "errors_CrossYear.xlsx"))
 # Formatted
-condformat2excel(errors_Trees_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+#condformat2excel(errors_Trees_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
