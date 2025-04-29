@@ -27,21 +27,17 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = FALSE, message = F
 ```{r install packages, include=FALSE}
 ## Install packages (if needed)
 
-# install.packages("knitr")
-# install.packages("here")
 # install.packages("tidyverse")
 # install.packages("Rtools")
 # install.packages("janitor")
 # install.packages("condformat")
+# install.packages("knitr")
+# install.packages("here")
 ```
 
 ```{r load packages, include=FALSE}
 ## Load Packages
 
-# knitr is used to create output files from R Markdown
-library(knitr)
-# "here" helps you easily find and reference your working directory
-library(here)
 # tidyverse and dplyr have lots of useful functions for data cleaning
 library(tidyverse)
 library(dplyr)
@@ -52,31 +48,18 @@ library(janitor)
 library(writexl)
 # condformat is used to format excel output files
 library(condformat)
-```
-
-### Adjust File Paths
-
-```{r import data, include=FALSE}
-# Identify working directory
-here()
-
-# Load in data.
-path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
-path_dataclean <- paste0(here(), "/output/data_clean/")
-path_errors <- paste0(here(), "/output/errors/")
-path_errors_name <- "Metadata QAQC Errors"
-
-# path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/metadata/"
-# path_dataclean <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/data_clean/"
-# path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
-# path_errors_name <- "Metadata QAQC Errors"
+# knitr is used to create output files from R Markdown
+library(knitr)
+# "here" helps you easily find and reference your working directory
+library(here)
 ```
 
 ### Create Function
 
 ```{r}
 # Blank data frame
-errors_blank <- data.frame("SavedQuery" = "","Macroplot" = "","SampleEventDate" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_meta <- data.frame("SavedQuery" = "","Macroplot" = "","SampleEventDate" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(SampleEventDate = as.Date(SampleEventDate))
 
 # QAQC function
 qaqc_meta <- function(data, query, query_message, values_check) {
@@ -84,7 +67,7 @@ qaqc_meta <- function(data, query, query_message, values_check) {
   # Check if there is data to QAQC
   if(nrow(data) == 0) {
   # If there is no data, default to "No Error" data frame
-  errors <- errors_blank %>%
+  errors <- errors_blank_meta %>%
     mutate(SavedQuery = query,
            Error = "No Error")
   # If there is data, perform error check
@@ -123,7 +106,7 @@ qaqc_meta <- function(data, query, query_message, values_check) {
   # Check if there are no errors
   if (nrow(errors) == 0) {  
     # If there are no errors, default to "No Error" data frame
-    errors <- errors_blank %>%
+    errors <- errors_blank_meta %>%
       mutate(SavedQuery = query,
              Error = "No Error")
     # If there are errors, keep error log you just created
@@ -131,6 +114,19 @@ qaqc_meta <- function(data, query, query_message, values_check) {
     errors <- errors
   }
 }
+```
+
+### Adjust File Paths
+
+```{r import data, include=FALSE}
+# Identify working directory.
+here()
+
+# Load in data.
+path_data <- "X:/FFI Data Management/Exports from FFI/metadata/"
+path_dataclean <- paste0(here(), "/output/data_clean/")
+path_errors <- paste0(here(), "/output/errors/")
+path_errors_name <- "Metadata QAQC Errors"
 ```
 
 ### Load Data
@@ -640,7 +636,7 @@ errors_Visited <- qaqc_meta(data, query, query_message, values_check)
 # ALL ERRORS
 
 ```{r}
-errors_all <- rbind(errors_Disturbance, errors_blank, errors_MonStatus, errors_blank, errors_ProjectUnit, errors_blank, errors_TimeSince, errors_blank, errors_Visited)
+errors_all <- rbind(errors_Disturbance, errors_blank_meta, errors_MonStatus, errors_blank_meta, errors_ProjectUnit, errors_blank_meta, errors_TimeSince, errors_blank_meta, errors_Visited)
 ```
 
 ```{r}
@@ -666,5 +662,5 @@ path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
 # condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
-condformat2excel(errors_all, paste0(path_errors, "errors_metadata_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+#condformat2excel(errors_all, paste0(path_errors, "errors_metadata_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```

@@ -28,6 +28,8 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 # install.packages("Rtools")
 # install.packages("janitor")
 # install.packages("condformat")
+# install.packages("knitr")
+# install.packages("here")
 ```
 
 ### Load Packages
@@ -47,30 +49,16 @@ library(writexl)
 library(condformat)
 # knitr is used to create output files from R Markdown
 library(knitr)
-```
-
-### Adjust File Paths
-
-Make sure to update file paths to be specific for your data.
-
-```{r}
-# Identify working directory (specifically user name)
-getwd()
-
-# Load in data. Change file path based on user name!
-path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_errors <- "C:/Users/alalor.NPS/OneDrive - DOI/Desktop/R/GRCA/output/errors/"
-path_errors_name <- "2023 GRCA FMH PIED QAQC Errors"
-
-# path_data <- "D:/Allie/_FireFX/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-# path_errors <- "C:/Users/allie/OneDrive/Desktop/R Projects/GRCA/output/errors/"
+# here is useful for easily finding the working directory of any project
+library(here)
 ```
 
 ### Create Function
 
 ```{r}
 # Blank data frame
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
 # QAQC function
 qaqc <- function(data, query, query_message, values_check) {
@@ -127,6 +115,20 @@ qaqc <- function(data, query, query_message, values_check) {
 }
 ```
 
+### Adjust File Paths
+
+Make sure to update file paths to be specific for your data.
+
+```{r}
+# Identify working directory.
+here()
+
+# Load in data.
+path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
+path_errors <- paste0(here(), "/output/errors/")
+path_errors_name <- "2023 GRCA FMH PIED QAQC Errors"
+```
+
 ### Load Data
 
 ```{r}
@@ -152,7 +154,9 @@ HerbsPoints_all <- read.csv(paste0(path_data, "Cover - Points (metric)_XPT.csv")
 Fuels1000_all <- Fuels1000_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -163,7 +167,9 @@ Fuels1000_all <- Fuels1000_all %>%
 FuelsDuffLitt_all <- FuelsDuffLitt_all %>%  
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -174,7 +180,9 @@ FuelsDuffLitt_all <- FuelsDuffLitt_all %>%
 FuelsFine_all <- FuelsFine_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -185,7 +193,9 @@ FuelsFine_all <- FuelsFine_all %>%
 PostBurn_all <- PostBurn_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -196,7 +206,9 @@ PostBurn_all <- PostBurn_all %>%
 Trees_all <- Trees_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -208,7 +220,9 @@ Trees_all <- Trees_all %>%
 Seedlings_all <- Seedlings_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -219,7 +233,9 @@ Seedlings_all <- Seedlings_all %>%
 Shrubs_all <- Shrubs_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -230,7 +246,9 @@ Shrubs_all <- Shrubs_all %>%
 HerbsObs_all <- HerbsObs_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 
@@ -241,7 +259,9 @@ HerbsObs_all <- HerbsObs_all %>%
 HerbsPoints_all <- HerbsPoints_all %>%
   # Separate Date column
   separate(Date, sep = " ", into = c("Date", "Time")) %>%
-  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>% 
+  separate(Date, sep = "/", into = c("Month", "Day", "Year"), remove = FALSE) %>%
+  # Reformat Date column
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
   # Remove Month, Day, and Time columns
   select(!c("Month", "Day", "Time"))
 ```
@@ -5189,23 +5209,32 @@ remove(errors_HerbsPoints_Complete, errors_HerbsPoints_Header, errors_HerbsPoint
 
 ```{r}
 # Create protocol separators
-errors_blank_Fuels1000 <- data.frame("SavedQuery" = "PROTOCOL - FUEL 1000","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_Fuels1000 <- data.frame("SavedQuery" = "PROTOCOL - FUEL 1000","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_FuelsDuffLitt <- data.frame("SavedQuery" = "PROTOCOL - FUEL DUFF LITTER","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_FuelsDuffLitt <- data.frame("SavedQuery" = "PROTOCOL - FUEL DUFF LITTER","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_FuelsFine <- data.frame("SavedQuery" = "PROTOCOL - FUEL FINE","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_FuelsFine <- data.frame("SavedQuery" = "PROTOCOL - FUEL FINE","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_PostBurn <- data.frame("SavedQuery" = "PROTOCOL - POST BURN","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_PostBurn <- data.frame("SavedQuery" = "PROTOCOL - POST BURN","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_Trees <- data.frame("SavedQuery" = "PROTOCOL - TREES","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_Trees <- data.frame("SavedQuery" = "PROTOCOL - TREES","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_Seedlings <- data.frame("SavedQuery" = "PROTOCOL - SEEDLINGS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_Seedlings <- data.frame("SavedQuery" = "PROTOCOL - SEEDLINGS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_Shrubs <- data.frame("SavedQuery" = "PROTOCOL - SHRUBS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_Shrubs <- data.frame("SavedQuery" = "PROTOCOL - SHRUBS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_HerbsObs <- data.frame("SavedQuery" = "PROTOCOL - HERBS OBSERVED","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_HerbsObs <- data.frame("SavedQuery" = "PROTOCOL - HERBS OBSERVED","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 
-errors_blank_HerbsPoints <- data.frame("SavedQuery" = "PROTOCOL - HERBS POINTS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_HerbsPoints <- data.frame("SavedQuery" = "PROTOCOL - HERBS POINTS","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Date = as.Date(Date))
 ```
 
 ```{r}
@@ -5249,5 +5278,5 @@ path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_FMH.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_FMH.xlsx"))
 # condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), overwrite_wb = TRUE)
-condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_FMH_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
