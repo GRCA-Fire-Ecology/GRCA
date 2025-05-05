@@ -12,7 +12,6 @@
 
 #load packages
 library(tidyverse)
-#library(readxl)
 
 
 ################################################################################
@@ -215,86 +214,274 @@ PIPO_14_FX_old <- PIPO_14_FX_old %>%
 
 
 ################################################################################
-# MERGE DATA
+# MERGE DATA (NEW ONLY)
 ################################################################################
 
 PIPO_01 <- merge(PIPO_01_IM, PIPO_01_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_01 <- merge(PIPO_01, PIPO_01_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_02 <- merge(PIPO_02_IM, PIPO_02_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_02 <- merge(PIPO_02, PIPO_02_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_03 <- merge(PIPO_03_IM, PIPO_03_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_03 <- merge(PIPO_03, PIPO_03_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_04 <- merge(PIPO_04_IM, PIPO_04_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_04 <- merge(PIPO_04, PIPO_04_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_05 <- PIPO_05_FX %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_05 <- merge(PIPO_05, PIPO_05_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_06 <- merge(PIPO_06_IM, PIPO_06_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_06 <- merge(PIPO_06, PIPO_06_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_07 <- merge(PIPO_07_IM, PIPO_07_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_07 <- merge(PIPO_07, PIPO_07_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_08 <- merge(PIPO_08_IM, PIPO_08_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_08 <- merge(PIPO_08, PIPO_08_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_09 <- merge(PIPO_09_IM, PIPO_09_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_09 <- merge(PIPO_09, PIPO_09_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_10 <- merge(PIPO_10_IM, PIPO_10_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_10 <- merge(PIPO_10, PIPO_10_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_11 <- merge(PIPO_11_IM, PIPO_11_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_11 <- merge(PIPO_11, PIPO_11_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_13 <- merge(PIPO_13_IM, PIPO_13_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_13 <- merge(PIPO_13, PIPO_13_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
 
 PIPO_14 <- merge(PIPO_14_IM, PIPO_14_FX, all = TRUE) %>%
-  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_14 <- merge(PIPO_14, PIPO_14_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
   arrange(SubFrac, QTR, TagNo) %>%
   mutate(Index = row_number())
+
+
+################################################################################
+# MERGE DATA (NEW AND OLD)
+################################################################################
+
+PIPO_01_add_old <- PIPO_01 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_01_add_old <- merge(PIPO_01_add_old, PIPO_01_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+
+PIPO_02_add_old <- PIPO_02 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_02_add_old <- merge(PIPO_02_add_old , PIPO_02_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_03_add_old  <- PIPO_03 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_03_add_old  <- merge(PIPO_03_add_old , PIPO_03_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_04_add_old  <- PIPO_04 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_04_add_old  <- merge(PIPO_04_add_old , PIPO_04_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_05_add_old  <- PIPO_05 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_05_add_old  <- merge(PIPO_05_add_old , PIPO_05_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_06_add_old  <- PIPO_06 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_06_add_old  <- merge(PIPO_06_add_old , PIPO_06_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_07_add_old  <- PIPO_07 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_07_add_old  <- merge(PIPO_07_add_old , PIPO_07_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_08_add_old  <- PIPO_08 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_08_add_old  <- merge(PIPO_08_add_old , PIPO_08_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_09_add_old  <- PIPO_09 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_09_add_old  <- merge(PIPO_09_add_old , PIPO_09_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_10_add_old  <- PIPO_10 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_10_add_old  <- merge(PIPO_10_add_old , PIPO_10_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_11_add_old  <- PIPO_11 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_11_add_old  <- merge(PIPO_11_add_old , PIPO_11_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_13_add_old  <- PIPO_13 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_13_add_old  <- merge(PIPO_13_add_old , PIPO_13_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
+
+PIPO_14_add_old  <- PIPO_14 %>%
+  select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
+PIPO_14_add_old  <- merge(PIPO_14_add_old , PIPO_14_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
+  arrange(SubFrac, QTR, TagNo) %>%
+  mutate(Index = row_number()) %>%
+  relocate(Index, .before = SubFrac) %>%
+  relocate(QTR, .after = SubFrac) %>%
+  relocate(CrwnCl, .after = Status) %>%
+  relocate(DRC, .after = LaddMaxHt) %>%
+  relocate(DamCd1, .before = DamSev1) %>%
+  relocate(DamCd2, .before = DamSev2) %>%
+  relocate(DamCd3, .before = DamSev3) %>%
+  relocate(DamCd4, .before = DamSev4) %>%
+  relocate(DamCd5, .before = DamSev5)
 
 
 ################################################################################
