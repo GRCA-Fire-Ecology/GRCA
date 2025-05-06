@@ -516,13 +516,25 @@ remove(Fuels1000_data_Slope)
 # Set parameters 
 data <- merge(Fuels1000_data_CrossYear, data_temp, all = T)
 query <- "Fuel 1000 Slope" 
-query_message <- paste0("Slope = ", data$Slope, ". ", "Conflicting slopes")
-values_data <- data$Slope_Count
-values_valid <- 1
-values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
+query_message <- paste0("Slope = ", data$Slope, ". ", "Earliest date = ", data$Date, ". ", "Conflicting slopes")
+values_data <- data$Slope_Change
+values_valid <- "Y"
+values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_Fuels1000_Slope_CrossYear <- qaqc_fuels(data, query, query_message, values_check)
+errors_Fuels1000_CrossYear_Slope_1 <- qaqc_fuels(data, query, query_message, values_check)
+
+# Consolidate duplicate species errors into one row
+errors_Fuels1000_CrossYear_Slope <- errors_Fuels1000_CrossYear_Slope_1 %>%
+  separate(Error, sep = ". Conflicting slopes = Y", into = c("Error")) %>% 
+  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
+  arrange(MacroPlot.Name, Transect, Date) %>% 
+  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
+  summarize(
+    Error = paste(Error, collapse = "; "),
+    Fixed = "",
+    Explanation = "",
+    Queryers = "")
 ```
 
 #### Fuels Fine
@@ -547,13 +559,25 @@ remove(FuelsFine_data_Slope)
 # Set parameters 
 data <- merge(FuelsFine_data_CrossYear, data_temp, all = T)
 query <- "Fuel Fine Slope" 
-query_message <- paste0("Transect = ", data$Transect, ". ", "Slope = ", data$Slope, ". ", "Conflicting slopes")
-values_data <- data$Slope_Count
-values_valid <- 1
-values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
+query_message <- paste0("Slope = ", data$Slope, ". ", "Earliest date = ", data$Date, ". ", "Conflicting slopes")
+values_data <- data$Slope_Change
+values_valid <- "Y"
+values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_FuelsFine_Slope_CrossYear <- qaqc_fuels(data, query, query_message, values_check)
+errors_FuelsFine_CrossYear_Slope_1 <- qaqc_fuels(data, query, query_message, values_check)
+
+# Consolidate duplicate species errors into one row
+errors_FuelsFine_CrossYear_Slope <- errors_FuelsFine_CrossYear_Slope_1 %>%
+  separate(Error, sep = ". Conflicting slopes = Y", into = c("Error")) %>% 
+  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
+  arrange(MacroPlot.Name, Transect, Date) %>% 
+  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
+  summarize(
+    Error = paste(Error, collapse = "; "),
+    Fixed = "",
+    Explanation = "",
+    Queryers = "")
 ```
 
 ### Fuel Azimuth
@@ -580,13 +604,65 @@ remove(FuelsFine_data_Azimuth)
 data <- merge(FuelsFine_data_CrossYear, data_temp, all = T) %>% 
   filter(AzimuthDiff >= 25)
 query <- "Fuel Fine Azimuth" 
-query_message <- paste0("Azimuth = ", data$Azimuth, ". ", "Conflicting azimuths")
-values_data <- data$Azimuth_Count
-values_valid <- 1
-values_check <- (values_data == values_valid) %>%  replace_na(TRUE)
+query_message <- paste0("Azimuth = ", data$Azimuth, ". ", "Earliest date = ", data$Date, ". ", "Conflicting azimuths")
+values_data <- data$Azimuth_Change
+values_valid <- "Y"
+values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
 
 # Identify errors
-errors_FuelsFine_Azimuth_CrossYear <- qaqc_fuels(data, query, query_message, values_check)
+errors_FuelsFine_CrossYear_Azimuth_1 <- qaqc_fuels(data, query, query_message, values_check)
+
+# Consolidate duplicate species errors into one row
+errors_FuelsFine_CrossYear_Azimuth <- errors_FuelsFine_CrossYear_Azimuth_1 %>%
+  separate(Error, sep = ". Conflicting azimuths = Y", into = c("Error")) %>% 
+  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
+  arrange(MacroPlot.Name, Transect, Date) %>% 
+  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
+  summarize(
+    Error = paste(Error, collapse = "; "),
+    Fixed = "",
+    Explanation = "",
+    Queryers = "")
+```
+
+## ALL FUEL ERRORS
+
+```{r}
+errors_Fuels_CrossYear <- rbind(errors_Fuels1000_CrossYear_Slope, errors_FuelsFine_CrossYear_Slope, errors_FuelsFine_CrossYear_Azimuth) %>% 
+  arrange(MacroPlot.Name, Transect)
+
+remove(errors_Fuels1000_CrossYear_Slope, errors_FuelsFine_CrossYear_Slope, errors_FuelsFine_CrossYear_Azimuth)
+```
+
+```{r}
+# Formatting
+
+# # Add blank rows between each tag number
+# errors_Trees_CrossYear_blanks <- errors_Trees_CrossYear[1, ]
+# for (i in 2:nrow(errors_Trees_CrossYear)) {
+#   if (errors_Trees_CrossYear[i, "TagNo"] != errors_Trees_CrossYear[i - 1, "TagNo"]) {
+#     errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_blank_CrossYear, errors_Trees_CrossYear[i, ])
+#   } else {
+#     errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_Trees_CrossYear[i, ])
+#   }
+# }
+# 
+# # Add conditional formating to ouput
+# errors_Trees_CrossYear_blanks <- condformat(errors_Trees_CrossYear_blanks[1:(nrow(errors_Trees_CrossYear_blanks)), 1:7]) %>%
+#   rule_fill_discrete(columns = 1:7,
+#                      expression = SavedQuery != "",
+#                      colours = c("TRUE" = "#C6E0B4"),
+#                      na.value = "#FFFFFF")
+# print(errors_Trees_CrossYear_blanks)
+```
+
+```{r}
+# Save as CSV or XLSX 
+#path_errors
+
+#write_xlsx(errors_Trees_CrossYear, paste0(path_errors, "errors_CrossYear.xlsx"))
+# Formatted
+#condformat2excel(errors_Trees_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
 
 # PROTOCOL - TREES
@@ -1014,7 +1090,7 @@ values_check <- (values_data >= values_valid) %>%  replace_na(TRUE)
 errors_Trees_CrossYear_Status <- qaqc_trees(data, query, query_message, values_check)
 ```
 
-# ALL ERRORS
+## ALL TREE ERRORS
 
 ```{r}
 errors_Trees_CrossYear <- rbind(errors_Trees_CrossYear_CBH, errors_Trees_CrossYear_DBH_Live, errors_Trees_CrossYear_DBH_Dead, errors_Trees_CrossYear_Height_Live, errors_Trees_CrossYear_Height_Dead, errors_Trees_CrossYear_Species, errors_Trees_CrossYear_Status) %>% 
@@ -1046,9 +1122,6 @@ print(errors_Trees_CrossYear_blanks)
 ```
 
 ```{r}
-# Table of results for quick check
-#kable(errors_all, "pipe")
-
 # Save as CSV or XLSX 
 path_errors
 
