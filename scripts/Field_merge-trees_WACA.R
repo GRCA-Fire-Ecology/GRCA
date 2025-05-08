@@ -23,10 +23,10 @@ getwd()
 
 #load in data and name them based on file path
 #change file path based on user name!
-path_data_IM <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/WACA/2024/Collected/Trees CSVs from SCPN/"
-path_data_FX <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/WACA/2024/Collected/CSV_Import to FFI/"
-path_data_FX_old <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/WACA/2024/Prepped/CSV_Old data/"
-path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/WACA/2024/Collected/CSV_All tree data ready to import/"
+path_data_IM <- "X:/Data Collection/WACA/2024/Collected/Trees CSVs from SCPN/"
+path_data_FX <- "X:/Data Collection/WACA/2024/Collected/CSV_Import to FFI/"
+path_data_FX_old <- "X:/Data Collection/WACA/2024/Prepped/CSV_Old data/"
+path_csv <- "X:/Data Collection/WACA/2024/Collected/CSV_All tree data ready to import/"
 
 ################################################################################
 # LOAD DATA
@@ -276,9 +276,13 @@ PIPO_14 <- merge(PIPO_14_IM, PIPO_14_FX, all = TRUE) %>%
 
 PIPO_01_add_old <- PIPO_01 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_01_add_old <- merge(PIPO_01_add_old, PIPO_01_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_01_add_old <- merge(PIPO_01_add_old, PIPO_01_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -293,9 +297,13 @@ PIPO_01_add_old <- merge(PIPO_01_add_old, PIPO_01_FX_old, by = c("SubFrac", "Tag
 
 PIPO_02_add_old <- PIPO_02 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_02_add_old <- merge(PIPO_02_add_old , PIPO_02_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_02_add_old <- merge(PIPO_02_add_old , PIPO_02_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -307,11 +315,16 @@ PIPO_02_add_old <- merge(PIPO_02_add_old , PIPO_02_FX_old, by = c("SubFrac", "Ta
   relocate(DamCd4, .before = DamSev4) %>%
   relocate(DamCd5, .before = DamSev5)
 
+
 PIPO_03_add_old  <- PIPO_03 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_03_add_old  <- merge(PIPO_03_add_old , PIPO_03_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_03_add_old  <- merge(PIPO_03_add_old , PIPO_03_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -325,9 +338,13 @@ PIPO_03_add_old  <- merge(PIPO_03_add_old , PIPO_03_FX_old, by = c("SubFrac", "T
 
 PIPO_04_add_old  <- PIPO_04 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_04_add_old  <- merge(PIPO_04_add_old , PIPO_04_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_04_add_old  <- merge(PIPO_04_add_old , PIPO_04_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -341,9 +358,13 @@ PIPO_04_add_old  <- merge(PIPO_04_add_old , PIPO_04_FX_old, by = c("SubFrac", "T
 
 PIPO_05_add_old  <- PIPO_05 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_05_add_old  <- merge(PIPO_05_add_old , PIPO_05_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_05_add_old  <- merge(PIPO_05_add_old , PIPO_05_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -357,9 +378,13 @@ PIPO_05_add_old  <- merge(PIPO_05_add_old , PIPO_05_FX_old, by = c("SubFrac", "T
 
 PIPO_06_add_old  <- PIPO_06 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_06_add_old  <- merge(PIPO_06_add_old , PIPO_06_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_06_add_old  <- merge(PIPO_06_add_old , PIPO_06_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -373,9 +398,13 @@ PIPO_06_add_old  <- merge(PIPO_06_add_old , PIPO_06_FX_old, by = c("SubFrac", "T
 
 PIPO_07_add_old  <- PIPO_07 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_07_add_old  <- merge(PIPO_07_add_old , PIPO_07_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_07_add_old  <- merge(PIPO_07_add_old , PIPO_07_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -389,9 +418,13 @@ PIPO_07_add_old  <- merge(PIPO_07_add_old , PIPO_07_FX_old, by = c("SubFrac", "T
 
 PIPO_08_add_old  <- PIPO_08 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_08_add_old  <- merge(PIPO_08_add_old , PIPO_08_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_08_add_old  <- merge(PIPO_08_add_old , PIPO_08_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -405,9 +438,13 @@ PIPO_08_add_old  <- merge(PIPO_08_add_old , PIPO_08_FX_old, by = c("SubFrac", "T
 
 PIPO_09_add_old  <- PIPO_09 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_09_add_old  <- merge(PIPO_09_add_old , PIPO_09_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_09_add_old  <- merge(PIPO_09_add_old , PIPO_09_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -421,9 +458,13 @@ PIPO_09_add_old  <- merge(PIPO_09_add_old , PIPO_09_FX_old, by = c("SubFrac", "T
 
 PIPO_10_add_old  <- PIPO_10 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_10_add_old  <- merge(PIPO_10_add_old , PIPO_10_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_10_add_old  <- merge(PIPO_10_add_old , PIPO_10_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -437,9 +478,13 @@ PIPO_10_add_old  <- merge(PIPO_10_add_old , PIPO_10_FX_old, by = c("SubFrac", "T
 
 PIPO_11_add_old  <- PIPO_11 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_11_add_old  <- merge(PIPO_11_add_old , PIPO_11_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_11_add_old  <- merge(PIPO_11_add_old , PIPO_11_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -453,9 +498,13 @@ PIPO_11_add_old  <- merge(PIPO_11_add_old , PIPO_11_FX_old, by = c("SubFrac", "T
 
 PIPO_13_add_old  <- PIPO_13 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_13_add_old  <- merge(PIPO_13_add_old , PIPO_13_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_13_add_old  <- merge(PIPO_13_add_old , PIPO_13_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -469,9 +518,13 @@ PIPO_13_add_old  <- merge(PIPO_13_add_old , PIPO_13_FX_old, by = c("SubFrac", "T
 
 PIPO_14_add_old  <- PIPO_14 %>%
   select(!c(QTR, CrwnCl, DRC, DamCd1, DamCd2, DamCd3, DamCd4, DamCd5, CharHt, ScorchHt, CrScPct))
-PIPO_14_add_old  <- merge(PIPO_14_add_old , PIPO_14_FX_old, by = c("SubFrac", "TagNo"), all.x = TRUE) %>%
-  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR)) %>%
-  arrange(SubFrac, QTR, TagNo) %>%
+PIPO_14_add_old  <- merge(PIPO_14_add_old , PIPO_14_FX_old, by = c("SubFrac", "TagNo"), all = TRUE) %>%
+  mutate(QTR = ifelse(SubFrac == 0.25, 1, QTR),
+         Crown.Class = ifelse(is.na(Crown.Class), "", Crown.Class),
+         CrwnCl = ifelse(Crown.Class == "Dead and Down (DD)", "DD", CrwnCl),
+         reorder = ifelse(is.na(Status), 1, 0)) %>%
+  arrange(reorder, SubFrac, QTR, TagNo) %>%
+  select(!c(reorder, Crown.Class)) %>%
   mutate(Index = row_number()) %>%
   relocate(Index, .before = SubFrac) %>%
   relocate(QTR, .after = SubFrac) %>%
@@ -488,6 +541,7 @@ PIPO_14_add_old  <- merge(PIPO_14_add_old , PIPO_14_FX_old, by = c("SubFrac", "T
 # SAVE DATA
 ################################################################################
 
+### New Data Only
 # write.csv(PIPO_01, paste0(path_csv, "PIPO_01_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
 # write.csv(PIPO_02, paste0(path_csv, "PIPO_02_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
 # write.csv(PIPO_03, paste0(path_csv, "PIPO_03_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
@@ -501,4 +555,20 @@ PIPO_14_add_old  <- merge(PIPO_14_add_old , PIPO_14_FX_old, by = c("SubFrac", "T
 # write.csv(PIPO_11, paste0(path_csv, "PIPO_11_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
 # write.csv(PIPO_13, paste0(path_csv, "PIPO_13_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
 # write.csv(PIPO_14, paste0(path_csv, "PIPO_14_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+
+
+### New Data Plus Old Data
+# write.csv(PIPO_01_add_old, paste0(path_csv, "PIPO_01_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_02_add_old, paste0(path_csv, "PIPO_02_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_03_add_old, paste0(path_csv, "PIPO_03_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_04_add_old, paste0(path_csv, "PIPO_04_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_05_add_old, paste0(path_csv, "PIPO_05_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_06_add_old, paste0(path_csv, "PIPO_06_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_07_add_old, paste0(path_csv, "PIPO_07_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_08_add_old, paste0(path_csv, "PIPO_08_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_09_add_old, paste0(path_csv, "PIPO_09_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_10_add_old, paste0(path_csv, "PIPO_10_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_11_add_old, paste0(path_csv, "PIPO_11_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_13_add_old, paste0(path_csv, "PIPO_13_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
+# write.csv(PIPO_14_add_old, paste0(path_csv, "PIPO_14_AllTrees.csv"), quote=FALSE, row.names = FALSE, na = "")
 
