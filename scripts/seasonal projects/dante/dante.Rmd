@@ -3,3 +3,4 @@ title: "dante"
 output: html_document
 ---
 
+plot(1)
