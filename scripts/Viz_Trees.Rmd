@@ -49,7 +49,7 @@ library(readxl)
 ```{r}
 # Adjust File Paths
 path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
-path_errors <- paste0(here(), "/output/errors/")
+path_errors <- "X:/FFI Data Management/Queries/QAQC/GRCA_FMH+RAP/"
 ```
 
 ### Load Data
@@ -57,7 +57,7 @@ path_errors <- paste0(here(), "/output/errors/")
 ```{r}
 # Load in data
 Trees_all <- read.csv(paste0(path_data, "Trees - Individuals (metric)_XPT.csv"), quote = "")
-errors_Trees_CrossYear <- read_excel(paste0(path_errors, "errors_CrossYear_formatted.xlsx"))
+errors_Trees_CrossYear <- read_excel(paste0(path_errors, "errors_GRCA_FMH_CrossYear_Trees_formatted.xlsx"))
 ```
 
 ### Clean Data
