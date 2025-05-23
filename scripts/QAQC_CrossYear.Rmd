@@ -59,7 +59,8 @@ Fuels
 
 ```{r}
 # Blank data frame
-errors_blank_fuels <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Transect" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "")
+errors_blank_fuels <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Transect" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+  mutate(Transect = as.integer(Transect))
 
 # QAQC function
 qaqc_fuels <- function(data, query, query_message, values_check) {
@@ -442,11 +443,11 @@ Trees_all_WACA <- Trees_all_WACA %>%
 # Select dataset of interest
 # _FMH, _RAP, _IM, _WACA
 
-Fuels1000_all <- Fuels1000_all_FMH
-FuelsFine_all <- FuelsFine_all_FMH
-Trees_all <- Trees_all_FMH
+Fuels1000_all <- Fuels1000_all_WACA
+FuelsFine_all <- FuelsFine_all_WACA
+Trees_all <- Trees_all_WACA
 
-path_errors_name <- "GRCA FMH QAQC Tree Errors"
+path_errors_name <- "WACA QAQC Tree Errors"
 ```
 
 ```{r}
@@ -480,117 +481,85 @@ Trees_data_CrossYear <- Trees_all %>%
   filter(is.na(Visited))  
 ```
 
-# PROTOCOL - SURFACE FUELS
+### Set Thresholds
 
-## 1000HR (CWD) & FINE FUELS (FWD)
+This QAQC check isolates *incorrect* changes in the following values. Setting thresholds allows us to decide what degree of inaccuracy is acceptable in the data. Larger changes may indicate clear errors, while smaller errors may simply reflect variation in data collection instruments and data collector interpretations. For instance, a live tree could decrease in height by 1 meter or by 10 meters; are both of these changes acceptable or unacceptable? Setting thresholds should consider imperfections in data collection methods and potential impacts to data analysis.
 
-This code conducts cross-year quality control checks on 2 surface fuels datasets
+```{r}
+# Azimuth (degrees)
+max_Azimuth <- 35
 
--   coarse woody debris (CWD) surface fuels data within the "Surface Fuels - 1000Hr" data set
+# DBH (centimeters)
+max_DBH <- 5
 
--   fine woody debris (FWD) surface fuels data within the "Surface Fuels - Fine" data set.
+# CBH (meters)
+max_CBH <- 5
 
-It checks for errors in: Fuel Slope consistency across years, Fuel Azimuth consistency across years
+# Height (meters)
+max_Ht <- 5
+```
 
-### Fuel Slope
+# Add Columns
 
-#### Fuels 1000
+### Slope Columns
+
+-   Slope_Count = How many unique slopes have been recorded for each transect? Count \> 1 means that the transect has changed slope.
+
+-   Slope_Change = Has slope changed over time? if Slope_Count \> 1, Slope_Change = Y.
 
 ```{r}
 # Find data with multiple slopes
-Fuels1000_data_Slope <- Fuels1000_data_CrossYear %>% 
+Fuels1000_data_CrossYear_Slope <- Fuels1000_data_CrossYear %>% 
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Slope_Count = n_distinct(unique(Slope))) %>% 
   ungroup() %>% 
   arrange(MacroPlot.Name, Date, Transect)
 
-data_temp <- Fuels1000_data_Slope %>% 
+data_temp_merge_Slope_Fuels1000 <- Fuels1000_data_CrossYear_Slope %>% 
   filter(Slope_Count > 1) %>%
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Slope_Change = ifelse(duplicated(Slope), "N", "Y")) %>%
   filter(Slope_Change == "Y") %>%
   unique()
 
-remove(Fuels1000_data_Slope)
-
-# Set parameters 
-data <- merge(Fuels1000_data_CrossYear, data_temp, all = T)
-query <- "Fuel 1000 Slope" 
-query_message <- paste0("Slope = ", data$Slope, ". ", "Earliest date = ", data$Date, ". ", "Conflicting slopes")
-values_data <- data$Slope_Change
-values_valid <- "Y"
-values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
-
-# Identify errors
-errors_Fuels1000_CrossYear_Slope_1 <- qaqc_fuels(data, query, query_message, values_check)
-
-# Consolidate duplicate species errors into one row
-errors_Fuels1000_CrossYear_Slope <- errors_Fuels1000_CrossYear_Slope_1 %>%
-  separate(Error, sep = ". Conflicting slopes = Y", into = c("Error")) %>% 
-  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
-  arrange(MacroPlot.Name, Transect, Date) %>% 
-  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
-  summarize(
-    Error = paste(Error, collapse = "; "),
-    Fixed = "",
-    Explanation = "",
-    Queryers = "")
+remove(Fuels1000_data_CrossYear_Slope)
 ```
-
-#### Fuels Fine
 
 ```{r}
 # Find data with multiple slopes
-FuelsFine_data_Slope <- FuelsFine_data_CrossYear %>% 
+FuelsFine_data_CrossYear_Slope <- FuelsFine_data_CrossYear %>% 
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Slope_Count = n_distinct(unique(Slope))) %>% 
   ungroup() %>% 
   arrange(MacroPlot.Name, Date, Transect)
 
-data_temp <- FuelsFine_data_Slope %>% 
+data_temp_merge_Slope_FuelsFine <- FuelsFine_data_CrossYear_Slope %>% 
   filter(Slope_Count > 1) %>%
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Slope_Change = ifelse(duplicated(Slope), "N", "Y")) %>%
   filter(Slope_Change == "Y") %>%
   unique()
 
-remove(FuelsFine_data_Slope)
-
-# Set parameters 
-data <- merge(FuelsFine_data_CrossYear, data_temp, all = T)
-query <- "Fuel Fine Slope" 
-query_message <- paste0("Slope = ", data$Slope, ". ", "Earliest date = ", data$Date, ". ", "Conflicting slopes")
-values_data <- data$Slope_Change
-values_valid <- "Y"
-values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
-
-# Identify errors
-errors_FuelsFine_CrossYear_Slope_1 <- qaqc_fuels(data, query, query_message, values_check)
-
-# Consolidate duplicate species errors into one row
-errors_FuelsFine_CrossYear_Slope <- errors_FuelsFine_CrossYear_Slope_1 %>%
-  separate(Error, sep = ". Conflicting slopes = Y", into = c("Error")) %>% 
-  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
-  arrange(MacroPlot.Name, Transect, Date) %>% 
-  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
-  summarize(
-    Error = paste(Error, collapse = "; "),
-    Fixed = "",
-    Explanation = "",
-    Queryers = "")
+remove(FuelsFine_data_CrossYear_Slope)
 ```
 
-### Fuel Azimuth
+### Azimuth Columns
+
+-   Azimuth_Count = How many unique azimuths have been recorded for each transect? Count \> 1 means that the transect has changed azimuth.
+
+-   Azimuth_Change = Has azimuth changed over time? if Azimuth_Count \> 1, Azimuth_Change = Y.
+
+-   AzimuthDiff = What is the difference between azimuth values?
 
 ```{r}
 # Find data with multiple azimuths
-FuelsFine_data_Azimuth <- FuelsFine_data_CrossYear %>% 
+FuelsFine_data_CrossYear_Azimuth <- FuelsFine_data_CrossYear %>% 
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(Azimuth_Count = n_distinct(unique(Azimuth))) %>% 
   ungroup() %>% 
   arrange(MacroPlot.Name, Date, Transect)
 
-data_temp <- FuelsFine_data_Azimuth %>% 
+data_temp_merge_Azimuth <- FuelsFine_data_CrossYear_Azimuth %>% 
   filter(Azimuth_Count > 1) %>%
   group_by(MacroPlot.Name, Transect) %>% 
   mutate(AzimuthDiff = max(Azimuth  - min(Azimuth)),
@@ -598,82 +567,10 @@ data_temp <- FuelsFine_data_Azimuth %>%
   filter(Azimuth_Change == "Y") %>%
   unique()
 
-remove(FuelsFine_data_Azimuth)
-
-# Set parameters 
-data <- merge(FuelsFine_data_CrossYear, data_temp, all = T) %>% 
-  filter(AzimuthDiff >= 25)
-query <- "Fuel Fine Azimuth" 
-query_message <- paste0("Azimuth = ", data$Azimuth, ". ", "Earliest date = ", data$Date, ". ", "Conflicting azimuths")
-values_data <- data$Azimuth_Change
-values_valid <- "Y"
-values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
-
-# Identify errors
-errors_FuelsFine_CrossYear_Azimuth_1 <- qaqc_fuels(data, query, query_message, values_check)
-
-# Consolidate duplicate species errors into one row
-errors_FuelsFine_CrossYear_Azimuth <- errors_FuelsFine_CrossYear_Azimuth_1 %>%
-  separate(Error, sep = ". Conflicting azimuths = Y", into = c("Error")) %>% 
-  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
-  arrange(MacroPlot.Name, Transect, Date) %>% 
-  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
-  summarize(
-    Error = paste(Error, collapse = "; "),
-    Fixed = "",
-    Explanation = "",
-    Queryers = "")
+remove(FuelsFine_data_CrossYear_Azimuth)
 ```
 
-## ALL FUEL ERRORS
-
-```{r}
-errors_Fuels_CrossYear <- rbind(errors_Fuels1000_CrossYear_Slope, errors_FuelsFine_CrossYear_Slope, errors_FuelsFine_CrossYear_Azimuth) %>% 
-  arrange(MacroPlot.Name, Transect)
-
-remove(errors_Fuels1000_CrossYear_Slope, errors_FuelsFine_CrossYear_Slope, errors_FuelsFine_CrossYear_Azimuth)
-```
-
-```{r}
-# Formatting
-
-# # Add blank rows between each tag number
-# errors_Trees_CrossYear_blanks <- errors_Trees_CrossYear[1, ]
-# for (i in 2:nrow(errors_Trees_CrossYear)) {
-#   if (errors_Trees_CrossYear[i, "TagNo"] != errors_Trees_CrossYear[i - 1, "TagNo"]) {
-#     errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_blank_CrossYear, errors_Trees_CrossYear[i, ])
-#   } else {
-#     errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_Trees_CrossYear[i, ])
-#   }
-# }
-# 
-# # Add conditional formating to ouput
-# errors_Trees_CrossYear_blanks <- condformat(errors_Trees_CrossYear_blanks[1:(nrow(errors_Trees_CrossYear_blanks)), 1:7]) %>%
-#   rule_fill_discrete(columns = 1:7,
-#                      expression = SavedQuery != "",
-#                      colours = c("TRUE" = "#C6E0B4"),
-#                      na.value = "#FFFFFF")
-# print(errors_Trees_CrossYear_blanks)
-```
-
-```{r}
-# Save as CSV or XLSX 
-#path_errors
-
-#write_xlsx(errors_Trees_CrossYear, paste0(path_errors, "errors_CrossYear.xlsx"))
-# Formatted
-#condformat2excel(errors_Trees_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
-```
-
-# PROTOCOL - TREES
-
-This code conducts quality control checks on tree data within the "Trees - Individuals (metric)" data set.
-
-It checks for illogical changes over time in: CBH, DBH, Height, Species, and Status
-
-### Add Columns
-
-#### CBH Columns
+### CBH Columns
 
 -   MaxCBH = What is the tallest recorded CBH of each individual **live** tree? (Dead trees do not have CBH)
 
@@ -702,7 +599,7 @@ data_temp_merge_CBH <- merge(data_temp_CBH, data_temp_MaxCBHDate, all = T)
 remove(data_temp_CBH, data_temp_MaxCBHDate)
 ```
 
-#### DBH Columns
+### DBH Columns
 
 -   MinDBH = What is the smallest recorded DBH of each individual **dead** tree?
 
@@ -761,7 +658,7 @@ data_temp_merge_DBH <- merge(data_temp_merge_DeadDBH, data_temp_merge_LiveDBH, a
 remove(data_temp_merge_DeadDBH, data_temp_merge_LiveDBH, data_temp_DBH, data_temp_MinDBHDate, data_temp_MaxDBHDate)
 ```
 
-#### Height Columns
+### Height Columns
 
 -   MinHeight= What is the shortest recorded Height of each individual **dead** tree?
 
@@ -820,7 +717,7 @@ data_temp_merge_Height <- merge(data_temp_merge_DeadHeight, data_temp_merge_Live
 remove(data_temp_merge_DeadHeight, data_temp_merge_LiveHeight, data_temp_Height, data_temp_MinHeightDate, data_temp_MaxHeightDate)
 ```
 
-#### Species Columns
+### Species Columns
 
 -   Species_Count = How many unique species have been recorded for each individual tree? Count \> 1 means that the tree has changed species.
 
@@ -842,7 +739,7 @@ data_temp_merge_Species <- data_temp_Species
 remove(Trees_data_CrossYear_Species, data_temp_Species)
 ```
 
-#### Status Columns
+### Status Columns
 
 -   Status_Count = How many unique statuses have been recorded for each individual tree? Count of 1 means that the tree has been alive or dead for the entirety of data collection. Count of 2 means that the tree has been both alive and dead.
 
@@ -895,6 +792,147 @@ data_temp_merge_Status <- merge(data_temp_merge_Status_Dead, data_temp_merge_Sta
 remove(Trees_data_CrossYear_Status, data_temp_Status_AllDead, data_temp_Status_SomeDead, data_temp_Status_Dead, data_temp_MinDeadDate, data_temp_merge_Status_Dead, data_temp_Status_AllLive, data_temp_Status_SomeLive, data_temp_Status_Live, data_temp_MinLiveDate, data_temp_merge_Status_Live)
 ```
 
+# PROTOCOL - SURFACE FUELS
+
+## 1000HR (CWD) & FINE FUELS (FWD)
+
+This code conducts cross-year quality control checks on 2 surface fuels datasets
+
+-   coarse woody debris (CWD) surface fuels data within the "Surface Fuels - 1000Hr" data set
+
+-   fine woody debris (FWD) surface fuels data within the "Surface Fuels - Fine" data set.
+
+It checks for errors in: Fuel Slope consistency across years, Fuel Azimuth consistency across years
+
+### Fuel Slope
+
+#### Fuels 1000
+
+```{r}
+# Set parameters 
+data <- merge(Fuels1000_data_CrossYear, data_temp_merge_Slope_Fuels1000, all = T)
+query <- "Fuel 1000 Slope" 
+query_message <- paste0("Slope = ", data$Slope, ". ", "Earliest date = ", data$Date, ". ", "Conflicting slopes")
+values_data <- data$Slope_Change
+values_valid <- "Y"
+values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_Fuels1000_CrossYear_Slope <- qaqc_fuels(data, query, query_message, values_check)
+
+# Consolidate duplicate slope errors into one row
+errors_Fuels1000_CrossYear_Slope <- errors_Fuels1000_CrossYear_Slope %>%
+  separate(Error, sep = ". Conflicting slopes = Y", into = c("Error")) %>% 
+  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
+  arrange(MacroPlot.Name, Transect, Date) %>% 
+  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
+  summarize(
+    Error = paste(Error, collapse = "; "),
+    Fixed = "",
+    Explanation = "",
+    Queryers = "")
+```
+
+#### Fuels Fine
+
+```{r}
+# Set parameters 
+data <- merge(FuelsFine_data_CrossYear, data_temp_merge_Slope_FuelsFine, all = T)
+query <- "Fuel Fine Slope" 
+query_message <- paste0("Slope = ", data$Slope, ". ", "Earliest date = ", data$Date, ". ", "Conflicting slopes")
+values_data <- data$Slope_Change
+values_valid <- "Y"
+values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_FuelsFine_CrossYear_Slope <- qaqc_fuels(data, query, query_message, values_check)
+
+# Consolidate duplicate species errors into one row
+errors_FuelsFine_CrossYear_Slope <- errors_FuelsFine_CrossYear_Slope %>%
+  separate(Error, sep = ". Conflicting slopes = Y", into = c("Error")) %>% 
+  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
+  arrange(MacroPlot.Name, Transect, Date) %>% 
+  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
+  summarize(
+    Error = paste(Error, collapse = "; "),
+    Fixed = "",
+    Explanation = "",
+    Queryers = "")
+```
+
+### Fuel Azimuth
+
+```{r}
+# Set parameters 
+data <- merge(FuelsFine_data_CrossYear, data_temp_merge_Azimuth, all = T) %>% 
+  filter(AzimuthDiff >= max_Azimuth)
+query <- "Fuel Fine Azimuth" 
+query_message <- paste0("Azimuth = ", data$Azimuth, ". ", "Earliest date = ", data$Date, ". ", "Conflicting azimuths")
+values_data <- data$Azimuth_Change
+values_valid <- "Y"
+values_check <- (values_data != values_valid) %>%  replace_na(TRUE)
+
+# Identify errors
+errors_FuelsFine_CrossYear_Azimuth <- qaqc_fuels(data, query, query_message, values_check)
+
+# Consolidate duplicate species errors into one row
+errors_FuelsFine_CrossYear_Azimuth <- errors_FuelsFine_CrossYear_Azimuth %>%
+  separate(Error, sep = ". Conflicting azimuths = Y", into = c("Error")) %>% 
+  separate(Error, sep = "date = ", into = c("Test", "Date"), remove = F) %>% 
+  arrange(MacroPlot.Name, Transect, Date) %>% 
+  group_by(SavedQuery, MacroPlot.Name, Transect) %>% 
+  summarize(
+    Error = paste(Error, collapse = "; "),
+    Fixed = "",
+    Explanation = "",
+    Queryers = "")
+```
+
+## ALL FUEL ERRORS
+
+```{r}
+errors_Fuels_CrossYear <- rbind(errors_Fuels1000_CrossYear_Slope, errors_FuelsFine_CrossYear_Slope, errors_FuelsFine_CrossYear_Azimuth) %>% 
+  arrange(MacroPlot.Name, Transect)
+
+remove(errors_Fuels1000_CrossYear_Slope, errors_FuelsFine_CrossYear_Slope, errors_FuelsFine_CrossYear_Azimuth)
+```
+
+```{r}
+# Formatting
+
+# Add blank rows between each tag number
+errors_Fuels_CrossYear_blanks <- errors_Fuels_CrossYear[1, ]
+for (i in 2:nrow(errors_Fuels_CrossYear)) {
+  if (errors_Fuels_CrossYear[i, "MacroPlot.Name"] != errors_Fuels_CrossYear[i - 1, "MacroPlot.Name"]) {
+    errors_Fuels_CrossYear_blanks <- rbind(errors_Fuels_CrossYear_blanks, errors_blank_fuels, errors_Fuels_CrossYear[i, ])
+  } else {
+    errors_Fuels_CrossYear_blanks <- rbind(errors_Fuels_CrossYear_blanks, errors_Fuels_CrossYear[i, ])
+  }
+}
+
+# Add conditional formating to ouput
+errors_Fuels_CrossYear_blanks <- condformat(errors_Fuels_CrossYear_blanks[1:(nrow(errors_Fuels_CrossYear_blanks)), 1:7]) %>%
+  rule_fill_discrete(columns = 1:7,
+                     expression = SavedQuery != "",
+                     colours = c("TRUE" = "#C6E0B4"),
+                     na.value = "#FFFFFF")
+```
+
+```{r}
+# Save as CSV or XLSX 
+#path_errors
+
+#write_xlsx(errors_Fuels_CrossYear, paste0(path_errors, "errors_Fuels_CrossYear.xlsx"))
+# Formatted
+condformat2excel(errors_Fuels_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_Fuels_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+```
+
+# PROTOCOL - TREES
+
+This code conducts quality control checks on tree data within the "Trees - Individuals (metric)" data set.
+
+It checks for illogical changes over time in: CBH, DBH, Height, Species, and Status
+
 ### Trees CBH
 
 #### CBH Decrease
@@ -912,7 +950,7 @@ remove(Trees_data_CrossYear_Status, data_temp_Status_AllDead, data_temp_Status_S
 data <- merge(Trees_data_CrossYear, data_temp_merge_CBH, all = T) %>% 
   filter(Status == "L", !is.na(LiCrBHt),
          # set threshold of concern
-         MaxCBHDiff >= 5)
+         MaxCBHDiff >= max_CBH)
 query <- "Trees CBH" 
 query_message <- paste0("LiCrBHt (CBH) decreases over time. ", "Max CBH = ", data$MaxCBH, " on date")
 values_data <- data$MaxCBHDate
@@ -940,7 +978,7 @@ errors_Trees_CrossYear_CBH <- qaqc_trees(data, query, query_message, values_chec
 data <- merge(Trees_data_CrossYear, data_temp_merge_DBH, all = T) %>% 
   filter(Status == "L", !is.na(DBH),
          # set threshold of concern
-         MaxDBHDiff >= 5)
+         MaxDBHDiff >= max_DBH)
 query <- "Trees DBH" 
 query_message <- paste0("Status = ", data$Status, ". ", "DBH decreases over time. ", "Max DBH = ", data$MaxDBH, " on date")
 values_data <- data$MaxDBHDate
@@ -966,7 +1004,7 @@ errors_Trees_CrossYear_DBH_Live <- qaqc_trees(data, query, query_message, values
 data <- merge(Trees_data_CrossYear, data_temp_merge_DBH, all = T) %>% 
   filter(Status == "D", !is.na(DBH),
          # set threshold of concern
-         MinDBHDiff >= 5)
+         MinDBHDiff >= max_DBH)
 query <- "Trees DBH" 
 query_message <- paste0("Status = ", data$Status, ". ", "DBH increases over time. ", "Min DBH = ", data$MinDBH, " on date")
 values_data <- data$MinDBHDate
@@ -994,7 +1032,7 @@ errors_Trees_CrossYear_DBH_Dead <- qaqc_trees(data, query, query_message, values
 data <- merge(Trees_data_CrossYear, data_temp_merge_Height, all = T) %>% 
   filter(Status == "L", !is.na(Ht),
          # set threshold of concern
-         MaxHeightDiff >= 5)
+         MaxHeightDiff >= max_Ht)
 query <- "Trees Height" 
 query_message <- paste0("Status = ", data$Status, ". ", "Height decreases over time. ", "Max Height = ", data$MaxHeight, " on date")
 values_data <- data$MaxHeightDate
@@ -1020,7 +1058,7 @@ errors_Trees_CrossYear_Height_Live <- qaqc_trees(data, query, query_message, val
 data <- merge(Trees_data_CrossYear, data_temp_merge_Height, all = T) %>% 
   filter(Status == "D", !is.na(Ht),
          # set threshold of concern
-         MinHeightDiff >= 5)
+         MinHeightDiff >= max_Ht)
 query <- "Trees Height" 
 query_message <- paste0("Status = ", data$Status, ". ", "Height increases over time. ", "Min Height = ", data$MinHeight, " on date")
 values_data <- data$MinHeightDate
@@ -1106,7 +1144,7 @@ remove(errors_Trees_CrossYear_CBH, errors_Trees_CrossYear_DBH_Live, errors_Trees
 errors_Trees_CrossYear_blanks <- errors_Trees_CrossYear[1, ]
 for (i in 2:nrow(errors_Trees_CrossYear)) {
   if (errors_Trees_CrossYear[i, "TagNo"] != errors_Trees_CrossYear[i - 1, "TagNo"]) {
-    errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_blank_CrossYear, errors_Trees_CrossYear[i, ])
+    errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_blank_trees, errors_Trees_CrossYear[i, ])
   } else {
     errors_Trees_CrossYear_blanks <- rbind(errors_Trees_CrossYear_blanks, errors_Trees_CrossYear[i, ])
   }
@@ -1118,7 +1156,6 @@ errors_Trees_CrossYear_blanks <- condformat(errors_Trees_CrossYear_blanks[1:(nro
                      expression = SavedQuery != "",
                      colours = c("TRUE" = "#C6E0B4"),
                      na.value = "#FFFFFF")
-print(errors_Trees_CrossYear_blanks)
 ```
 
 ```{r}
@@ -1127,5 +1164,5 @@ path_errors
 
 #write_xlsx(errors_Trees_CrossYear, paste0(path_errors, "errors_CrossYear.xlsx"))
 # Formatted
-#condformat2excel(errors_Trees_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+condformat2excel(errors_Trees_CrossYear_blanks, paste0(path_errors, "errors_CrossYear_Trees_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```
