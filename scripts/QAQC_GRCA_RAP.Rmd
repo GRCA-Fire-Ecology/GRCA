@@ -57,7 +57,7 @@ library(here)
 
 ```{r}
 # Blank data frame
-errors_blank <- data.frame("SavedQuery" = "","MacroPlot.Name" = "","Date" = "","Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>% 
+errors_blank <- data.frame("SavedQuery" = "", "MacroPlot.Name" = "", "Date" = "", "Error" = "", "Fixed" = "", "Explanation" = "", "Queryers" = "") %>%
   mutate(Date = as.Date(Date))
 
 # QAQC function
@@ -89,7 +89,7 @@ qaqc <- function(data, query, query_message, values_check) {
     # NA values are treated as "false" (missing data is not valid)
     filter(!(values_check %>% replace_na(FALSE))) %>%   
     # Select relevant columns to view errors
-    select("SavedQuery","MacroPlot.Name","Date","Error", "Fixed", "Explanation", "Queryers")
+    select("SavedQuery", "MacroPlot.Name", "Date", "Error", "Fixed", "Explanation", "Queryers")
   
   # Next, check if there are duplicate errors
   errors_temp <- errors %>% 
