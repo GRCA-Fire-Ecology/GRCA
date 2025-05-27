@@ -1,7 +1,6 @@
 # Created by: Alexandra Lalor
 # Email: alexandra_lalor@nps.gov, allielalor@gmail.com
 # Date Created: 2024-05-01
-# Last Edited: 2024-11-04
 #
 # To take data from excel files and save individual protocols/tabs as CSVs,
 # and name them appropriately
