@@ -134,7 +134,7 @@ path_data_M <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/M/2025-03-20/"
 path_data_P <- "X:/FFI Data Management/Exports from FFI/GRCA_I&M/P/2025-01-23/"
 # Errors
 path_errors <- paste0(here(), "/output/errors/")
-path_errors_name <- "2024 GRCA I&M QAQC Errors"
+path_errors_name <- "GRCA I&M QAQC Errors"
 ```
 
 ### Load Data
@@ -271,6 +271,13 @@ Trees_all <- Trees_all %>%
   mutate(MonitoringType = ifelse(MonitoringType == "M", "Mixed Conifer", "PIED"))
 ```
 
+### Set Target Values
+
+```{r}
+# designate target year or years
+years <- c(2024)
+```
+
 ### Filter Data
 
 ```{r}
@@ -281,10 +288,10 @@ Trees_all <- Trees_all %>%
 Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 # Filter for only data
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Filter for only headers
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # FuelsDuffLitt
@@ -293,10 +300,10 @@ Fuels1000_header <- Fuels1000_all %>%
 FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA
 # Filter for only data, by year
 FuelsDuffLitt_data <- FuelsDuffLitt_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Filter for only headers, by year
 FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # FuelsFine
@@ -305,10 +312,10 @@ FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
 FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA
 # Filter for only data, by year
 FuelsFine_data <- FuelsFine_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Filter for only headers, by year
 FuelsFine_header <- FuelsFine_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # PostBurn
@@ -317,10 +324,10 @@ FuelsFine_header <- FuelsFine_all %>%
 PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
 # Filter for only data, by year
 PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Filter for only headers, by year
 PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # Trees
@@ -329,11 +336,13 @@ PostBurn_header <- PostBurn_all %>%
 Trees_all$Visited[Trees_all$Visited==""] <- NA
 # Filter for only data, by year
 Trees_data <- Trees_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Filter for only headers, by year
 Trees_header <- Trees_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 ```
+
+### Selected year(s): [`r years`]{style="color:red"}
 
 # PROTOCOL - SURFACE FUELS
 
@@ -3388,11 +3397,11 @@ errors_all <- condformat(errors_all_cf[1:(nrow(errors_all_cf)), 1:8]) %>%
 
 ```{r}
 # Table of results for quick check
-#kable(errors_all, "pipe")
+kable(errors_all, "pipe")
 
 # Save as CSV or XLSX 
 path_errors
 #write.csv(errors_all, paste0(path_errors, "errors_GRCA_I&M.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_I&M.xlsx"))
-#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_I&M_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_I&M_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```

@@ -131,7 +131,7 @@ path_data_N <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/North Rim/2025-
 path_data_S <- "X:/FFI Data Management/Exports from FFI/GRCA_RAP/South Rim/2025-02-10/"
 # Errors
 path_errors <- paste0(here(), "/output/errors/")
-path_errors_name <- "2018 GRCA RAP QAQC Errors"
+path_errors_name <- "GRCA RAP QAQC Errors"
 ```
 
 ### Load Data
@@ -276,6 +276,13 @@ HerbsObs_all <- HerbsObs_all %>%
   select(!c("Month", "Day", "Time"))
 ```
 
+### Set Target Values
+
+```{r}
+# designate target year or years
+years <- c(2018)
+```
+
 ### Filter Data
 
 ```{r}
@@ -286,10 +293,10 @@ HerbsObs_all <- HerbsObs_all %>%
 Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 # Filter for only data
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2018))
+  filter(is.na(Visited), Year %in% years)
 # Filter for only headers
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2018))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # FuelsDuffLitt
@@ -298,10 +305,10 @@ Fuels1000_header <- Fuels1000_all %>%
 FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA 
 # Filter for only data 
 FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
+  filter(is.na(Visited), Year %in% years)  
 # Filter for only headers 
 FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # FuelsFine
@@ -310,10 +317,10 @@ FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
 FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
 # Filter for only data 
 FuelsFine_data <- FuelsFine_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
+  filter(is.na(Visited), Year %in% years)  
 # Filter for only headers 
 FuelsFine_header <- FuelsFine_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # PostBurn
@@ -322,10 +329,10 @@ FuelsFine_header <- FuelsFine_all %>%
 PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
 # Filter for only data
 PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2018))
+  filter(is.na(Visited), Year %in% years)
 # Filter for only headers
 PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2018))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # Trees
@@ -334,10 +341,10 @@ PostBurn_header <- PostBurn_all %>%
 Trees_all$Visited[Trees_all$Visited==""] <- NA  
 # Filter for only data 
 Trees_data <- Trees_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
+  filter(is.na(Visited), Year %in% years)  
 # Filter for only headers 
 Trees_header <- Trees_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # Seedlings
@@ -346,10 +353,10 @@ Trees_header <- Trees_all %>%
 Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA 
 # Filter for only data 
 Seedlings_data <- Seedlings_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
+  filter(is.na(Visited), Year %in% years)  
 # Filter for only headers 
 Seedlings_header <- Seedlings_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # HerbsObs
@@ -358,11 +365,13 @@ Seedlings_header <- Seedlings_all %>%
 HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA  
 # Filter for only data 
 HerbsObs_data <- HerbsObs_all %>%   
-  filter(is.na(Visited), Year %in% c(2018))  
+  filter(is.na(Visited), Year %in% years)  
 # Filter for only headers 
 HerbsObs_header <- HerbsObs_all %>%   
-  filter(!is.na(Visited), Year %in% c(2018))
+  filter(!is.na(Visited), Year %in% years)
 ```
+
+### Selected year(s): [`r years`]{style="color:red"}
 
 # PROTOCOL - SURFACE FUELS
 
@@ -4796,12 +4805,12 @@ errors_all <- condformat(errors_all_cf[1:(nrow(errors_all_cf)), 1:8]) %>%
 
 ```{r}
 # Table of results for quick check
-#kable(errors_all, "pipe")
+kable(errors_all, "pipe")
 
 # Save as CSV or XLSX 
 path_errors
 # write.csv(errors_all, paste0(path_errors, "errors_GRCA_RAP.csv"), quote=FALSE, row.names = FALSE, na = "") 
 #write_xlsx(errors_all, paste0(path_errors, "errors_GRCA_RAP.xlsx"))
 # condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), overwrite_wb = TRUE)
-#condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
+condformat2excel(errors_all, paste0(path_errors, "errors_GRCA_RAP_formatted.xlsx"), sheet_name = path_errors_name, overwrite_wb = TRUE)
 ```

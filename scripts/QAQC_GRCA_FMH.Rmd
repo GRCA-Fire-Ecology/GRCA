@@ -126,7 +126,7 @@ here()
 # Load in data.
 path_data <- "X:/FFI Data Management/Exports from FFI/GRCA_FMH/2025-01-23/"
 path_errors <- paste0(here(), "/output/errors/")
-path_errors_name <- "2023 GRCA FMH PIED QAQC Errors"
+path_errors_name <- "GRCA FMH QAQC Errors"
 ```
 
 ### Load Data
@@ -265,6 +265,13 @@ HerbsPoints_all <- HerbsPoints_all %>%
   select(!c("Month", "Day", "Time"))
 ```
 
+### Set Target Values
+
+```{r}
+# designate target year or years
+years <- c(2022, 2023, 2024)
+```
+
 ### Filter Data
 
 ```{r}
@@ -275,10 +282,10 @@ HerbsPoints_all <- HerbsPoints_all %>%
 Fuels1000_all$Visited[Fuels1000_all$Visited==""] <- NA
 # Fuels1000 data
 Fuels1000_data <- Fuels1000_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Fuels1000 headers
 Fuels1000_header <- Fuels1000_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # FuelsDuffLitt
@@ -287,10 +294,10 @@ Fuels1000_header <- Fuels1000_all %>%
 FuelsDuffLitt_all$Visited[FuelsDuffLitt_all$Visited==""] <- NA 
 # FuelsDuffLitt data
 FuelsDuffLitt_data <- FuelsDuffLitt_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited), Year %in% years)  
 # FuelsDuffLitt headers 
 FuelsDuffLitt_header <- FuelsDuffLitt_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # FuelsFine
@@ -299,10 +306,10 @@ FuelsDuffLitt_header <- FuelsDuffLitt_all %>%
 FuelsFine_all$Visited[FuelsFine_all$Visited==""] <- NA  
 # FuelsFine data
 FuelsFine_data <- FuelsFine_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited), Year %in% years)  
 # FuelsFine headers 
 FuelsFine_header <- FuelsFine_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # PostBurn
@@ -311,10 +318,10 @@ FuelsFine_header <- FuelsFine_all %>%
 PostBurn_all$Visited[PostBurn_all$Visited==""] <- NA
 # PostBurn data
 PostBurn_data <- PostBurn_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # PostBurn headers
 PostBurn_header <- PostBurn_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # Trees
@@ -323,10 +330,10 @@ PostBurn_header <- PostBurn_all %>%
 Trees_all$Visited[Trees_all$Visited==""] <- NA  
 # Trees data
 Trees_data <- Trees_all %>%   
-  filter(is.na(Visited), Year %in% c(2024))  
+  filter(is.na(Visited), Year %in% years)  
 # Trees headers
 Trees_header <- Trees_all %>%   
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # Seedlings
@@ -335,10 +342,10 @@ Trees_header <- Trees_all %>%
 Seedlings_all$Visited[Seedlings_all$Visited==""] <- NA
 # Seedlings data
 Seedlings_data <- Seedlings_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Seedlings headers
 Seedlings_header <- Seedlings_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # Shrubs
@@ -347,10 +354,10 @@ Seedlings_header <- Seedlings_all %>%
 Shrubs_all$Visited[Shrubs_all$Visited==""] <- NA
 # Shrubs data
 Shrubs_data <- Shrubs_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # Shrubs headers
 Shrubs_header <- Shrubs_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # HerbsObs
@@ -359,10 +366,10 @@ Shrubs_header <- Shrubs_all %>%
 HerbsObs_all$Visited[HerbsObs_all$Visited==""] <- NA
 # HerbsObs data
 HerbsObs_data <- HerbsObs_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # HerbsObs headers
 HerbsObs_header <- HerbsObs_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 
 #####
 # HerbsPoints
@@ -371,11 +378,13 @@ HerbsObs_header <- HerbsObs_all %>%
 HerbsPoints_all$Visited[HerbsPoints_all$Visited==""] <- NA
 # HerbsPoints data
 HerbsPoints_data <- HerbsPoints_all %>%
-  filter(is.na(Visited), Year %in% c(2024))
+  filter(is.na(Visited), Year %in% years)
 # HerbsPoints headers
 HerbsPoints_header <- HerbsPoints_all %>%
-  filter(!is.na(Visited), Year %in% c(2024))
+  filter(!is.na(Visited), Year %in% years)
 ```
+
+### Selected year(s): [`r years`]{style="color:red"}
 
 # PROTOCOL - SURFACE FUELS
 
