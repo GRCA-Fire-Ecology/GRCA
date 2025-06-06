@@ -6,5 +6,7 @@
 # data
 /data
 /photos
-/output
 /scripts/examples
+/output/data_clean/*
+/output/errors/*
+/output/graphs/*
