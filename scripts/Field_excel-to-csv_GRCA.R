@@ -22,6 +22,7 @@ install.packages("tidyverse")
 #load packages
 library(tidyverse)
 library(readxl)
+library(dplyr)
 
 
 ################################################################################
@@ -33,8 +34,8 @@ getwd()
 
 #load in data and name them based on file path
 #change file path based on user name!
-my_path_data <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - FMH/2024/Collected/"
-my_path_csv <- "C:/Users/alalor.NPS/OneDrive - DOI/FireFX2.0/Data Collection/GRCA - FMH/2024/Collected/_CSV_Import to FFI/"
+my_path_data <- "X:/Data Collection/GRCA_FMH/2025/Collected/"
+my_path_csv <- "X:/Data Collection/GRCA_FMH/2025/Collected/CSV_Import to FFI/"
 
 
 ################################################################################
