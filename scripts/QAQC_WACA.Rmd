@@ -124,9 +124,9 @@ Make sure to update file paths to be specific for your data.
 here()
 
 # Load in data.
-path_data <- "X:/FFI Data Management/Exports from FFI/WACA/2025-02-04/"
+path_data <- "X:/FFI Data Management/Exports from FFI/WACA/2025-06-09/"
 path_errors <- paste0(here(), "/output/errors/")
-path_errors_name <- "2020 WACA QAQC Errors"
+path_errors_name <- "WACA QAQC Errors"
 ```
 
 ### Load Data
@@ -213,7 +213,7 @@ Trees_all <- Trees_all %>%
 
 ```{r}
 # designate target year or years
-years <- c(2020)
+years <- c(2024)
 ```
 
 ### Filter Data
